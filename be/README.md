@@ -45,6 +45,23 @@ src/
 4. Chạy lệnh đồng bộ Prisma.
 5. Khởi động backend.
 
+## Seed dữ liệu mẫu
+- Chạy lệnh: `npm run seed`
+- Dữ liệu seed có đủ bảng chính để mô phỏng hệ thống đã vận hành thực tế:
+- Vai trò, người dùng, danh mục, nhà cung cấp, khách hàng.
+- Sản phẩm, ảnh sản phẩm, nhập kho, xuất kho, điều chỉnh kho.
+- Đơn bán, chi tiết đơn, thanh toán, hóa đơn.
+- Thông báo, email log, audit log, gợi ý tồn kho.
+- Có dữ liệu lịch sử nhiều ngày để biểu đồ và thống kê trực quan hơn.
+
+## Tài khoản đăng nhập mẫu sau khi seed
+- Admin:
+- Email: `admin@ongnuocviet.vn`
+- Mật khẩu: `Admin@123`
+- User:
+- Email: `user@ongnuocviet.vn`
+- Mật khẩu: `User@123`
+
 ## API nền đã có
 - `POST /api/v1/auth/register`
 - `POST /api/v1/auth/login`
