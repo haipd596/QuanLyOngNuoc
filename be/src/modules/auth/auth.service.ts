@@ -10,7 +10,7 @@ import { RegisterDto } from './dto/register.dto';
 type JwtPayload = {
   sub: string;
   email: string;
-  roleId: string | null;
+  role: string;
 };
 
 @Injectable()
@@ -25,7 +25,7 @@ export class AuthService {
   async register(dto: RegisterDto) {
     const existed = await this.usersService.findByEmail(dto.email);
     if (existed) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException('Email đã tồn tại');
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
@@ -36,12 +36,17 @@ export class AuthService {
         passwordHash,
         roleId: dto.roleId,
       },
+      include: {
+        role: {
+          select: { name: true },
+        },
+      },
     });
 
     const tokens = await this.issueTokens({
       sub: user.id,
       email: user.email,
-      roleId: user.roleId,
+      role: user.role?.name ?? 'USER',
     });
 
     return {
@@ -50,6 +55,7 @@ export class AuthService {
         fullName: user.fullName,
         email: user.email,
         roleId: user.roleId,
+        role: user.role?.name ?? 'USER',
       },
       ...tokens,
     };
@@ -58,18 +64,18 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.usersService.findByEmail(dto.email);
     if (!user || !user.passwordHash) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
     }
 
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
     if (!ok) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
     }
 
     const tokens = await this.issueTokens({
       sub: user.id,
       email: user.email,
-      roleId: user.roleId,
+      role: user.role?.name ?? 'USER',
     });
 
     return {
@@ -78,6 +84,7 @@ export class AuthService {
         fullName: user.fullName,
         email: user.email,
         roleId: user.roleId,
+        role: user.role?.name ?? 'USER',
       },
       ...tokens,
     };
@@ -90,7 +97,7 @@ export class AuthService {
       });
       return this.issueTokens(payload);
     } catch {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Refresh token không hợp lệ');
     }
   }
 
@@ -113,4 +120,3 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 }
-

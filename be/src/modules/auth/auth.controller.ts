@@ -31,7 +31,7 @@ export class AuthController {
   @Post('refresh')
   refresh(@Headers('x-refresh-token') refreshToken: string) {
     if (!refreshToken) {
-      throw new UnauthorizedException('Missing x-refresh-token');
+      throw new UnauthorizedException('Thiếu header x-refresh-token');
     }
     return this.authService.refresh(refreshToken);
   }
@@ -40,9 +40,8 @@ export class AuthController {
   @Get('me')
   me(@Req() req: Request & { user?: { sub: string } }) {
     if (!req.user?.sub) {
-      throw new UnauthorizedException('User not found in token');
+      throw new UnauthorizedException('Không tìm thấy người dùng trong token');
     }
     return this.authService.me(req.user.sub);
   }
 }
-

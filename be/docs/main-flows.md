@@ -1,76 +1,76 @@
-# Luong Chinh User va Admin
+# Luồng Chính User Và Admin
 
-Tai lieu nay tap trung vao cac luong cot loi, khong bao gom tinh nang nang cao (Google login, AI, ...).
+Tài liệu này tập trung vào các luồng cốt lõi, chưa bao gồm các tính năng nâng cao (Google Login, AI, ...).
 
-## 1. User moi vao trang se lam gi?
+## 1. User mới vào trang sẽ làm gì?
 
-### 1.1 Luong Onboarding User (nhan vien ban hang)
-1. Mo trang dang nhap.
-2. Dang nhap bang email + mat khau.
-3. He thong dieu huong vao dashboard user.
-4. User thuc hien cac nghiep vu hang ngay:
-- Tim san pham.
-- Tao don ban.
-- Cap nhat thong tin khach hang.
-- Xem ton kho nhanh.
-- Theo doi trang thai don vua tao.
+### 1.1 Luồng onboarding user (nhân viên bán hàng)
+1. Mở trang đăng nhập.
+2. Đăng nhập bằng email và mật khẩu.
+3. Hệ thống điều hướng vào màn hình nghiệp vụ.
+4. User thực hiện công việc hằng ngày:
+- Tìm sản phẩm.
+- Tạo đơn bán.
+- Cập nhật thông tin khách hàng.
+- Xem tồn kho nhanh.
+- Theo dõi trạng thái đơn vừa tạo.
 
-### 1.2 User co the lam duoc gi?
-- Xem danh sach san pham va ton kho (`/products`, `/inventory/summary`).
-- Tao don ban (`/sales-orders`).
-- Huy don neu can (`/sales-orders/:id/cancel`).
-- Quan ly khach hang (`/customers`).
-- Xem lich su luan chuyen kho (`/inventory/movements`).
+### 1.2 User có thể làm được gì?
+- Xem danh sách sản phẩm và tồn kho (`/products`, `/inventory/summary`).
+- Tạo đơn bán (`/sales-orders`).
+- Hủy đơn nếu cần (`/sales-orders/:id/cancel`).
+- Quản lý khách hàng (`/customers`).
+- Xem lịch sử luân chuyển kho (`/inventory/movements`).
 
-## 2. Luong chinh cua User theo nghiep vu
+## 2. Luồng chính của user theo nghiệp vụ
 
-### 2.1 Ban hang tai quay
-1. Tim san pham theo ten/SKU.
-2. Kiem tra ton kho hien tai.
-3. Tao don ban voi danh sach hang.
-4. He thong tru kho tu dong.
-5. User theo doi trang thai don.
+### 2.1 Bán hàng tại quầy
+1. Tìm sản phẩm theo tên hoặc SKU.
+2. Kiểm tra tồn kho hiện tại.
+3. Tạo đơn bán với danh sách hàng.
+4. Hệ thống trừ kho tự động.
+5. User theo dõi trạng thái đơn.
 
-### 2.2 Dieu chinh kho thuc te
-1. User vao man hinh kho.
-2. Chon nhap/xuat/dieu chinh.
-3. Nhap so luong va ly do.
-4. He thong cap nhat ton + luu lich su movement.
+### 2.2 Điều chỉnh kho thực tế
+1. User vào màn hình kho.
+2. Chọn nhập/xuất/điều chỉnh.
+3. Nhập số lượng và lý do.
+4. Hệ thống cập nhật tồn và lưu lịch sử movement.
 
-## 3. Admin vao he thong se lam gi?
+## 3. Admin vào hệ thống sẽ làm gì?
 
-### 3.1 Luong dieu hanh tong quan
-1. Dang nhap.
-2. Vao dashboard admin.
+### 3.1 Luồng điều hành tổng quan
+1. Đăng nhập.
+2. Vào dashboard admin.
 3. Xem nhanh:
-- Tong so san pham, khach hang, nhan vien, nha cung cap.
-- Doanh thu trong ngay.
-- So mat hang sap het.
-4. Neu co bat thuong: vao man hinh kiem ke va bao cao chi tiet.
+- Tổng số sản phẩm, khách hàng, nhân viên, nhà cung cấp.
+- Doanh thu trong ngày.
+- Số mặt hàng sắp hết.
+4. Nếu có bất thường: vào màn hình kiểm kê và báo cáo chi tiết.
 
-### 3.2 Admin co the lam duoc gi?
-- Quan ly user/role (`/users`, `/roles`).
-- Quan ly danh muc du lieu goc (`/categories`, `/suppliers`, `/products`).
-- Theo doi don ban (`/sales-orders`).
-- Kiem ke kho (`/reports/inventory-audit`).
-- Xem thong ke ban hang (`/reports/sales-overview`).
-- Theo doi dashboard tong hop (`/reports/dashboard`).
+### 3.2 Admin có thể làm được gì?
+- Quản lý user/role (`/users`, `/roles`).
+- Quản lý danh mục dữ liệu gốc (`/categories`, `/suppliers`, `/products`).
+- Theo dõi đơn bán (`/sales-orders`).
+- Kiểm kê kho (`/reports/inventory-audit`).
+- Xem thống kê bán hàng (`/reports/sales-overview`).
+- Theo dõi dashboard tổng hợp (`/reports/dashboard`).
 
-## 4. Luong kiem ke va theo doi cua Admin
+## 4. Luồng kiểm kê và theo dõi của admin
 
-### 4.1 Kiem ke kho dinh ky
-1. Mo bao cao `inventory-audit`.
-2. Xem danh sach hang duoi nguong.
-3. Xem san pham bien dong kho cao.
-4. Ra quyet dinh dieu chinh ton kho hoac dat nhap.
+### 4.1 Kiểm kê kho định kỳ
+1. Mở báo cáo `inventory-audit`.
+2. Xem danh sách hàng dưới ngưỡng.
+3. Xem sản phẩm biến động kho cao.
+4. Ra quyết định điều chỉnh tồn kho hoặc đặt nhập.
 
-### 4.2 Theo doi hieu suat ban hang
-1. Chon khoang thoi gian.
-2. Xem tong don, tong doanh thu, tong chiet khau.
-3. Xem co cau trang thai don.
-4. Danh gia chat luong van hanh va xu huong ban.
+### 4.2 Theo dõi hiệu suất bán hàng
+1. Chọn khoảng thời gian.
+2. Xem tổng đơn, tổng doanh thu, tổng chiết khấu.
+3. Xem cơ cấu trạng thái đơn.
+4. Đánh giá chất lượng vận hành và xu hướng bán.
 
-## 5. API cot loi phuc vu 2 nhom vai tro
+## 5. API cốt lõi phục vụ 2 nhóm vai trò
 
 ### 5.1 Auth
 - `POST /api/v1/auth/register`
@@ -78,22 +78,22 @@ Tai lieu nay tap trung vao cac luong cot loi, khong bao gom tinh nang nang cao (
 - `POST /api/v1/auth/refresh`
 - `GET /api/v1/auth/me`
 
-### 5.2 User nghiep vu
+### 5.2 User nghiệp vụ
 - `GET /api/v1/products`
 - `POST /api/v1/sales-orders`
 - `POST /api/v1/sales-orders/:id/cancel`
 - `GET /api/v1/customers`
 - `POST /api/v1/inventory/move`
 
-### 5.3 Admin dieu hanh
+### 5.3 Admin điều hành
 - `GET /api/v1/reports/dashboard`
 - `GET /api/v1/reports/inventory-audit`
 - `GET /api/v1/reports/sales-overview?from=YYYY-MM-DD&to=YYYY-MM-DD`
 - `GET /api/v1/users`
 - `GET /api/v1/roles`
 
-## 6. Nguyen tac trien khai tiep theo
-- Chua can nang cao, uu tien on dinh luong cot loi.
-- Moi API can co validation dau vao ro rang.
-- Moi tac dong kho phai co lich su movement de doi soat.
-- Moi don ban phai lien ket du lieu ton kho de tranh lech so.
+## 6. Nguyên tắc triển khai tiếp theo
+- Chưa làm nâng cao, ưu tiên ổn định luồng cốt lõi.
+- Mỗi API phải có validation đầu vào rõ ràng.
+- Mỗi tác động kho phải có lịch sử movement để đối soát.
+- Mỗi đơn bán phải liên kết dữ liệu tồn kho để tránh lệch số.

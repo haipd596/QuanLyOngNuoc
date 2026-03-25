@@ -1,4 +1,4 @@
-# Backend - Quan Ly Ong Nuoc
+# Backend - Quản Lý Ống Nước
 
 ## Mục tiêu
 Backend được thiết kế theo hướng:
@@ -13,8 +13,6 @@ Backend được thiết kế theo hướng:
 - Prisma
 - MySQL
 - JWT
-- Google OAuth
-- Mail service
 
 ## Cấu trúc khởi đầu
 ```bash
@@ -42,9 +40,9 @@ src/
 
 ## Chạy dự án
 1. Cài dependency trong `be/`.
-2. Copy `.env.example` thành `.env`.
+2. Sao chép `.env.example` thành `.env`.
 3. Kết nối MySQL.
-4. Chạy migrate Prisma.
+4. Chạy lệnh đồng bộ Prisma.
 5. Khởi động backend.
 
 ## API nền đã có
@@ -52,23 +50,23 @@ src/
 - `POST /api/v1/auth/login`
 - `POST /api/v1/auth/refresh` (header `x-refresh-token`)
 - `GET /api/v1/auth/me` (Bearer token)
-- `GET/POST/PATCH/DELETE /api/v1/users`
-- `GET/POST/PATCH/DELETE /api/v1/roles`
-- `GET/POST/PATCH/DELETE /api/v1/categories`
-- `GET/POST/PATCH/DELETE /api/v1/suppliers`
-- `GET/POST/PATCH/DELETE /api/v1/customers`
-- `GET/POST/PATCH/DELETE /api/v1/products`
-- `GET /api/v1/products/low-stock`
-- `GET /api/v1/inventory/summary`
-- `GET /api/v1/inventory/movements`
-- `POST /api/v1/inventory/move`
-- `GET/POST /api/v1/sales-orders`
-- `GET /api/v1/sales-orders/:id`
-- `PATCH /api/v1/sales-orders/:id/status`
-- `POST /api/v1/sales-orders/:id/cancel`
-- `GET /api/v1/reports/dashboard`
-- `GET /api/v1/reports/inventory-audit`
-- `GET /api/v1/reports/sales-overview`
+- `GET/POST/PATCH/DELETE /api/v1/users` (`ADMIN`)
+- `GET/POST/PATCH/DELETE /api/v1/roles` (`ADMIN`)
+- `GET/POST/PATCH/DELETE /api/v1/categories` (`ADMIN`)
+- `GET/POST/PATCH/DELETE /api/v1/suppliers` (`ADMIN`)
+- `GET/POST/PATCH/DELETE /api/v1/customers` (`ADMIN`, `USER` trừ `DELETE`)
+- `GET/POST/PATCH/DELETE /api/v1/products` (`USER` chỉ được `GET`)
+- `GET /api/v1/products/low-stock` (`ADMIN`, `USER`)
+- `GET /api/v1/inventory/summary` (`ADMIN`, `USER`)
+- `GET /api/v1/inventory/movements` (`ADMIN`, `USER`)
+- `POST /api/v1/inventory/move` (`ADMIN`, `USER`)
+- `GET/POST /api/v1/sales-orders` (`ADMIN`, `USER`)
+- `GET /api/v1/sales-orders/:id` (`ADMIN`, `USER`)
+- `PATCH /api/v1/sales-orders/:id/status` (`ADMIN`, `USER`)
+- `POST /api/v1/sales-orders/:id/cancel` (`ADMIN`, `USER`)
+- `GET /api/v1/reports/dashboard` (`ADMIN`)
+- `GET /api/v1/reports/inventory-audit` (`ADMIN`)
+- `GET /api/v1/reports/sales-overview` (`ADMIN`)
 
-## Tai lieu luong chinh
-- Xem tai lieu: `be/docs/main-flows.md`
+## Tài liệu luồng chính
+- Xem tại `be/docs/main-flows.md`

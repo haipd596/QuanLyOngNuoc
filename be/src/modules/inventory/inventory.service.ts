@@ -39,7 +39,7 @@ export class InventoryService {
       select: { id: true, stockQuantity: true },
     });
     if (!product) {
-      throw new BadRequestException('Product not found');
+      throw new BadRequestException('Không tìm thấy sản phẩm');
     }
 
     let nextStock = product.stockQuantity;
@@ -54,7 +54,7 @@ export class InventoryService {
     }
 
     if (nextStock < 0) {
-      throw new BadRequestException('Stock cannot be negative');
+      throw new BadRequestException('Tồn kho không được âm');
     }
 
     return this.prisma.$transaction(async (tx) => {

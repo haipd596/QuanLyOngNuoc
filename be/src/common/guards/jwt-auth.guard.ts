@@ -19,7 +19,7 @@ export class JwtAuthGuard implements CanActivate {
     const authHeader: string | undefined = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Missing bearer token');
+      throw new UnauthorizedException('Thiếu Bearer token');
     }
 
     const token = authHeader.substring(7);
@@ -30,8 +30,7 @@ export class JwtAuthGuard implements CanActivate {
       request.user = payload;
       return true;
     } catch {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException('Token không hợp lệ');
     }
   }
 }
-

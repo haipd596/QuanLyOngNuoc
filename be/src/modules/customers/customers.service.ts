@@ -20,7 +20,7 @@ export class CustomersService {
   async findOne(id: string) {
     const item = await this.prisma.customer.findUnique({ where: { id } });
     if (!item) {
-      throw new NotFoundException('Customer not found');
+      throw new NotFoundException('Không tìm thấy khách hàng');
     }
     return item;
   }
@@ -33,7 +33,6 @@ export class CustomersService {
   async remove(id: string) {
     await this.findOne(id);
     await this.prisma.customer.delete({ where: { id } });
-    return { message: 'Deleted successfully' };
+    return { message: 'Xóa thành công' };
   }
 }
-

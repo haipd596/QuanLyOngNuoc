@@ -1,9 +1,15 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
 import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
 import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
 import { SalesOrdersService } from './sales-orders.service';
 
 @Controller('sales-orders')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('ADMIN', 'USER')
 export class SalesOrdersController {
   constructor(private readonly salesOrdersService: SalesOrdersService) {}
 
@@ -32,4 +38,3 @@ export class SalesOrdersController {
     return this.salesOrdersService.cancel(id);
   }
 }
-

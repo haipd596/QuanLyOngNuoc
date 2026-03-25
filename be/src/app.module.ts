@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { RolesGuard } from './common/guards/roles.guard';
 import { PrismaModule } from './config/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
@@ -18,6 +21,9 @@ import { UsersModule } from './modules/users/users.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    JwtModule.register({
+      global: true,
+    }),
     PrismaModule,
     AuthModule,
     UsersModule,
@@ -30,5 +36,6 @@ import { UsersModule } from './modules/users/users.module';
     SalesOrdersModule,
     ReportsModule,
   ],
+  providers: [JwtAuthGuard, RolesGuard],
 })
 export class AppModule {}

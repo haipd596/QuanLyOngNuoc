@@ -17,7 +17,7 @@ export class UsersService {
       where: { email: dto.email },
     });
     if (existed) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException('Email đã tồn tại');
     }
 
     const passwordHash = dto.password
@@ -38,6 +38,7 @@ export class UsersService {
         email: true,
         phone: true,
         roleId: true,
+        role: { select: { name: true } },
         status: true,
         createdAt: true,
       },
@@ -53,6 +54,7 @@ export class UsersService {
         email: true,
         phone: true,
         roleId: true,
+        role: { select: { name: true } },
         status: true,
         createdAt: true,
       },
@@ -68,18 +70,24 @@ export class UsersService {
         email: true,
         phone: true,
         roleId: true,
+        role: { select: { name: true } },
         status: true,
         createdAt: true,
       },
     });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Không tìm thấy người dùng');
     }
     return user;
   }
 
   async findByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        role: { select: { name: true } },
+      },
+    });
   }
 
   async update(id: string, dto: UpdateUserDto) {
@@ -105,6 +113,7 @@ export class UsersService {
         email: true,
         phone: true,
         roleId: true,
+        role: { select: { name: true } },
         status: true,
         updatedAt: true,
       },
@@ -114,7 +123,6 @@ export class UsersService {
   async remove(id: string) {
     await this.findOne(id);
     await this.prisma.user.delete({ where: { id } });
-    return { message: 'Deleted successfully' };
+    return { message: 'Xóa thành công' };
   }
 }
-

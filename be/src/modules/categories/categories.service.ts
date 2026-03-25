@@ -20,7 +20,7 @@ export class CategoriesService {
   async findOne(id: string) {
     const item = await this.prisma.category.findUnique({ where: { id } });
     if (!item) {
-      throw new NotFoundException('Category not found');
+      throw new NotFoundException('Không tìm thấy danh mục');
     }
     return item;
   }
@@ -33,7 +33,6 @@ export class CategoriesService {
   async remove(id: string) {
     await this.findOne(id);
     await this.prisma.category.delete({ where: { id } });
-    return { message: 'Deleted successfully' };
+    return { message: 'Xóa thành công' };
   }
 }
-

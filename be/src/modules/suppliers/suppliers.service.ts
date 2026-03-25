@@ -20,7 +20,7 @@ export class SuppliersService {
   async findOne(id: string) {
     const item = await this.prisma.supplier.findUnique({ where: { id } });
     if (!item) {
-      throw new NotFoundException('Supplier not found');
+      throw new NotFoundException('Không tìm thấy nhà cung cấp');
     }
     return item;
   }
@@ -33,7 +33,6 @@ export class SuppliersService {
   async remove(id: string) {
     await this.findOne(id);
     await this.prisma.supplier.delete({ where: { id } });
-    return { message: 'Deleted successfully' };
+    return { message: 'Xóa thành công' };
   }
 }
-

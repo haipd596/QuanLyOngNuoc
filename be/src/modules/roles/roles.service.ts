@@ -20,7 +20,7 @@ export class RolesService {
   async findOne(id: string) {
     const role = await this.prisma.role.findUnique({ where: { id } });
     if (!role) {
-      throw new NotFoundException('Role not found');
+      throw new NotFoundException('Không tìm thấy vai trò');
     }
     return role;
   }
@@ -36,7 +36,6 @@ export class RolesService {
   async remove(id: string) {
     await this.findOne(id);
     await this.prisma.role.delete({ where: { id } });
-    return { message: 'Deleted successfully' };
+    return { message: 'Xóa thành công' };
   }
 }
-

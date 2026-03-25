@@ -20,7 +20,7 @@ export class SalesOrdersService {
     });
 
     if (products.length !== productIds.length) {
-      throw new BadRequestException('Some products were not found');
+      throw new BadRequestException('Một số sản phẩm không tồn tại');
     }
 
     const productMap = new Map(products.map((p) => [p.id, p]));
@@ -29,10 +29,10 @@ export class SalesOrdersService {
     const normalizedItems = dto.items.map((item) => {
       const product = productMap.get(item.productId);
       if (!product) {
-        throw new BadRequestException(`Product not found: ${item.productId}`);
+        throw new BadRequestException(`Không tìm thấy sản phẩm: ${item.productId}`);
       }
       if (product.stockQuantity < item.quantity) {
-        throw new BadRequestException(`Insufficient stock for SKU ${product.sku}`);
+        throw new BadRequestException(`Tồn kho không đủ cho mã SKU ${product.sku}`);
       }
       const unitPrice = item.unitPrice ?? Number(product.salePrice);
       const subtotal = unitPrice * item.quantity;
@@ -112,7 +112,7 @@ export class SalesOrdersService {
       },
     });
     if (!order) {
-      throw new NotFoundException('Sales order not found');
+      throw new NotFoundException('Không tìm thấy đơn bán hàng');
     }
     return order;
   }
@@ -128,10 +128,10 @@ export class SalesOrdersService {
   async cancel(id: string) {
     const order = await this.findOne(id);
     if (order.orderStatus === OrderStatus.CANCELED) {
-      throw new BadRequestException('Order already canceled');
+      throw new BadRequestException('Đơn hàng đã bị hủy');
     }
     if (order.orderStatus === OrderStatus.COMPLETED) {
-      throw new BadRequestException('Completed order cannot be canceled');
+      throw new BadRequestException('Không thể hủy đơn hàng đã hoàn tất');
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -161,4 +161,3 @@ export class SalesOrdersService {
     });
   }
 }
-

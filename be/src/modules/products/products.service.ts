@@ -50,7 +50,7 @@ export class ProductsService {
       include: { category: true, supplier: true },
     });
     if (!item) {
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException('Không tìm thấy sản phẩm');
     }
     return item;
   }
@@ -66,6 +66,6 @@ export class ProductsService {
   async remove(id: string) {
     await this.findOne(id);
     await this.prisma.product.delete({ where: { id } });
-    return { message: 'Deleted successfully' };
+    return { message: 'Xóa thành công' };
   }
 }
