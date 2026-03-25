@@ -1,5 +1,8 @@
 FROM node:20-bookworm-slim AS base
 WORKDIR /app
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 FROM base AS deps
 COPY package.json package-lock.json ./
@@ -16,7 +19,7 @@ RUN npm run prisma:generate --workspace be
 RUN npm run build --workspace be
 RUN npm prune --omit=dev --workspace be --include-workspace-root=false
 
-FROM node:20-bookworm-slim AS runner
+FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
