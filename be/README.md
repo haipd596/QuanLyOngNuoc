@@ -62,3 +62,13 @@ src/
 - `GET /api/v1/inventory/summary`
 - `GET /api/v1/inventory/movements`
 - `POST /api/v1/inventory/move`
+- `GET/POST /api/v1/sales-orders`
+- `GET /api/v1/sales-orders/:id`
+- `PATCH /api/v1/sales-orders/:id/status`
+- `POST /api/v1/sales-orders/:id/cancel`
+- `GET /api/v1/reports/dashboard`
+- `GET /api/v1/reports/inventory-audit`
+- `GET /api/v1/reports/sales-overview`
+
+## Tai lieu luong chinh
+- Xem tai lieu: `be/docs/main-flows.md`

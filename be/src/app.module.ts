@@ -6,7 +6,9 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { ProductsModule } from './modules/products/products.module';
+import { ReportsModule } from './modules/reports/reports.module';
 import { RolesModule } from './modules/roles/roles.module';
+import { SalesOrdersModule } from './modules/sales-orders/sales-orders.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -25,6 +27,8 @@ import { UsersModule } from './modules/users/users.module';
     CustomersModule,
     ProductsModule,
     InventoryModule,
+    SalesOrdersModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}
