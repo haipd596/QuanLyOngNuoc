@@ -1,4 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import {
+  buildPaginatedResult,
+  normalizePagination,
+} from '../../common/utils/pagination.util';
 import { PrismaService } from '../../config/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -17,31 +22,70 @@ export class ProductsService {
     });
   }
 
-  findAll(search?: string) {
-    return this.prisma.product.findMany({
-      where: search
-        ? {
-            OR: [
-              { name: { contains: search } },
-              { sku: { contains: search } },
-              { slug: { contains: search } },
-            ],
-          }
-        : undefined,
-      include: {
-        category: true,
-        supplier: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(query: PaginationQueryDto, search?: string) {
+    const { page, limit, skip } = normalizePagination(query);
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: search } },
+            { sku: { contains: search } },
+            { slug: { contains: search } },
+          ],
+        }
+      : undefined;
+
+    const [items, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        include: {
+          category: true,
+          supplier: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+
+    return buildPaginatedResult(items, total, page, limit);
   }
 
-  findLowStock() {
-    return this.prisma.$queryRaw`
-      SELECT * FROM Product
-      WHERE stockQuantity <= minStockLevel
-      ORDER BY stockQuantity ASC
-    `;
+  async findLowStock(query: PaginationQueryDto) {
+    const { page, limit, skip } = normalizePagination(query);
+    const [items, total] = await Promise.all([
+      this.prisma.$queryRaw<
+        Array<{
+          id: string;
+          sku: string;
+          name: string;
+          slug: string;
+          categoryId: string | null;
+          supplierId: string | null;
+          unit: string;
+          importPrice: number;
+          salePrice: number;
+          stockQuantity: number;
+          minStockLevel: number;
+          description: string | null;
+          status: string;
+          createdAt: Date;
+          updatedAt: Date;
+        }>
+      >`
+        SELECT *
+        FROM Product
+        WHERE stockQuantity <= minStockLevel
+        ORDER BY stockQuantity ASC
+        LIMIT ${limit} OFFSET ${skip}
+      `,
+      this.prisma.$queryRaw<Array<{ count: bigint }>>`
+        SELECT COUNT(*) as count FROM Product
+        WHERE stockQuantity <= minStockLevel
+      `,
+    ]);
+
+    return buildPaginatedResult(items, Number(total[0]?.count ?? 0), page, limit);
   }
 
   async findOne(id: string) {

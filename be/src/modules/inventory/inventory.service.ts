@@ -1,5 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { StockMovementType } from '@prisma/client';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import {
+  buildPaginatedResult,
+  normalizePagination,
+} from '../../common/utils/pagination.util';
 import { PrismaService } from '../../config/prisma.service';
 import { MoveStockDto } from './dto/move-stock.dto';
 
@@ -7,30 +12,45 @@ import { MoveStockDto } from './dto/move-stock.dto';
 export class InventoryService {
   constructor(private readonly prisma: PrismaService) {}
 
-  summary() {
-    return this.prisma.product.findMany({
-      select: {
-        id: true,
-        sku: true,
-        name: true,
-        stockQuantity: true,
-        minStockLevel: true,
-        salePrice: true,
-      },
-      orderBy: { stockQuantity: 'asc' },
-    });
+  async summary(query: PaginationQueryDto) {
+    const { page, limit, skip } = normalizePagination(query);
+    const [items, total] = await Promise.all([
+      this.prisma.product.findMany({
+        select: {
+          id: true,
+          sku: true,
+          name: true,
+          stockQuantity: true,
+          minStockLevel: true,
+          salePrice: true,
+        },
+        orderBy: { stockQuantity: 'asc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.product.count(),
+    ]);
+
+    return buildPaginatedResult(items, total, page, limit);
   }
 
-  movements() {
-    return this.prisma.stockMovement.findMany({
-      include: {
-        product: {
-          select: { id: true, sku: true, name: true },
+  async movements(query: PaginationQueryDto) {
+    const { page, limit, skip } = normalizePagination(query);
+    const [items, total] = await Promise.all([
+      this.prisma.stockMovement.findMany({
+        include: {
+          product: {
+            select: { id: true, sku: true, name: true },
+          },
         },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 100,
-    });
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.stockMovement.count(),
+    ]);
+
+    return buildPaginatedResult(items, total, page, limit);
   }
 
   async moveStock(dto: MoveStockDto) {

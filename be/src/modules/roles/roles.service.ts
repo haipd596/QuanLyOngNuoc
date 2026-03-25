@@ -1,4 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import {
+  buildPaginatedResult,
+  normalizePagination,
+} from '../../common/utils/pagination.util';
 import { PrismaService } from '../../config/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -11,10 +16,18 @@ export class RolesService {
     return this.prisma.role.create({ data: dto });
   }
 
-  findAll() {
-    return this.prisma.role.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(query: PaginationQueryDto) {
+    const { page, limit, skip } = normalizePagination(query);
+    const [items, total] = await Promise.all([
+      this.prisma.role.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.role.count(),
+    ]);
+
+    return buildPaginatedResult(items, total, page, limit);
   }
 
   async findOne(id: string) {

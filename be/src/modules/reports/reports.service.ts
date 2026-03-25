@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import {
+  buildPaginatedResult,
+  normalizePagination,
+} from '../../common/utils/pagination.util';
 import { PrismaService } from '../../config/prisma.service';
 
 @Injectable()
@@ -43,10 +48,30 @@ export class ReportsService {
     };
   }
 
-  async inventoryAudit() {
-    const lowStock = await this.prisma.$queryRaw<
-      Array<{ id: string; sku: string; name: string; stockQuantity: number; minStockLevel: number }>
-    >`SELECT id, sku, name, stockQuantity, minStockLevel FROM Product WHERE stockQuantity <= minStockLevel ORDER BY stockQuantity ASC`;
+  async inventoryAudit(query: PaginationQueryDto) {
+    const { page, limit, skip } = normalizePagination(query);
+    const [lowStockRows, lowStockCount] = await Promise.all([
+      this.prisma.$queryRaw<
+        Array<{
+          id: string;
+          sku: string;
+          name: string;
+          stockQuantity: number;
+          minStockLevel: number;
+        }>
+      >`
+        SELECT id, sku, name, stockQuantity, minStockLevel
+        FROM Product
+        WHERE stockQuantity <= minStockLevel
+        ORDER BY stockQuantity ASC
+        LIMIT ${limit} OFFSET ${skip}
+      `,
+      this.prisma.$queryRaw<Array<{ count: bigint }>>`
+        SELECT COUNT(*) as count
+        FROM Product
+        WHERE stockQuantity <= minStockLevel
+      `,
+    ]);
 
     const movements = await this.prisma.stockMovement.groupBy({
       by: ['productId'],
@@ -63,7 +88,12 @@ export class ReportsService {
     const productMap = new Map(products.map((p) => [p.id, p]));
 
     return {
-      lowStock,
+      lowStock: buildPaginatedResult(
+        lowStockRows,
+        Number(lowStockCount[0]?.count ?? 0),
+        page,
+        limit,
+      ),
       topMovedProducts: movements.map((m) => ({
         productId: m.productId,
         sku: productMap.get(m.productId)?.sku ?? '',
@@ -109,4 +139,3 @@ export class ReportsService {
     };
   }
 }
-

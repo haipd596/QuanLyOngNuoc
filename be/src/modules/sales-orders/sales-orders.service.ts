@@ -4,6 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrderStatus, PaymentStatus, StockMovementType } from '@prisma/client';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
+import {
+  buildPaginatedResult,
+  normalizePagination,
+} from '../../common/utils/pagination.util';
 import { PrismaService } from '../../config/prisma.service';
 import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
 import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
@@ -91,15 +96,23 @@ export class SalesOrdersService {
     });
   }
 
-  findAll() {
-    return this.prisma.salesOrder.findMany({
-      include: {
-        customer: true,
-        staff: { select: { id: true, fullName: true, email: true } },
-        items: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(query: PaginationQueryDto) {
+    const { page, limit, skip } = normalizePagination(query);
+    const [items, total] = await Promise.all([
+      this.prisma.salesOrder.findMany({
+        include: {
+          customer: true,
+          staff: { select: { id: true, fullName: true, email: true } },
+          items: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.salesOrder.count(),
+    ]);
+
+    return buildPaginatedResult(items, total, page, limit);
   }
 
   async findOne(id: string) {
