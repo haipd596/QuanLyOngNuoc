@@ -16,15 +16,25 @@ export class RolesService {
     return this.prisma.role.create({ data: dto });
   }
 
-  async findAll(query: PaginationQueryDto) {
+  async findAll(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
+    const where = keyword
+      ? {
+          OR: [
+            { name: { contains: keyword } },
+            { description: { contains: keyword } },
+          ],
+        }
+      : undefined;
+
     const [items, total] = await Promise.all([
       this.prisma.role.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      this.prisma.role.count(),
+      this.prisma.role.count({ where }),
     ]);
 
     return buildPaginatedResult(items, total, page, limit);

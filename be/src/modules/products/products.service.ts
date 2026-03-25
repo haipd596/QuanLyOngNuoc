@@ -22,14 +22,14 @@ export class ProductsService {
     });
   }
 
-  async findAll(query: PaginationQueryDto, search?: string) {
+  async findAll(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
-    const where = search
+    const where = keyword
       ? {
           OR: [
-            { name: { contains: search } },
-            { sku: { contains: search } },
-            { slug: { contains: search } },
+            { name: { contains: keyword } },
+            { sku: { contains: keyword } },
+            { slug: { contains: keyword } },
           ],
         }
       : undefined;
@@ -51,8 +51,9 @@ export class ProductsService {
     return buildPaginatedResult(items, total, page, limit);
   }
 
-  async findLowStock(query: PaginationQueryDto) {
+  async findLowStock(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
+    const sqlKeyword = keyword ? `%${keyword}%` : null;
     const [items, total] = await Promise.all([
       this.prisma.$queryRaw<
         Array<{
@@ -76,12 +77,24 @@ export class ProductsService {
         SELECT *
         FROM Product
         WHERE stockQuantity <= minStockLevel
+          AND (
+            ${sqlKeyword} IS NULL
+            OR name LIKE ${sqlKeyword}
+            OR sku LIKE ${sqlKeyword}
+            OR slug LIKE ${sqlKeyword}
+          )
         ORDER BY stockQuantity ASC
         LIMIT ${limit} OFFSET ${skip}
       `,
       this.prisma.$queryRaw<Array<{ count: bigint }>>`
         SELECT COUNT(*) as count FROM Product
         WHERE stockQuantity <= minStockLevel
+          AND (
+            ${sqlKeyword} IS NULL
+            OR name LIKE ${sqlKeyword}
+            OR sku LIKE ${sqlKeyword}
+            OR slug LIKE ${sqlKeyword}
+          )
       `,
     ]);
 

@@ -12,10 +12,20 @@ import { MoveStockDto } from './dto/move-stock.dto';
 export class InventoryService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async summary(query: PaginationQueryDto) {
+  async summary(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
+    const where = keyword
+      ? {
+          OR: [
+            { name: { contains: keyword } },
+            { sku: { contains: keyword } },
+          ],
+        }
+      : undefined;
+
     const [items, total] = await Promise.all([
       this.prisma.product.findMany({
+        where,
         select: {
           id: true,
           sku: true,
@@ -28,16 +38,44 @@ export class InventoryService {
         skip,
         take: limit,
       }),
-      this.prisma.product.count(),
+      this.prisma.product.count({ where }),
     ]);
 
     return buildPaginatedResult(items, total, page, limit);
   }
 
-  async movements(query: PaginationQueryDto) {
+  async movements(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
+    const enumKeyword = keyword?.toUpperCase();
+    const isStockTypeKeyword =
+      enumKeyword === StockMovementType.IMPORT ||
+      enumKeyword === StockMovementType.EXPORT ||
+      enumKeyword === StockMovementType.ADJUST;
+
+    const where = keyword
+      ? {
+          OR: [
+            { note: { contains: keyword } },
+            ...(isStockTypeKeyword
+              ? [{ type: { equals: enumKeyword as StockMovementType } }]
+              : []),
+            {
+              product: {
+                is: {
+                  OR: [
+                    { name: { contains: keyword } },
+                    { sku: { contains: keyword } },
+                  ],
+                },
+              },
+            },
+          ],
+        }
+      : undefined;
+
     const [items, total] = await Promise.all([
       this.prisma.stockMovement.findMany({
+        where,
         include: {
           product: {
             select: { id: true, sku: true, name: true },
@@ -47,7 +85,7 @@ export class InventoryService {
         skip,
         take: limit,
       }),
-      this.prisma.stockMovement.count(),
+      this.prisma.stockMovement.count({ where }),
     ]);
 
     return buildPaginatedResult(items, total, page, limit);

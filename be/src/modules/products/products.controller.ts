@@ -44,22 +44,29 @@ export class ProductsController {
   @ResponseMessage('Lấy danh sách sản phẩm thành công')
   @ApiPaginationQuery()
   @ApiQuery({
-    name: 'search',
+    name: 'keyword',
     required: false,
-    description: 'Từ khóa tìm kiếm theo tên, SKU hoặc slug',
+    description: 'Tìm theo tên sản phẩm, SKU hoặc slug',
+    example: 'PVC',
   })
   @ApiStandardPaginationResponse('Lấy danh sách sản phẩm thành công')
-  findAll(@Query() query: PaginationQueryDto, @Query('search') search?: string) {
-    return this.productsService.findAll(query, search);
+  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
+    return this.productsService.findAll(query, keyword);
   }
 
   @Get('low-stock')
   @Roles('ADMIN', 'USER')
   @ResponseMessage('Lấy danh sách sản phẩm tồn thấp thành công')
   @ApiPaginationQuery()
+  @ApiQuery({
+    name: 'keyword',
+    required: false,
+    description: 'Tìm theo tên sản phẩm, SKU hoặc slug trong nhóm tồn thấp',
+    example: 'dây điện',
+  })
   @ApiStandardPaginationResponse('Lấy danh sách sản phẩm tồn thấp thành công')
-  lowStock(@Query() query: PaginationQueryDto) {
-    return this.productsService.findLowStock(query);
+  lowStock(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
+    return this.productsService.findLowStock(query, keyword);
   }
 
   @Get(':id')

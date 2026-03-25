@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiQuery } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { UseGuards } from '@nestjs/common';
@@ -26,17 +27,30 @@ export class InventoryController {
   @Get('summary')
   @ResponseMessage('Lấy tổng quan tồn kho thành công')
   @ApiPaginationQuery()
+  @ApiQuery({
+    name: 'keyword',
+    required: false,
+    description: 'Tìm theo tên sản phẩm hoặc SKU',
+    example: 'ONV-PVC',
+  })
   @ApiStandardPaginationResponse('Lấy tổng quan tồn kho thành công')
-  summary(@Query() query: PaginationQueryDto) {
-    return this.inventoryService.summary(query);
+  summary(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
+    return this.inventoryService.summary(query, keyword);
   }
 
   @Get('movements')
   @ResponseMessage('Lấy lịch sử nhập xuất kho thành công')
   @ApiPaginationQuery()
+  @ApiQuery({
+    name: 'keyword',
+    required: false,
+    description:
+      'Tìm theo ghi chú, tên sản phẩm, SKU hoặc loại giao dịch (IMPORT, EXPORT, ADJUST)',
+    example: 'IMPORT',
+  })
   @ApiStandardPaginationResponse('Lấy lịch sử nhập xuất kho thành công')
-  movements(@Query() query: PaginationQueryDto) {
-    return this.inventoryService.movements(query);
+  movements(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
+    return this.inventoryService.movements(query, keyword);
   }
 
   @Post('move')

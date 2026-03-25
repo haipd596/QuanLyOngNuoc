@@ -50,10 +50,21 @@ export class UsersService {
     });
   }
 
-  async findAll(query: PaginationQueryDto) {
+  async findAll(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
+    const where = keyword
+      ? {
+          OR: [
+            { fullName: { contains: keyword } },
+            { email: { contains: keyword } },
+            { phone: { contains: keyword } },
+          ],
+        }
+      : undefined;
+
     const [items, total] = await Promise.all([
       this.prisma.user.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
@@ -68,7 +79,7 @@ export class UsersService {
           createdAt: true,
         },
       }),
-      this.prisma.user.count(),
+      this.prisma.user.count({ where }),
     ]);
 
     return buildPaginatedResult(items, total, page, limit);

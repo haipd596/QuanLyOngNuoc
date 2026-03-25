@@ -16,15 +16,26 @@ export class CategoriesService {
     return this.prisma.category.create({ data: dto });
   }
 
-  async findAll(query: PaginationQueryDto) {
+  async findAll(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
+    const where = keyword
+      ? {
+          OR: [
+            { name: { contains: keyword } },
+            { slug: { contains: keyword } },
+            { description: { contains: keyword } },
+          ],
+        }
+      : undefined;
+
     const [items, total] = await Promise.all([
       this.prisma.category.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      this.prisma.category.count(),
+      this.prisma.category.count({ where }),
     ]);
 
     return buildPaginatedResult(items, total, page, limit);

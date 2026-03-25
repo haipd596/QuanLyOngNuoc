@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiQuery } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { UseGuards } from '@nestjs/common';
@@ -34,9 +35,15 @@ export class SalesOrdersController {
   @Get()
   @ResponseMessage('Lấy danh sách đơn bán hàng thành công')
   @ApiPaginationQuery()
+  @ApiQuery({
+    name: 'keyword',
+    required: false,
+    description: 'Tìm theo mã đơn, ghi chú, tên khách hàng hoặc tên nhân viên',
+    example: 'SO-2026',
+  })
   @ApiStandardPaginationResponse('Lấy danh sách đơn bán hàng thành công')
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.salesOrdersService.findAll(query);
+  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
+    return this.salesOrdersService.findAll(query, keyword);
   }
 
   @Get(':id')

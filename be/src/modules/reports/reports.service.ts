@@ -48,8 +48,9 @@ export class ReportsService {
     };
   }
 
-  async inventoryAudit(query: PaginationQueryDto) {
+  async inventoryAudit(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
+    const sqlKeyword = keyword ? `%${keyword}%` : null;
     const [lowStockRows, lowStockCount] = await Promise.all([
       this.prisma.$queryRaw<
         Array<{
@@ -63,6 +64,11 @@ export class ReportsService {
         SELECT id, sku, name, stockQuantity, minStockLevel
         FROM Product
         WHERE stockQuantity <= minStockLevel
+          AND (
+            ${sqlKeyword} IS NULL
+            OR name LIKE ${sqlKeyword}
+            OR sku LIKE ${sqlKeyword}
+          )
         ORDER BY stockQuantity ASC
         LIMIT ${limit} OFFSET ${skip}
       `,
@@ -70,6 +76,11 @@ export class ReportsService {
         SELECT COUNT(*) as count
         FROM Product
         WHERE stockQuantity <= minStockLevel
+          AND (
+            ${sqlKeyword} IS NULL
+            OR name LIKE ${sqlKeyword}
+            OR sku LIKE ${sqlKeyword}
+          )
       `,
     ]);
 

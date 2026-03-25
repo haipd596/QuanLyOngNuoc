@@ -12,6 +12,7 @@ COPY be/tsconfig.json ./be/tsconfig.json
 COPY be/tsconfig.build.json ./be/tsconfig.build.json
 COPY be/nest-cli.json ./be/nest-cli.json
 COPY be/src ./be/src
+RUN npm run prisma:generate --workspace be
 RUN npm run build --workspace be
 RUN npm prune --omit=dev --workspace be --include-workspace-root=false
 
@@ -29,4 +30,3 @@ COPY --from=build /app/be/prisma ./be/prisma
 WORKDIR /app/be
 EXPOSE 3000
 CMD ["node", "dist/main.js"]
-

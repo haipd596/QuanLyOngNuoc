@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiQuery } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { UseGuards } from '@nestjs/common';
@@ -34,9 +35,15 @@ export class UsersController {
   @Get()
   @ResponseMessage('Lấy danh sách người dùng thành công')
   @ApiPaginationQuery()
+  @ApiQuery({
+    name: 'keyword',
+    required: false,
+    description: 'Tìm theo họ tên, email hoặc số điện thoại',
+    example: 'user',
+  })
   @ApiStandardPaginationResponse('Lấy danh sách người dùng thành công')
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.usersService.findAll(query);
+  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
+    return this.usersService.findAll(query, keyword);
   }
 
   @Get(':id')

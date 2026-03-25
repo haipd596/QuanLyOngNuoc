@@ -96,10 +96,34 @@ export class SalesOrdersService {
     });
   }
 
-  async findAll(query: PaginationQueryDto) {
+  async findAll(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
+    const where = keyword
+      ? {
+          OR: [
+            { orderCode: { contains: keyword } },
+            { note: { contains: keyword } },
+            {
+              customer: {
+                is: {
+                  fullName: { contains: keyword },
+                },
+              },
+            },
+            {
+              staff: {
+                is: {
+                  fullName: { contains: keyword },
+                },
+              },
+            },
+          ],
+        }
+      : undefined;
+
     const [items, total] = await Promise.all([
       this.prisma.salesOrder.findMany({
+        where,
         include: {
           customer: true,
           staff: { select: { id: true, fullName: true, email: true } },
@@ -109,7 +133,7 @@ export class SalesOrdersService {
         skip,
         take: limit,
       }),
-      this.prisma.salesOrder.count(),
+      this.prisma.salesOrder.count({ where }),
     ]);
 
     return buildPaginatedResult(items, total, page, limit);

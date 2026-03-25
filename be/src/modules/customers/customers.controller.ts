@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiQuery } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { UseGuards } from '@nestjs/common';
@@ -35,9 +36,15 @@ export class CustomersController {
   @Roles('ADMIN', 'USER')
   @ResponseMessage('Lấy danh sách khách hàng thành công')
   @ApiPaginationQuery()
+  @ApiQuery({
+    name: 'keyword',
+    required: false,
+    description: 'Tìm theo tên, số điện thoại, email hoặc địa chỉ khách hàng',
+    example: 'Phạm',
+  })
   @ApiStandardPaginationResponse('Lấy danh sách khách hàng thành công')
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.customersService.findAll(query);
+  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
+    return this.customersService.findAll(query, keyword);
   }
 
   @Get(':id')

@@ -28,9 +28,15 @@ export class ReportsController {
   @Get('inventory-audit')
   @ResponseMessage('Lấy báo cáo kiểm kê kho thành công')
   @ApiPaginationQuery()
+  @ApiQuery({
+    name: 'keyword',
+    required: false,
+    description: 'Tìm trong danh sách tồn thấp theo tên sản phẩm hoặc SKU',
+    example: 'CADIVI',
+  })
   @ApiStandardResponse('Lấy báo cáo kiểm kê kho thành công')
-  inventoryAudit(@Query() query: PaginationQueryDto) {
-    return this.reportsService.inventoryAudit(query);
+  inventoryAudit(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
+    return this.reportsService.inventoryAudit(query, keyword);
   }
 
   @Get('sales-overview')

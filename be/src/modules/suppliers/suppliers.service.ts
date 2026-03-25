@@ -16,15 +16,28 @@ export class SuppliersService {
     return this.prisma.supplier.create({ data: dto });
   }
 
-  async findAll(query: PaginationQueryDto) {
+  async findAll(query: PaginationQueryDto, keyword?: string) {
     const { page, limit, skip } = normalizePagination(query);
+    const where = keyword
+      ? {
+          OR: [
+            { name: { contains: keyword } },
+            { phone: { contains: keyword } },
+            { email: { contains: keyword } },
+            { address: { contains: keyword } },
+            { taxCode: { contains: keyword } },
+          ],
+        }
+      : undefined;
+
     const [items, total] = await Promise.all([
       this.prisma.supplier.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      this.prisma.supplier.count(),
+      this.prisma.supplier.count({ where }),
     ]);
 
     return buildPaginatedResult(items, total, page, limit);

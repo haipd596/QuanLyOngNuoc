@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiQuery } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { UseGuards } from '@nestjs/common';
@@ -34,9 +35,15 @@ export class CategoriesController {
   @Get()
   @ResponseMessage('Lấy danh sách danh mục thành công')
   @ApiPaginationQuery()
+  @ApiQuery({
+    name: 'keyword',
+    required: false,
+    description: 'Tìm theo tên danh mục, slug hoặc mô tả',
+    example: 'ống',
+  })
   @ApiStandardPaginationResponse('Lấy danh sách danh mục thành công')
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.categoriesService.findAll(query);
+  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
+    return this.categoriesService.findAll(query, keyword);
   }
 
   @Get(':id')
