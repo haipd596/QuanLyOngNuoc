@@ -17,7 +17,7 @@ import { MoveStockDto } from './dto/move-stock.dto';
 import { InventoryService } from './inventory.service';
 
 @Controller('inventory')
-@ApiTags('Inventory')
+@ApiTags('Kho hàng')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN', 'USER')
@@ -34,8 +34,8 @@ export class InventoryController {
     example: 'ONV-PVC',
   })
   @ApiStandardPaginationResponse('Lấy tổng quan tồn kho thành công')
-  summary(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.inventoryService.summary(query, keyword);
+  summary(@Query() query: PaginationQueryDto) {
+    return this.inventoryService.summary(query, query.keyword);
   }
 
   @Get('movements')
@@ -49,8 +49,8 @@ export class InventoryController {
     example: 'IMPORT',
   })
   @ApiStandardPaginationResponse('Lấy lịch sử nhập xuất kho thành công')
-  movements(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.inventoryService.movements(query, keyword);
+  movements(@Query() query: PaginationQueryDto) {
+    return this.inventoryService.movements(query, query.keyword);
   }
 
   @Post('move')

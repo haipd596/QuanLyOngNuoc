@@ -18,7 +18,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { RolesService } from './roles.service';
 
 @Controller('roles')
-@ApiTags('Roles')
+@ApiTags('Vai trò')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
@@ -42,8 +42,8 @@ export class RolesController {
     example: 'ADMIN',
   })
   @ApiStandardPaginationResponse('Lấy danh sách vai trò thành công')
-  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.rolesService.findAll(query, keyword);
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.rolesService.findAll(query, query.keyword);
   }
 
   @Get(':id')

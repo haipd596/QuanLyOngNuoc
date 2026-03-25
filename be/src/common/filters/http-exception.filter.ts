@@ -20,7 +20,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       response.status(code).json({
         code,
-        status: 'error',
+        status: 'lỗi',
         data: null,
         message,
       });
@@ -29,7 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       code: HttpStatus.INTERNAL_SERVER_ERROR,
-      status: 'error',
+      status: 'lỗi',
       data: null,
       message: 'Lỗi hệ thống, vui lòng thử lại sau',
     });
@@ -50,4 +50,3 @@ export class HttpExceptionFilter implements ExceptionFilter {
     return 'Yêu cầu không hợp lệ';
   }
 }
-

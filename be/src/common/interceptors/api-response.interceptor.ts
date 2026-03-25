@@ -28,11 +28,10 @@ export class ApiResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => ({
         code: response.statusCode,
-        status: 'success',
+        status: 'thành công',
         data,
         message,
       })),
     );
   }
 }
-

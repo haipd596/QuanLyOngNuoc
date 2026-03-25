@@ -11,7 +11,7 @@ import { ApiStandardResponse } from '../../common/swagger/api-standard-response.
 import { ReportsService } from './reports.service';
 
 @Controller('reports')
-@ApiTags('Reports')
+@ApiTags('Báo cáo')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
@@ -35,8 +35,8 @@ export class ReportsController {
     example: 'CADIVI',
   })
   @ApiStandardResponse('Lấy báo cáo kiểm kê kho thành công')
-  inventoryAudit(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.reportsService.inventoryAudit(query, keyword);
+  inventoryAudit(@Query() query: PaginationQueryDto) {
+    return this.reportsService.inventoryAudit(query, query.keyword);
   }
 
   @Get('sales-overview')

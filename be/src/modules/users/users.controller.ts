@@ -18,7 +18,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
-@ApiTags('Users')
+@ApiTags('Người dùng')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
@@ -42,8 +42,8 @@ export class UsersController {
     example: 'user',
   })
   @ApiStandardPaginationResponse('Lấy danh sách người dùng thành công')
-  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.usersService.findAll(query, keyword);
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.usersService.findAll(query, query.keyword);
   }
 
   @Get(':id')

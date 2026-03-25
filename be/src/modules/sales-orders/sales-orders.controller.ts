@@ -18,7 +18,7 @@ import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
 import { SalesOrdersService } from './sales-orders.service';
 
 @Controller('sales-orders')
-@ApiTags('Sales Orders')
+@ApiTags('Đơn bán hàng')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN', 'USER')
@@ -42,8 +42,8 @@ export class SalesOrdersController {
     example: 'SO-2026',
   })
   @ApiStandardPaginationResponse('Lấy danh sách đơn bán hàng thành công')
-  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.salesOrdersService.findAll(query, keyword);
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.salesOrdersService.findAll(query, query.keyword);
   }
 
   @Get(':id')

@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Max, Min, MaxLength } from 'class-validator';
 
 export class PaginationQueryDto {
   @ApiPropertyOptional({
@@ -23,4 +23,13 @@ export class PaginationQueryDto {
   @Min(1)
   @Max(100)
   limit?: number = 10;
+
+  @ApiPropertyOptional({
+    example: 'PVC',
+    description: 'Từ khóa tìm kiếm theo từng API danh sách',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  keyword?: string;
 }

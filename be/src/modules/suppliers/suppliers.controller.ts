@@ -18,7 +18,7 @@ import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { SuppliersService } from './suppliers.service';
 
 @Controller('suppliers')
-@ApiTags('Suppliers')
+@ApiTags('Nhà cung cấp')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
@@ -42,8 +42,8 @@ export class SuppliersController {
     example: 'Miền Nam',
   })
   @ApiStandardPaginationResponse('Lấy danh sách nhà cung cấp thành công')
-  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.suppliersService.findAll(query, keyword);
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.suppliersService.findAll(query, query.keyword);
   }
 
   @Get(':id')

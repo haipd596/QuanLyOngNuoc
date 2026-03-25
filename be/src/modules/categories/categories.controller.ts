@@ -18,7 +18,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('categories')
-@ApiTags('Categories')
+@ApiTags('Danh mục')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
@@ -42,8 +42,8 @@ export class CategoriesController {
     example: 'ống',
   })
   @ApiStandardPaginationResponse('Lấy danh sách danh mục thành công')
-  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.categoriesService.findAll(query, keyword);
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.categoriesService.findAll(query, query.keyword);
   }
 
   @Get(':id')

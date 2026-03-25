@@ -18,7 +18,7 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { CustomersService } from './customers.service';
 
 @Controller('customers')
-@ApiTags('Customers')
+@ApiTags('Khách hàng')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CustomersController {
@@ -43,8 +43,8 @@ export class CustomersController {
     example: 'Phạm',
   })
   @ApiStandardPaginationResponse('Lấy danh sách khách hàng thành công')
-  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.customersService.findAll(query, keyword);
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.customersService.findAll(query, query.keyword);
   }
 
   @Get(':id')

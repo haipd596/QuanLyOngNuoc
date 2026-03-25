@@ -25,7 +25,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
 
 @Controller('products')
-@ApiTags('Products')
+@ApiTags('Sản phẩm')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
@@ -50,8 +50,8 @@ export class ProductsController {
     example: 'PVC',
   })
   @ApiStandardPaginationResponse('Lấy danh sách sản phẩm thành công')
-  findAll(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.productsService.findAll(query, keyword);
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.productsService.findAll(query, query.keyword);
   }
 
   @Get('low-stock')
@@ -65,8 +65,8 @@ export class ProductsController {
     example: 'dây điện',
   })
   @ApiStandardPaginationResponse('Lấy danh sách sản phẩm tồn thấp thành công')
-  lowStock(@Query() query: PaginationQueryDto, @Query('keyword') keyword?: string) {
-    return this.productsService.findLowStock(query, keyword);
+  lowStock(@Query() query: PaginationQueryDto) {
+    return this.productsService.findLowStock(query, query.keyword);
   }
 
   @Get(':id')

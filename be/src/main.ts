@@ -21,8 +21,8 @@ async function bootstrap() {
   );
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('API Quản Lý Ống Nước Việt')
-    .setDescription('Tài liệu API cho hệ thống quản lý bán vật liệu điện nước')
+    .setTitle('Tài liệu hệ thống Quản Lý Ống Nước Việt')
+    .setDescription('Tài liệu giao tiếp dịch vụ cho hệ thống quản lý bán vật liệu điện nước')
     .setVersion('1.0.0')
     .addBearerAuth(
       {
@@ -41,7 +41,7 @@ async function bootstrap() {
       persistAuthorization: true,
       displayRequestDuration: true,
     },
-    customSiteTitle: 'Swagger - Quản Lý Ống Nước Việt',
+    customSiteTitle: 'Tài liệu hệ thống Quản Lý Ống Nước Việt',
   });
 
   const port = process.env.PORT ? Number(process.env.PORT) : 3000;

@@ -12,7 +12,7 @@ export function ApiStandardResponse(
       schema: {
         example: {
           code: status,
-          status: 'success',
+          status: 'thành công',
           data: dataExample,
           message,
         },
@@ -28,7 +28,7 @@ export function ApiStandardPaginationResponse(message: string, status = 200) {
       schema: {
         example: {
           code: status,
-          status: 'success',
+          status: 'thành công',
           data: {
             items: [],
             pagination: {
@@ -46,4 +46,3 @@ export function ApiStandardPaginationResponse(message: string, status = 200) {
     }),
   );
 }
-
