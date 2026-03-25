@@ -116,3 +116,11 @@ Response danh sách:
 
 ## Tài liệu luồng nghiệp vụ
 - Xem tại `be/docs/main-flows.md`
+
+## Swagger
+- URL: `http://localhost:3000/api/docs`
+- Dùng nút `Authorize` và chọn `BearerAuth` để test API có xác thực.
+- Swagger đã được gắn:
+- `Tag` theo từng module (`Auth`, `Users`, `Products`, `Inventory`, `Sales Orders`, `Reports`, ...).
+- Mô tả query phân trang (`page`, `limit`) cho API danh sách.
+- Mẫu response chuẩn `code`, `status`, `data`, `message` cho endpoint chính.
