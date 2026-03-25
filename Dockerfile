@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:20-bookworm-slim AS base
 WORKDIR /app
 
 FROM base AS deps
@@ -16,7 +16,7 @@ RUN npm run prisma:generate --workspace be
 RUN npm run build --workspace be
 RUN npm prune --omit=dev --workspace be --include-workspace-root=false
 
-FROM node:20-alpine AS runner
+FROM node:20-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
