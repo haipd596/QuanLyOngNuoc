@@ -29,4 +29,4 @@ COPY --from=build /app/be/prisma ./be/prisma
 
 WORKDIR /app/be
 EXPOSE 3000
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
