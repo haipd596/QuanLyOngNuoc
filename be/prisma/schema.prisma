@@ -73,6 +73,7 @@ model User {
   role           Role?       @relation(fields: [roleId], references: [id])
   salesOrders    SalesOrder[]
   purchaseOrders PurchaseOrder[]
+  stockMovements StockMovement[]
   notifications  Notification[]
   auditLogs      AuditLog[]
   createdAt      DateTime    @default(now())
