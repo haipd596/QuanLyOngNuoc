@@ -41,7 +41,12 @@ export class SuppliersController {
     description: 'Tìm theo tên, số điện thoại, email, mã số thuế hoặc địa chỉ',
     example: 'Miền Nam',
   })
-  @ApiStandardPaginationResponse('Lấy danh sách nhà cung cấp thành công')
+  @ApiStandardPaginationResponse('Lấy danh sách nhà cung cấp thành công', 200, {
+    id: 'cmai42t3b0000sup001',
+    name: 'Công ty Nhựa Miền Nam',
+    phone: '02838118888',
+    email: 'sale@nhuamiennam.vn',
+  })
   findAll(@Query() query: PaginationQueryDto) {
     return this.suppliersService.findAll(query, query.keyword);
   }

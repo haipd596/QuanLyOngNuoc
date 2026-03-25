@@ -9,6 +9,7 @@
     "start:dev": "nest start --watch",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "test": "jest",
+    "test:smoke": "node scripts/smoke-test.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",

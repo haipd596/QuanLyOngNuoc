@@ -33,7 +33,14 @@ export class InventoryController {
     description: 'Tìm theo tên sản phẩm hoặc SKU',
     example: 'ONV-PVC',
   })
-  @ApiStandardPaginationResponse('Lấy tổng quan tồn kho thành công')
+  @ApiStandardPaginationResponse('Lấy tổng quan tồn kho thành công', 200, {
+    id: 'cmai42t3b0000prd001',
+    sku: 'ONV-PVC-001',
+    name: 'Ống PVC Bình Minh phi 21',
+    stockQuantity: 120,
+    minStockLevel: 30,
+    salePrice: '55000',
+  })
   summary(@Query() query: PaginationQueryDto) {
     return this.inventoryService.summary(query, query.keyword);
   }
@@ -48,7 +55,13 @@ export class InventoryController {
       'Tìm theo ghi chú, tên sản phẩm, SKU hoặc loại giao dịch (IMPORT, EXPORT, ADJUST)',
     example: 'IMPORT',
   })
-  @ApiStandardPaginationResponse('Lấy lịch sử nhập xuất kho thành công')
+  @ApiStandardPaginationResponse('Lấy lịch sử nhập xuất kho thành công', 200, {
+    id: 'cmai42t3b0000mov001',
+    productId: 'cmai42t3b0000prd001',
+    type: 'IMPORT',
+    quantity: 50,
+    note: 'Nhập thêm hàng mới',
+  })
   movements(@Query() query: PaginationQueryDto) {
     return this.inventoryService.movements(query, query.keyword);
   }

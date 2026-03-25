@@ -41,7 +41,14 @@ export class UsersController {
     description: 'Tìm theo họ tên, email hoặc số điện thoại',
     example: 'user',
   })
-  @ApiStandardPaginationResponse('Lấy danh sách người dùng thành công')
+  @ApiStandardPaginationResponse('Lấy danh sách người dùng thành công', 200, {
+    id: 'cmai42t3b0000abc123xyz',
+    fullName: 'Trần Bán Hàng',
+    email: 'user@ongnuocviet.vn',
+    phone: '0909123456',
+    roleId: 'cmai42t3b0000role001',
+    status: 'ACTIVE',
+  })
   findAll(@Query() query: PaginationQueryDto) {
     return this.usersService.findAll(query, query.keyword);
   }

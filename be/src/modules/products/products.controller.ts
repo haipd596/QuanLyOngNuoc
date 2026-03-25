@@ -49,7 +49,14 @@ export class ProductsController {
     description: 'Tìm theo tên sản phẩm, SKU hoặc slug',
     example: 'PVC',
   })
-  @ApiStandardPaginationResponse('Lấy danh sách sản phẩm thành công')
+  @ApiStandardPaginationResponse('Lấy danh sách sản phẩm thành công', 200, {
+    id: 'cmai42t3b0000prd001',
+    sku: 'ONV-PVC-001',
+    name: 'Ống PVC Bình Minh phi 21',
+    unit: 'Cây',
+    salePrice: '55000',
+    stockQuantity: 120,
+  })
   findAll(@Query() query: PaginationQueryDto) {
     return this.productsService.findAll(query, query.keyword);
   }
@@ -64,7 +71,13 @@ export class ProductsController {
     description: 'Tìm theo tên sản phẩm, SKU hoặc slug trong nhóm tồn thấp',
     example: 'dây điện',
   })
-  @ApiStandardPaginationResponse('Lấy danh sách sản phẩm tồn thấp thành công')
+  @ApiStandardPaginationResponse('Lấy danh sách sản phẩm tồn thấp thành công', 200, {
+    id: 'cmai42t3b0000prd005',
+    sku: 'ONV-WIRE-001',
+    name: 'Dây điện CADIVI 2.5mm',
+    stockQuantity: 18,
+    minStockLevel: 20,
+  })
   lowStock(@Query() query: PaginationQueryDto) {
     return this.productsService.findLowStock(query, query.keyword);
   }

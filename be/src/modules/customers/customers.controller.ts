@@ -42,7 +42,13 @@ export class CustomersController {
     description: 'Tìm theo tên, số điện thoại, email hoặc địa chỉ khách hàng',
     example: 'Phạm',
   })
-  @ApiStandardPaginationResponse('Lấy danh sách khách hàng thành công')
+  @ApiStandardPaginationResponse('Lấy danh sách khách hàng thành công', 200, {
+    id: 'cmai42t3b0000cus001',
+    fullName: 'Phạm Văn A',
+    phone: '0911000001',
+    email: 'phamvana@gmail.com',
+    address: 'Gò Vấp, TP.HCM',
+  })
   findAll(@Query() query: PaginationQueryDto) {
     return this.customersService.findAll(query, query.keyword);
   }

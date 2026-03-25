@@ -41,7 +41,11 @@ export class RolesController {
     description: 'Tìm theo tên vai trò hoặc mô tả',
     example: 'ADMIN',
   })
-  @ApiStandardPaginationResponse('Lấy danh sách vai trò thành công')
+  @ApiStandardPaginationResponse('Lấy danh sách vai trò thành công', 200, {
+    id: 'cmai42t3b0000role001',
+    name: 'ADMIN',
+    description: 'Quản trị toàn hệ thống',
+  })
   findAll(@Query() query: PaginationQueryDto) {
     return this.rolesService.findAll(query, query.keyword);
   }

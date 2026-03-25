@@ -41,7 +41,14 @@ export class SalesOrdersController {
     description: 'Tìm theo mã đơn, ghi chú, tên khách hàng hoặc tên nhân viên',
     example: 'SO-2026',
   })
-  @ApiStandardPaginationResponse('Lấy danh sách đơn bán hàng thành công')
+  @ApiStandardPaginationResponse('Lấy danh sách đơn bán hàng thành công', 200, {
+    id: 'cmai42t3b0000so001',
+    orderCode: 'SO-20260325-001',
+    totalAmount: '262000',
+    finalAmount: '250000',
+    paymentStatus: 'PAID',
+    orderStatus: 'COMPLETED',
+  })
   findAll(@Query() query: PaginationQueryDto) {
     return this.salesOrdersService.findAll(query, query.keyword);
   }

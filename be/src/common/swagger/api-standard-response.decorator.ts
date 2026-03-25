@@ -10,6 +10,13 @@ export function ApiStandardResponse(
     ApiResponse({
       status,
       schema: {
+        type: 'object',
+        properties: {
+          code: { type: 'number', example: status },
+          status: { type: 'string', example: 'thành công' },
+          data: { example: dataExample },
+          message: { type: 'string', example: message },
+        },
         example: {
           code: status,
           status: 'thành công',
@@ -21,11 +28,44 @@ export function ApiStandardResponse(
   );
 }
 
-export function ApiStandardPaginationResponse(message: string, status = 200) {
+export function ApiStandardPaginationResponse(
+  message: string,
+  status = 200,
+  itemExample: Record<string, unknown> = {},
+) {
   return applyDecorators(
     ApiResponse({
       status,
       schema: {
+        type: 'object',
+        properties: {
+          code: { type: 'number', example: status },
+          status: { type: 'string', example: 'thành công' },
+          data: {
+            type: 'object',
+            properties: {
+              items: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  example: itemExample,
+                },
+              },
+              pagination: {
+                type: 'object',
+                properties: {
+                  page: { type: 'number', example: 1 },
+                  limit: { type: 'number', example: 10 },
+                  total: { type: 'number', example: 100 },
+                  totalPages: { type: 'number', example: 10 },
+                  hasNextPage: { type: 'boolean', example: true },
+                  hasPreviousPage: { type: 'boolean', example: false },
+                },
+              },
+            },
+          },
+          message: { type: 'string', example: message },
+        },
         example: {
           code: status,
           status: 'thành công',

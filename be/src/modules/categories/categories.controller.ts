@@ -41,7 +41,12 @@ export class CategoriesController {
     description: 'Tìm theo tên danh mục, slug hoặc mô tả',
     example: 'ống',
   })
-  @ApiStandardPaginationResponse('Lấy danh sách danh mục thành công')
+  @ApiStandardPaginationResponse('Lấy danh sách danh mục thành công', 200, {
+    id: 'cmai42t3b0000cat001',
+    name: 'Ống nước',
+    slug: 'ong-nuoc',
+    description: 'Danh mục ống và phụ kiện',
+  })
   findAll(@Query() query: PaginationQueryDto) {
     return this.categoriesService.findAll(query, query.keyword);
   }
