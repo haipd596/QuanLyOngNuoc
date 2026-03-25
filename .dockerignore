@@ -1,0 +1,15 @@
+.git
+.gitignore
+node_modules
+be/node_modules
+fe/node_modules
+be/dist
+dist
+coverage
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+.env
+be/.env
+fe/.env
+
