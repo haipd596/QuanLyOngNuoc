@@ -1,0 +1,8 @@
+{
+  "name": "quanlyongnuoc",
+  "private": true,
+  "workspaces": [
+    "be"
+  ]
+}
+
