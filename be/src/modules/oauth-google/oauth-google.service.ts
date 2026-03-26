@@ -21,6 +21,7 @@ type GoogleTokenResponse = {
 
 type GoogleUserInfo = {
   id?: string;
+  sub?: string;
   email?: string;
   name?: string;
 };
@@ -55,13 +56,15 @@ export class OauthGoogleService {
 
   async loginWithGoogleCode(code: string) {
     const googleUser = await this.fetchGoogleUserInfo(code);
-    if (!googleUser.email || !googleUser.id) {
+    const googleId = googleUser.id ?? googleUser.sub;
+
+    if (!googleUser.email || !googleId) {
       throw new UnauthorizedException('Không thể lấy thông tin email từ Google');
     }
 
     const normalizedEmail = googleUser.email.toLowerCase().trim();
     const existingByGoogleId = await this.prisma.user.findUnique({
-      where: { googleId: googleUser.id },
+      where: { googleId },
       include: {
         role: {
           select: { name: true },
@@ -84,13 +87,13 @@ export class OauthGoogleService {
 
     let user = existingByGoogleId ?? existingByEmail;
     if (user) {
-      if (user.googleId && user.googleId !== googleUser.id) {
+      if (user.googleId && user.googleId !== googleId) {
         throw new BadRequestException('Tài khoản đã liên kết Google khác');
       }
       user = await this.prisma.user.update({
         where: { id: user.id },
         data: {
-          googleId: googleUser.id,
+          googleId,
           avatarUrl: user.avatarUrl ?? null,
         },
         include: {
@@ -109,7 +112,7 @@ export class OauthGoogleService {
         data: {
           fullName: googleUser.name?.trim() || normalizedEmail.split('@')[0] || 'Google User',
           email: normalizedEmail,
-          googleId: googleUser.id,
+          googleId,
           roleId: defaultRole?.id,
         },
         include: {
@@ -200,4 +203,3 @@ export class OauthGoogleService {
     return { accessToken, refreshToken };
   }
 }
-
