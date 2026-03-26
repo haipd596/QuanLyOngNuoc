@@ -12,10 +12,14 @@ import {
 import { PrismaService } from '../../config/prisma.service';
 import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
 import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class SalesOrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   async create(dto: CreateSalesOrderDto) {
     const productIds = dto.items.map((item) => item.productId);
@@ -54,7 +58,7 @@ export class SalesOrdersService {
     const finalAmount = Math.max(totalAmount - discountAmount, 0);
     const orderCode = `SO-${Date.now()}`;
 
-    return this.prisma.$transaction(async (tx) => {
+    const order = await this.prisma.$transaction(async (tx) => {
       const order = await tx.salesOrder.create({
         data: {
           orderCode,
@@ -70,7 +74,10 @@ export class SalesOrdersService {
             create: normalizedItems,
           },
         },
-        include: { items: true },
+        include: {
+          items: true,
+          customer: true,
+        },
       });
 
       for (const item of normalizedItems) {
@@ -94,6 +101,13 @@ export class SalesOrdersService {
 
       return order;
     });
+
+    try {
+      await this.sendOrderMailHooks(order.id);
+    } catch {
+      // Mail hook là best-effort, không làm fail request tạo đơn.
+    }
+    return order;
   }
 
   async findAll(
@@ -230,5 +244,76 @@ export class SalesOrdersService {
         data: { orderStatus: OrderStatus.CANCELED },
       });
     });
+  }
+
+  private async sendOrderMailHooks(orderId: string) {
+    const order = await this.prisma.salesOrder.findUnique({
+      where: { id: orderId },
+      include: {
+        customer: true,
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+                sku: true,
+                stockQuantity: true,
+                minStockLevel: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      return;
+    }
+
+    if (order.customer?.email) {
+      await this.mailService.sendBusinessMailSafe({
+        to: order.customer.email,
+        subject: `[${order.orderCode}] Xác nhận đơn hàng`,
+        content: `Don hang ${order.orderCode} da duoc tao thanh cong. Tong thanh toan: ${order.finalAmount}.`,
+      });
+    }
+
+    const lowStockLines = order.items
+      .filter((item) => item.product.stockQuantity <= item.product.minStockLevel)
+      .map(
+        (item) =>
+          `- ${item.product.name} (${item.product.sku}): con ${item.product.stockQuantity}, nguong ${item.product.minStockLevel}`,
+      );
+
+    if (lowStockLines.length === 0) {
+      return;
+    }
+
+    const adminUsers = await this.prisma.user.findMany({
+      where: {
+        role: {
+          is: {
+            name: 'ADMIN',
+          },
+        },
+      },
+      select: {
+        email: true,
+      },
+    });
+
+    const adminEmails = adminUsers
+      .map((user) => user.email?.trim())
+      .filter((email): email is string => Boolean(email));
+
+    await Promise.all(
+      adminEmails.map((email) =>
+        this.mailService.sendBusinessMailSafe({
+          to: email,
+          subject: '[Canh bao ton kho] San pham duoi nguong',
+          content: `He thong ghi nhan san pham ton thap sau don ${order.orderCode}:\n${lowStockLines.join('\n')}`,
+        }),
+      ),
+    );
   }
 }

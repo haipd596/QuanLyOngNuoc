@@ -1,6 +1,6 @@
-# Luồng Chính User Và Admin
+# Luồng chính User và Admin
 
-Tài liệu này tập trung vào các luồng cốt lõi, chưa bao gồm các tính năng nâng cao (Google Login, AI, ...).
+Tài liệu này tập trung vào các luồng cốt lõi, chưa bao gồm Google Login, Mail và AI.
 
 ## 1. User mới vào trang sẽ làm gì?
 
@@ -16,11 +16,17 @@ Tài liệu này tập trung vào các luồng cốt lõi, chưa bao gồm các 
 - Theo dõi trạng thái đơn vừa tạo.
 
 ### 1.2 User có thể làm được gì?
-- Xem danh sách sản phẩm và tồn kho (`/products`, `/inventory/summary`).
-- Tạo đơn bán (`/sales-orders`).
-- Hủy đơn nếu cần (`/sales-orders/:id/cancel`).
-- Quản lý khách hàng (`/customers`).
-- Xem lịch sử luân chuyển kho (`/inventory/movements`).
+- Xem danh sách sản phẩm và tồn kho:
+  - `GET /api/v1/products?Keyword=&Page=&PageSize=`
+  - `GET /api/v1/inventory/summary?Keyword=&Page=&PageSize=`
+- Tạo đơn bán: `POST /api/v1/sales-orders`
+- Hủy đơn nếu cần: `POST /api/v1/sales-orders/:id/cancel`
+- Quản lý khách hàng:
+  - `GET /api/v1/customers?Keyword=&Page=&PageSize=`
+  - `POST /api/v1/customers`
+  - `PATCH /api/v1/customers/:id`
+- Xem lịch sử kho:
+  - `GET /api/v1/inventory/movements?Keyword=&Page=&PageSize=`
 
 ## 2. Luồng chính của user theo nghiệp vụ
 
@@ -49,12 +55,21 @@ Tài liệu này tập trung vào các luồng cốt lõi, chưa bao gồm các 
 4. Nếu có bất thường: vào màn hình kiểm kê và báo cáo chi tiết.
 
 ### 3.2 Admin có thể làm được gì?
-- Quản lý user/role (`/users`, `/roles`).
-- Quản lý danh mục dữ liệu gốc (`/categories`, `/suppliers`, `/products`).
-- Theo dõi đơn bán (`/sales-orders`).
-- Kiểm kê kho (`/reports/inventory-audit`).
-- Xem thống kê bán hàng (`/reports/sales-overview`).
-- Theo dõi dashboard tổng hợp (`/reports/dashboard`).
+- Quản lý user/role:
+  - `GET /api/v1/users?Keyword=&Page=&PageSize=`
+  - `GET /api/v1/roles?Keyword=&Page=&PageSize=`
+- Quản lý dữ liệu gốc:
+  - `GET /api/v1/categories?Keyword=&Page=&PageSize=`
+  - `GET /api/v1/suppliers?Keyword=&Page=&PageSize=`
+  - `GET /api/v1/products?Keyword=&Page=&PageSize=`
+- Theo dõi đơn bán:
+  - `GET /api/v1/sales-orders?Keyword=&Page=&PageSize=`
+- Kiểm kê kho:
+  - `GET /api/v1/reports/inventory-audit?Keyword=&Page=&PageSize=`
+- Xem thống kê bán hàng:
+  - `GET /api/v1/reports/sales-overview?from=YYYY-MM-DD&to=YYYY-MM-DD`
+- Theo dõi dashboard tổng hợp:
+  - `GET /api/v1/reports/dashboard`
 
 ## 4. Luồng kiểm kê và theo dõi của admin
 
@@ -70,30 +85,24 @@ Tài liệu này tập trung vào các luồng cốt lõi, chưa bao gồm các 
 3. Xem cơ cấu trạng thái đơn.
 4. Đánh giá chất lượng vận hành và xu hướng bán.
 
-## 5. API cốt lõi phục vụ 2 nhóm vai trò
+## 5. Chuẩn giao tiếp API đang dùng
 
-### 5.1 Auth
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
-- `POST /api/v1/auth/refresh`
-- `GET /api/v1/auth/me`
+### 5.1 Query danh sách
+- `Keyword`, `Page`, `PageSize`
+- `Query.<TênCột>` theo từng bảng
 
-### 5.2 User nghiệp vụ
-- `GET /api/v1/products`
-- `POST /api/v1/sales-orders`
-- `POST /api/v1/sales-orders/:id/cancel`
-- `GET /api/v1/customers`
-- `POST /api/v1/inventory/move`
-
-### 5.3 Admin điều hành
-- `GET /api/v1/reports/dashboard`
-- `GET /api/v1/reports/inventory-audit`
-- `GET /api/v1/reports/sales-overview?from=YYYY-MM-DD&to=YYYY-MM-DD`
-- `GET /api/v1/users`
-- `GET /api/v1/roles`
-
-## 6. Nguyên tắc triển khai tiếp theo
-- Chưa làm nâng cao, ưu tiên ổn định luồng cốt lõi.
-- Mỗi API phải có validation đầu vào rõ ràng.
-- Mỗi tác động kho phải có lịch sử movement để đối soát.
-- Mỗi đơn bán phải liên kết dữ liệu tồn kho để tránh lệch số.
+### 5.2 Response chuẩn
+```json
+{
+  "code": 0,
+  "success": true,
+  "message": "Thành công",
+  "data": [],
+  "metaData": {
+    "page": 1,
+    "pageSize": 10,
+    "total": 100,
+    "totalPage": 10
+  }
+}
+```

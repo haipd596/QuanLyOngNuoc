@@ -15,12 +15,13 @@
 
 ## Chuẩn query danh sách
 Tất cả API danh sách dùng:
-- `Keyword`: từ khóa tìm kiếm
-- `Page`: trang hiện tại
-- `PageSize`: số bản ghi mỗi trang
+- `Keyword`: từ khóa tìm kiếm tổng quát.
+- `Page`: trang hiện tại.
+- `PageSize`: số bản ghi mỗi trang.
+- `Query.<TênCột>`: lọc theo cột cụ thể của từng bảng.
 
 Ví dụ:
-- `GET /api/v1/products?Keyword=PVC&Page=1&PageSize=10`
+- `GET /api/v1/products?Keyword=PVC&Page=1&PageSize=10&Query.Sku=ONV-PVC`
 
 ## Chuẩn response toàn hệ thống
 ### Thành công (danh sách)
@@ -64,4 +65,9 @@ Ví dụ:
 ## Swagger
 - URL: `http://localhost:3000/api/docs`
 - Có ví dụ JSON cho request body.
-- Có mô tả `Keyword`, `Page`, `PageSize` cho API danh sách.
+- Có mô tả query `Keyword`, `Page`, `PageSize`.
+- Có mô tả các filter `Query.<TênCột>` theo từng API danh sách.
+
+## Tài liệu
+- Ma trận API: `be/docs/api-matrix.md`
+- Luồng nghiệp vụ: `be/docs/main-flows.md`

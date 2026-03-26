@@ -8,6 +8,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { ApiResponseInterceptor } from './common/interceptors/api-response.interceptor';
 import { PrismaModule } from './config/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { OauthGoogleModule } from './modules/oauth-google/oauth-google.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
@@ -17,6 +18,8 @@ import { RolesModule } from './modules/roles/roles.module';
 import { SalesOrdersModule } from './modules/sales-orders/sales-orders.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { UsersModule } from './modules/users/users.module';
+import { MailModule } from './modules/mail/mail.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -29,6 +32,7 @@ import { UsersModule } from './modules/users/users.module';
     }),
     PrismaModule,
     AuthModule,
+    OauthGoogleModule,
     UsersModule,
     RolesModule,
     CategoriesModule,
@@ -38,6 +42,8 @@ import { UsersModule } from './modules/users/users.module';
     InventoryModule,
     SalesOrdersModule,
     ReportsModule,
+    MailModule,
+    AiModule,
   ],
   providers: [
     JwtAuthGuard,
