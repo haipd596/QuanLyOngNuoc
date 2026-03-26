@@ -34,10 +34,15 @@ export class MailService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    const provider = this.getPreferredProvider();
+    const providers = this.getProviderSequence();
+    const provider = providers[0];
 
     if (provider === 'resend') {
-      this.logger.log('Mail provider: Resend API');
+      if (providers.includes('smtp')) {
+        this.logger.log('Mail provider: Resend API (fallback SMTP khi Resend loi)');
+      } else {
+        this.logger.log('Mail provider: Resend API');
+      }
       return;
     }
 
@@ -77,49 +82,52 @@ export class MailService implements OnModuleInit {
     const totalAttempts = retryCount + 1;
 
     for (let attempt = 0; attempt <= retryCount; attempt += 1) {
-      try {
-        const provider = this.getPreferredProvider();
-        this.logger.log(
-          `sendMail start attempt ${attempt + 1}/${totalAttempts} provider=${provider} to=${input.to} subject="${input.subject}"`,
-        );
+      const providers = this.getProviderSequence();
 
-        let messageId: string;
+      for (const provider of providers) {
+        try {
+          this.logger.log(
+            `sendMail start attempt ${attempt + 1}/${totalAttempts} provider=${provider} to=${input.to} subject="${input.subject}"`,
+          );
 
-        if (provider === 'resend') {
-          const resend = this.getResendConfig();
-          if (!resend) {
-            throw new InternalServerErrorException('Thieu cau hinh RESEND_API_KEY hoac MAIL_FROM');
+          let messageId: string;
+
+          if (provider === 'resend') {
+            const resend = this.getResendConfig();
+            if (!resend) {
+              throw new InternalServerErrorException('Thieu cau hinh RESEND_API_KEY hoac MAIL_FROM');
+            }
+            messageId = await this.sendViaResend(input, resend.apiKey, resend.from);
+          } else if (provider === 'log') {
+            messageId = this.sendViaLog(input);
+          } else {
+            messageId = await this.sendViaSmtp(input);
           }
-          messageId = await this.sendViaResend(input, resend.apiKey, resend.from);
-        } else if (provider === 'log') {
-          messageId = this.sendViaLog(input);
-        } else {
-          messageId = await this.sendViaSmtp(input);
-        }
 
-        await this.prisma.emailLog.create({
-          data: {
+          await this.prisma.emailLog.create({
+            data: {
+              to: input.to,
+              subject: input.subject,
+              content: input.content ?? null,
+              status: 'SUCCESS',
+            },
+          });
+
+          this.logger.log(
+            `sendMail success attempt ${attempt + 1}/${totalAttempts} provider=${provider} to=${input.to} messageId=${messageId}`,
+          );
+
+          return {
+            messageId,
             to: input.to,
             subject: input.subject,
-            content: input.content ?? null,
-            status: 'SUCCESS',
-          },
-        });
-
-        this.logger.log(
-          `sendMail success attempt ${attempt + 1}/${totalAttempts} to=${input.to} messageId=${messageId}`,
-        );
-
-        return {
-          messageId,
-          to: input.to,
-          subject: input.subject,
-        };
-      } catch (error) {
-        lastError = error;
-        this.logger.error(
-          `sendMail failed attempt ${attempt + 1}/${totalAttempts} to=${input.to} subject="${input.subject}" error=${this.formatError(error)}`,
-        );
+          };
+        } catch (error) {
+          lastError = error;
+          this.logger.error(
+            `sendMail failed attempt ${attempt + 1}/${totalAttempts} provider=${provider} to=${input.to} subject="${input.subject}" error=${this.formatError(error)}`,
+          );
+        }
       }
     }
 
@@ -140,20 +148,26 @@ export class MailService implements OnModuleInit {
     throw new InternalServerErrorException('Gui email that bai');
   }
 
-  private getPreferredProvider(): MailProvider {
-    if (this.getResendConfig()) {
-      return 'resend';
-    }
-
+  private getProviderSequence(): MailProvider[] {
+    const resend = this.getResendConfig();
+    const smtp = this.getSmtpConfig();
     const mailer = (this.configService.get<string>('MAIL_MAILER') ?? 'smtp')
       .trim()
       .toLowerCase();
 
-    if (mailer === 'log') {
-      return 'log';
+    if (resend && smtp) {
+      return ['resend', 'smtp'];
     }
 
-    return 'smtp';
+    if (resend) {
+      return ['resend'];
+    }
+
+    if (mailer === 'log') {
+      return ['log'];
+    }
+
+    return ['smtp'];
   }
 
   private getResendConfig() {
