@@ -3,16 +3,22 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { OrderStatus, PaymentStatus, StockMovementType } from '@prisma/client';
+import {
+  CheckoutType,
+  OrderStatus,
+  PaymentStatus,
+  StockMovementType,
+} from '@prisma/client';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import {
   buildPaginatedResult,
   normalizePagination,
 } from '../../common/utils/pagination.util';
 import { PrismaService } from '../../config/prisma.service';
-import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
-import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
 import { MailService } from '../mail/mail.service';
+import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
+import { GuestCheckoutDto } from './dto/guest-checkout.dto';
+import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
 
 @Injectable()
 export class SalesOrdersService {
@@ -22,46 +28,17 @@ export class SalesOrdersService {
   ) {}
 
   async create(dto: CreateSalesOrderDto) {
-    const productIds = dto.items.map((item) => item.productId);
-    const products = await this.prisma.product.findMany({
-      where: { id: { in: productIds } },
-      select: { id: true, sku: true, stockQuantity: true, salePrice: true },
-    });
-
-    if (products.length !== productIds.length) {
-      throw new BadRequestException('Một số sản phẩm không tồn tại');
-    }
-
-    const productMap = new Map(products.map((p) => [p.id, p]));
-    let totalAmount = 0;
-
-    const normalizedItems = dto.items.map((item) => {
-      const product = productMap.get(item.productId);
-      if (!product) {
-        throw new BadRequestException(`Không tìm thấy sản phẩm: ${item.productId}`);
-      }
-      if (product.stockQuantity < item.quantity) {
-        throw new BadRequestException(`Tồn kho không đủ cho mã SKU ${product.sku}`);
-      }
-      const unitPrice = item.unitPrice ?? Number(product.salePrice);
-      const subtotal = unitPrice * item.quantity;
-      totalAmount += subtotal;
-      return {
-        productId: item.productId,
-        quantity: item.quantity,
-        unitPrice,
-        subtotal,
-      };
-    });
+    const { normalizedItems, totalAmount } = await this.buildNormalizedItems(dto.items);
 
     const discountAmount = dto.discountAmount ?? 0;
     const finalAmount = Math.max(totalAmount - discountAmount, 0);
     const orderCode = `SO-${Date.now()}`;
 
     const order = await this.prisma.$transaction(async (tx) => {
-      const order = await tx.salesOrder.create({
+      const created = await tx.salesOrder.create({
         data: {
           orderCode,
+          checkoutType: CheckoutType.USER,
           customerId: dto.customerId,
           staffId: dto.staffId,
           totalAmount,
@@ -92,21 +69,83 @@ export class SalesOrdersService {
             productId: item.productId,
             type: StockMovementType.EXPORT,
             quantity: item.quantity,
-            salesOrderId: order.id,
+            salesOrderId: created.id,
             createdById: dto.staffId,
-            note: `Export for ${order.orderCode}`,
+            note: `Export for ${created.orderCode}`,
           },
         });
       }
 
-      return order;
+      return created;
     });
 
     try {
       await this.sendOrderMailHooks(order.id);
     } catch {
-      // Mail hook là best-effort, không làm fail request tạo đơn.
+      // mail hook best-effort
     }
+
+    return order;
+  }
+
+  async createGuest(dto: GuestCheckoutDto) {
+    const { normalizedItems, totalAmount } = await this.buildNormalizedItems(dto.items);
+
+    const discountAmount = dto.discountAmount ?? 0;
+    const finalAmount = Math.max(totalAmount - discountAmount, 0);
+    const orderCode = `SO-${Date.now()}`;
+
+    const order = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.salesOrder.create({
+        data: {
+          orderCode,
+          checkoutType: CheckoutType.GUEST,
+          guestName: dto.guestName.trim(),
+          guestPhone: dto.guestPhone.trim(),
+          guestEmail: dto.guestEmail?.trim() || null,
+          guestAddress: dto.guestAddress?.trim() || null,
+          totalAmount,
+          discountAmount,
+          finalAmount,
+          paymentStatus: PaymentStatus.UNPAID,
+          orderStatus: OrderStatus.PENDING,
+          note: dto.note,
+          items: {
+            create: normalizedItems,
+          },
+        },
+        include: {
+          items: true,
+        },
+      });
+
+      for (const item of normalizedItems) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stockQuantity: { decrement: item.quantity },
+          },
+        });
+        await tx.stockMovement.create({
+          data: {
+            productId: item.productId,
+            type: StockMovementType.EXPORT,
+            quantity: item.quantity,
+            salesOrderId: created.id,
+            note: `Export for ${created.orderCode} (guest checkout)`,
+          },
+        });
+      }
+
+      return created;
+    });
+
+    try {
+      await this.sendOrderMailHooks(order.id);
+    } catch {
+      // mail hook best-effort
+    }
+
     return order;
   }
 
@@ -137,6 +176,8 @@ export class SalesOrdersService {
               },
             },
           },
+          { guestName: { contains: keyword } },
+          { guestPhone: { contains: keyword } },
         ],
       });
     }
@@ -197,7 +238,7 @@ export class SalesOrdersService {
       },
     });
     if (!order) {
-      throw new NotFoundException('Không tìm thấy đơn bán hàng');
+      throw new NotFoundException('Khong tim thay don ban hang');
     }
     return order;
   }
@@ -213,10 +254,10 @@ export class SalesOrdersService {
   async cancel(id: string) {
     const order = await this.findOne(id);
     if (order.orderStatus === OrderStatus.CANCELED) {
-      throw new BadRequestException('Đơn hàng đã bị hủy');
+      throw new BadRequestException('Don hang da bi huy');
     }
     if (order.orderStatus === OrderStatus.COMPLETED) {
-      throw new BadRequestException('Không thể hủy đơn hàng đã hoàn tất');
+      throw new BadRequestException('Khong the huy don hang da hoan tat');
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -246,6 +287,37 @@ export class SalesOrdersService {
     });
   }
 
+  async trackByGuest(orderCode: string, phone: string) {
+    const normalizedOrderCode = orderCode.trim();
+    const normalizedPhone = phone.trim();
+
+    const order = await this.prisma.salesOrder.findFirst({
+      where: {
+        orderCode: normalizedOrderCode,
+        OR: [
+          { guestPhone: normalizedPhone },
+          {
+            customer: {
+              is: {
+                phone: normalizedPhone,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        customer: true,
+        items: { include: { product: true } },
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Khong tim thay don hang phu hop');
+    }
+
+    return order;
+  }
+
   private async sendOrderMailHooks(orderId: string) {
     const order = await this.prisma.salesOrder.findUnique({
       where: { id: orderId },
@@ -270,10 +342,11 @@ export class SalesOrdersService {
       return;
     }
 
-    if (order.customer?.email) {
+    const orderEmail = order.customer?.email?.trim() || order.guestEmail?.trim() || null;
+    if (orderEmail) {
       await this.mailService.sendBusinessMailSafe({
-        to: order.customer.email,
-        subject: `[${order.orderCode}] Xác nhận đơn hàng`,
+        to: orderEmail,
+        subject: `[${order.orderCode}] Xac nhan don hang`,
         content: `Don hang ${order.orderCode} da duoc tao thanh cong. Tong thanh toan: ${order.finalAmount}.`,
       });
     }
@@ -315,5 +388,47 @@ export class SalesOrdersService {
         }),
       ),
     );
+  }
+
+  private async buildNormalizedItems(
+    items: Array<{ productId: string; quantity: number; unitPrice?: number }>,
+  ) {
+    const productIds = items.map((item) => item.productId);
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, sku: true, stockQuantity: true, salePrice: true },
+    });
+
+    if (products.length !== productIds.length) {
+      throw new BadRequestException('Mot so san pham khong ton tai');
+    }
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+    let totalAmount = 0;
+
+    const normalizedItems = items.map((item) => {
+      const product = productMap.get(item.productId);
+      if (!product) {
+        throw new BadRequestException(`Khong tim thay san pham: ${item.productId}`);
+      }
+      if (product.stockQuantity < item.quantity) {
+        throw new BadRequestException(`Ton kho khong du cho ma SKU ${product.sku}`);
+      }
+      const unitPrice = item.unitPrice ?? Number(product.salePrice);
+      const subtotal = unitPrice * item.quantity;
+      totalAmount += subtotal;
+
+      return {
+        productId: item.productId,
+        quantity: item.quantity,
+        unitPrice,
+        subtotal,
+      };
+    });
+
+    return {
+      normalizedItems,
+      totalAmount,
+    };
   }
 }

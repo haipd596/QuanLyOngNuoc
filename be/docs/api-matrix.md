@@ -236,3 +236,10 @@ Cong thuc ban dau:
 - `Query.ProductName`
 - `Query.ProductSku`
 - `Query.RiskLevel`
+
+## 13) Ban hang cho khach (khong can dang nhap)
+
+| Man hinh | API | Method | Vai tro | Muc dich |
+|---|---|---|---|---|
+| Dat don guest | `/sales-orders/guest-checkout` | `POST` | `PUBLIC` | Khach dat don khong can tai khoan |
+| Tra cuu don guest | `/sales-orders/track?orderCode=&phone=` | `GET` | `PUBLIC` | Khach tra cuu tinh trang don |

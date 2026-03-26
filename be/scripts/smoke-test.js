@@ -50,6 +50,7 @@ async function main() {
   assert(products.response.status === 200, 'Lay danh sach san pham that bai');
   assert(Array.isArray(products.body?.data), 'Du lieu danh sach san pham phai la mang');
   assert(products.body?.metaData?.page !== undefined, 'Thieu metaData o danh sach san pham');
+  assert(products.body.data.length > 0, 'Khong co san pham de chay smoke test guest checkout');
 
   const inventory = await call('/inventory/movements?Page=1&PageSize=5&Keyword=IMPORT', {
     headers: userHeaders,
@@ -64,6 +65,32 @@ async function main() {
   assert(salesOrders.response.status === 200, 'Lay danh sach don ban that bai');
   assert(Array.isArray(salesOrders.body?.data), 'Du lieu don ban phai la mang');
   assert(salesOrders.body?.metaData?.page !== undefined, 'Thieu metaData o danh sach don ban');
+
+  const firstProduct = products.body.data[0];
+  const guestCheckout = await call('/sales-orders/guest-checkout', {
+    method: 'POST',
+    body: JSON.stringify({
+      guestName: 'Khach Smoke Test',
+      guestPhone: '0900000001',
+      guestEmail: 'guest-smoke@example.com',
+      guestAddress: 'Quan 1, TP.HCM',
+      items: [
+        {
+          productId: firstProduct.id,
+          quantity: 1,
+        },
+      ],
+    }),
+  });
+  assert(guestCheckout.response.status === 201, 'Guest checkout that bai');
+  assert(guestCheckout.body?.data?.orderCode, 'Thieu orderCode o guest checkout');
+
+  const trackOrder = await call(
+    `/sales-orders/track?orderCode=${encodeURIComponent(guestCheckout.body.data.orderCode)}&phone=0900000001`,
+    { method: 'GET' },
+  );
+  assert(trackOrder.response.status === 200, 'Tra cuu don guest that bai');
+  assert(trackOrder.body?.data?.orderCode === guestCheckout.body.data.orderCode, 'Track orderCode khong khop');
 
   const dashboard = await call('/reports/dashboard', {
     headers: adminHeaders,

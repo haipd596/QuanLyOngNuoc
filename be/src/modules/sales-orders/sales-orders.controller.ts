@@ -1,9 +1,6 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiQuery } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
-import { UseGuards } from '@nestjs/common';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -12,48 +9,69 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
-import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
-import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
-import { SalesOrdersService } from './sales-orders.service';
 import {
   buildPaginationInput,
   extractQueryFilters,
 } from '../../common/utils/list-query.util';
+import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
+import { GuestCheckoutDto } from './dto/guest-checkout.dto';
+import { TrackOrderDto } from './dto/track-order.dto';
+import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
+import { SalesOrdersService } from './sales-orders.service';
 
 @Controller('sales-orders')
-@ApiTags('Đơn bán hàng')
-@ApiBearerAuth('BearerAuth')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN', 'USER')
+@ApiTags('Don ban hang')
 export class SalesOrdersController {
   constructor(private readonly salesOrdersService: SalesOrdersService) {}
 
+  @Post('guest-checkout')
+  @ResponseMessage('Dat don guest thanh cong')
+  @ApiStandardResponse('Dat don guest thanh cong', 201)
+  guestCheckout(@Body() dto: GuestCheckoutDto) {
+    return this.salesOrdersService.createGuest(dto);
+  }
+
+  @Get('track')
+  @ResponseMessage('Tra cuu don hang thanh cong')
+  @ApiQuery({ name: 'orderCode', required: true, example: 'SO-1742960000000' })
+  @ApiQuery({ name: 'phone', required: true, example: '0901234567' })
+  @ApiStandardResponse('Tra cuu don hang thanh cong')
+  trackOrder(@Query() query: TrackOrderDto) {
+    return this.salesOrdersService.trackByGuest(query.orderCode, query.phone);
+  }
+
   @Post()
-  @ResponseMessage('Tạo đơn bán hàng thành công')
-  @ApiStandardResponse('Tạo đơn bán hàng thành công', 201)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth('BearerAuth')
+  @Roles('ADMIN', 'USER')
+  @ResponseMessage('Tao don ban hang thanh cong')
+  @ApiStandardResponse('Tao don ban hang thanh cong', 201)
   create(@Body() dto: CreateSalesOrderDto) {
     return this.salesOrdersService.create(dto);
   }
 
   @Get()
-  @ResponseMessage('Lấy danh sách đơn bán hàng thành công')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth('BearerAuth')
+  @Roles('ADMIN', 'USER')
+  @ResponseMessage('Lay danh sach don ban hang thanh cong')
   @ApiPaginationQuery()
   @ApiQuery({
     name: 'Keyword',
     required: false,
-    description: 'Tìm theo mã đơn, ghi chú, tên khách hàng hoặc tên nhân viên',
+    description: 'Tim theo ma don, ghi chu, ten khach, ten nhan vien, guestName hoac guestPhone',
     example: 'SO-2026',
   })
   @ApiQuery({ name: 'Query.Id', required: false, example: 'cmai42t3b0000so001' })
   @ApiQuery({ name: 'Query.OrderCode', required: false, example: 'SO-20260325-001' })
   @ApiQuery({ name: 'Query.CustomerId', required: false, example: 'cmai42t3b0000cus001' })
-  @ApiQuery({ name: 'Query.CustomerName', required: false, example: 'Phạm Văn A' })
+  @ApiQuery({ name: 'Query.CustomerName', required: false, example: 'Pham Van A' })
   @ApiQuery({ name: 'Query.StaffId', required: false, example: 'cmai42t3b0000staff001' })
-  @ApiQuery({ name: 'Query.StaffName', required: false, example: 'Trần Bán Hàng' })
+  @ApiQuery({ name: 'Query.StaffName', required: false, example: 'Tran Ban Hang' })
   @ApiQuery({ name: 'Query.PaymentStatus', required: false, example: 'PAID' })
   @ApiQuery({ name: 'Query.OrderStatus', required: false, example: 'COMPLETED' })
-  @ApiQuery({ name: 'Query.Note', required: false, example: 'Bán tại quầy' })
-  @ApiStandardPaginationResponse('Lấy danh sách đơn bán hàng thành công', 200, {
+  @ApiQuery({ name: 'Query.Note', required: false, example: 'Ban tai quay' })
+  @ApiStandardPaginationResponse('Lay danh sach don ban hang thanh cong', 200, {
     id: 'cmai42t3b0000so001',
     orderCode: 'SO-20260325-001',
     totalAmount: '262000',
@@ -83,22 +101,31 @@ export class SalesOrdersController {
   }
 
   @Get(':id')
-  @ResponseMessage('Lấy chi tiết đơn bán hàng thành công')
-  @ApiStandardResponse('Lấy chi tiết đơn bán hàng thành công')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth('BearerAuth')
+  @Roles('ADMIN', 'USER')
+  @ResponseMessage('Lay chi tiet don ban hang thanh cong')
+  @ApiStandardResponse('Lay chi tiet don ban hang thanh cong')
   findOne(@Param('id') id: string) {
     return this.salesOrdersService.findOne(id);
   }
 
   @Patch(':id/status')
-  @ResponseMessage('Cập nhật trạng thái đơn hàng thành công')
-  @ApiStandardResponse('Cập nhật trạng thái đơn hàng thành công')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth('BearerAuth')
+  @Roles('ADMIN', 'USER')
+  @ResponseMessage('Cap nhat trang thai don hang thanh cong')
+  @ApiStandardResponse('Cap nhat trang thai don hang thanh cong')
   updateStatus(@Param('id') id: string, @Body() dto: UpdateSalesOrderStatusDto) {
     return this.salesOrdersService.updateStatus(id, dto);
   }
 
   @Post(':id/cancel')
-  @ResponseMessage('Hủy đơn hàng thành công')
-  @ApiStandardResponse('Hủy đơn hàng thành công', 201)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth('BearerAuth')
+  @Roles('ADMIN', 'USER')
+  @ResponseMessage('Huy don hang thanh cong')
+  @ApiStandardResponse('Huy don hang thanh cong', 201)
   cancel(@Param('id') id: string) {
     return this.salesOrdersService.cancel(id);
   }
