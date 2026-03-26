@@ -12,16 +12,18 @@ export function ApiStandardResponse(
       schema: {
         type: 'object',
         properties: {
-          code: { type: 'number', example: status },
-          status: { type: 'string', example: 'thành công' },
-          data: { example: dataExample },
+          code: { type: 'number', example: 0 },
+          success: { type: 'boolean', example: true },
           message: { type: 'string', example: message },
+          data: { example: dataExample },
+          metaData: { type: 'object', nullable: true, example: null },
         },
         example: {
-          code: status,
-          status: 'thành công',
-          data: dataExample,
+          code: 0,
+          success: true,
           message,
+          data: dataExample,
+          metaData: null,
         },
       },
     }),
@@ -39,48 +41,39 @@ export function ApiStandardPaginationResponse(
       schema: {
         type: 'object',
         properties: {
-          code: { type: 'number', example: status },
-          status: { type: 'string', example: 'thành công' },
+          code: { type: 'number', example: 0 },
+          success: { type: 'boolean', example: true },
+          message: { type: 'string', example: message },
           data: {
+            type: 'array',
+            items: {
+              type: 'object',
+              example: itemExample,
+            },
+          },
+          metaData: {
             type: 'object',
             properties: {
-              items: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  example: itemExample,
-                },
-              },
-              pagination: {
-                type: 'object',
-                properties: {
-                  page: { type: 'number', example: 1 },
-                  limit: { type: 'number', example: 10 },
-                  total: { type: 'number', example: 100 },
-                  totalPages: { type: 'number', example: 10 },
-                  hasNextPage: { type: 'boolean', example: true },
-                  hasPreviousPage: { type: 'boolean', example: false },
-                },
-              },
+              page: { type: 'number', example: 1 },
+              pageSize: { type: 'number', example: 10 },
+              total: { type: 'number', example: 100 },
+              totalPage: { type: 'number', example: 10 },
             },
           },
-          message: { type: 'string', example: message },
         },
         example: {
-          code: status,
-          status: 'thành công',
-          data: {
-            items: [],
-            pagination: {
-              page: 1,
-              limit: 10,
-              total: 100,
-              totalPages: 10,
-              hasNextPage: true,
-              hasPreviousPage: false,
-            },
-          },
+          code: 0,
+          success: true,
           message,
+          data: [
+            itemExample,
+          ],
+          metaData: {
+            page: 1,
+            pageSize: 10,
+            total: 100,
+            totalPage: 10,
+          },
         },
       },
     }),

@@ -16,17 +16,31 @@ export class CategoriesService {
     return this.prisma.category.create({ data: dto });
   }
 
-  async findAll(query: PaginationQueryDto, keyword?: string) {
+  async findAll(
+    query: PaginationQueryDto,
+    keyword?: string,
+    filters?: Record<string, string>,
+  ) {
     const { page, limit, skip } = normalizePagination(query);
-    const where = keyword
-      ? {
-          OR: [
-            { name: { contains: keyword } },
-            { slug: { contains: keyword } },
-            { description: { contains: keyword } },
-          ],
-        }
-      : undefined;
+    const andConditions: Record<string, unknown>[] = [];
+
+    if (keyword) {
+      andConditions.push({
+        OR: [
+          { name: { contains: keyword } },
+          { slug: { contains: keyword } },
+          { description: { contains: keyword } },
+        ],
+      });
+    }
+
+    if (filters?.Id) andConditions.push({ id: { equals: filters.Id } });
+    if (filters?.Name) andConditions.push({ name: { contains: filters.Name } });
+    if (filters?.Slug) andConditions.push({ slug: { contains: filters.Slug } });
+    if (filters?.Description)
+      andConditions.push({ description: { contains: filters.Description } });
+
+    const where = andConditions.length > 0 ? { AND: andConditions } : undefined;
 
     const [items, total] = await Promise.all([
       this.prisma.category.findMany({

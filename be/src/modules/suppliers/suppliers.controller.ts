@@ -3,7 +3,6 @@ import { Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ApiQuery } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -16,6 +15,10 @@ import {
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { SuppliersService } from './suppliers.service';
+import {
+  buildPaginationInput,
+  extractQueryFilters,
+} from '../../common/utils/list-query.util';
 
 @Controller('suppliers')
 @ApiTags('Nhà cung cấp')
@@ -36,19 +39,39 @@ export class SuppliersController {
   @ResponseMessage('Lấy danh sách nhà cung cấp thành công')
   @ApiPaginationQuery()
   @ApiQuery({
-    name: 'keyword',
+    name: 'Keyword',
     required: false,
     description: 'Tìm theo tên, số điện thoại, email, mã số thuế hoặc địa chỉ',
     example: 'Miền Nam',
   })
+  @ApiQuery({ name: 'Query.Id', required: false, example: 'cmai42t3b0000sup001' })
+  @ApiQuery({ name: 'Query.Name', required: false, example: 'Công ty Nhựa Miền Nam' })
+  @ApiQuery({ name: 'Query.Phone', required: false, example: '02838118888' })
+  @ApiQuery({ name: 'Query.Email', required: false, example: 'sale@nhuamiennam.vn' })
+  @ApiQuery({ name: 'Query.Address', required: false, example: 'KCN Tân Bình, TP.HCM' })
+  @ApiQuery({ name: 'Query.TaxCode', required: false, example: '0312345678' })
   @ApiStandardPaginationResponse('Lấy danh sách nhà cung cấp thành công', 200, {
     id: 'cmai42t3b0000sup001',
     name: 'Công ty Nhựa Miền Nam',
     phone: '02838118888',
     email: 'sale@nhuamiennam.vn',
   })
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.suppliersService.findAll(query, query.keyword);
+  findAll(
+    @Query('Keyword') keyword: string | undefined,
+    @Query('Page') page: string | undefined,
+    @Query('PageSize') pageSize: string | undefined,
+    @Query() rawQuery: Record<string, unknown>,
+  ) {
+    const filters = extractQueryFilters(rawQuery, [
+      'Id',
+      'Name',
+      'Phone',
+      'Email',
+      'Address',
+      'TaxCode',
+    ]);
+    const paging = buildPaginationInput(page, pageSize);
+    return this.suppliersService.findAll(paging, keyword, filters);
   }
 
   @Get(':id')

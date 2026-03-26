@@ -50,17 +50,33 @@ export class UsersService {
     });
   }
 
-  async findAll(query: PaginationQueryDto, keyword?: string) {
+  async findAll(
+    query: PaginationQueryDto,
+    keyword?: string,
+    filters?: Record<string, string>,
+  ) {
     const { page, limit, skip } = normalizePagination(query);
-    const where = keyword
-      ? {
-          OR: [
-            { fullName: { contains: keyword } },
-            { email: { contains: keyword } },
-            { phone: { contains: keyword } },
-          ],
-        }
-      : undefined;
+    const andConditions: Record<string, unknown>[] = [];
+
+    if (keyword) {
+      andConditions.push({
+        OR: [
+          { fullName: { contains: keyword } },
+          { email: { contains: keyword } },
+          { phone: { contains: keyword } },
+        ],
+      });
+    }
+
+    if (filters?.Id) andConditions.push({ id: { equals: filters.Id } });
+    if (filters?.FullName)
+      andConditions.push({ fullName: { contains: filters.FullName } });
+    if (filters?.Email) andConditions.push({ email: { contains: filters.Email } });
+    if (filters?.Phone) andConditions.push({ phone: { contains: filters.Phone } });
+    if (filters?.Status) andConditions.push({ status: { equals: filters.Status } });
+    if (filters?.RoleId) andConditions.push({ roleId: { equals: filters.RoleId } });
+
+    const where = andConditions.length > 0 ? { AND: andConditions } : undefined;
 
     const [items, total] = await Promise.all([
       this.prisma.user.findMany({

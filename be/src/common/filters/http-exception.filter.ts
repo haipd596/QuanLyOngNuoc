@@ -20,18 +20,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       response.status(code).json({
         code,
-        status: 'lỗi',
-        data: null,
         message,
+        success: false,
+        data: null,
+        metaData: null,
       });
       return;
     }
 
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       code: HttpStatus.INTERNAL_SERVER_ERROR,
-      status: 'lỗi',
-      data: null,
       message: 'Lỗi hệ thống, vui lòng thử lại sau',
+      success: false,
+      data: null,
+      metaData: null,
     });
   }
 

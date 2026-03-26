@@ -1,6 +1,8 @@
 export type PaginationInput = {
   page?: number;
   limit?: number;
+  Page?: number;
+  PageSize?: number;
 };
 
 export type PaginationResult<T> = {
@@ -16,8 +18,10 @@ export type PaginationResult<T> = {
 };
 
 export function normalizePagination(input: PaginationInput) {
-  const page = input.page && input.page > 0 ? input.page : 1;
-  const limit = input.limit && input.limit > 0 ? input.limit : 10;
+  const pageValue = input.Page ?? input.page;
+  const pageSizeValue = input.PageSize ?? input.limit;
+  const page = pageValue && pageValue > 0 ? pageValue : 1;
+  const limit = pageSizeValue && pageSizeValue > 0 ? pageSizeValue : 10;
   const skip = (page - 1) * limit;
   return { page, limit, skip };
 }
@@ -41,4 +45,3 @@ export function buildPaginatedResult<T>(
     },
   };
 }
-

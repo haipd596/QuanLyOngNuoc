@@ -48,9 +48,17 @@ export class ReportsService {
     };
   }
 
-  async inventoryAudit(query: PaginationQueryDto, keyword?: string) {
+  async inventoryAudit(
+    query: PaginationQueryDto,
+    keyword?: string,
+    filters?: Record<string, string>,
+  ) {
     const { page, limit, skip } = normalizePagination(query);
     const sqlKeyword = keyword ? `%${keyword}%` : null;
+    const queryId = filters?.Id ?? null;
+    const querySku = filters?.Sku ? `%${filters.Sku}%` : null;
+    const queryName = filters?.Name ? `%${filters.Name}%` : null;
+    const queryStatus = filters?.Status ?? null;
     const [lowStockRows, lowStockCount] = await Promise.all([
       this.prisma.$queryRaw<
         Array<{
@@ -69,6 +77,10 @@ export class ReportsService {
             OR name LIKE ${sqlKeyword}
             OR sku LIKE ${sqlKeyword}
           )
+          AND (${queryId} IS NULL OR id = ${queryId})
+          AND (${querySku} IS NULL OR sku LIKE ${querySku})
+          AND (${queryName} IS NULL OR name LIKE ${queryName})
+          AND (${queryStatus} IS NULL OR status = ${queryStatus})
         ORDER BY stockQuantity ASC
         LIMIT ${limit} OFFSET ${skip}
       `,
@@ -81,6 +93,10 @@ export class ReportsService {
             OR name LIKE ${sqlKeyword}
             OR sku LIKE ${sqlKeyword}
           )
+          AND (${queryId} IS NULL OR id = ${queryId})
+          AND (${querySku} IS NULL OR sku LIKE ${querySku})
+          AND (${queryName} IS NULL OR name LIKE ${queryName})
+          AND (${queryStatus} IS NULL OR status = ${queryStatus})
       `,
     ]);
 
@@ -98,13 +114,23 @@ export class ReportsService {
     });
     const productMap = new Map(products.map((p) => [p.id, p]));
 
+    const lowStock = buildPaginatedResult(
+      lowStockRows,
+      Number(lowStockCount[0]?.count ?? 0),
+      page,
+      limit,
+    );
+
     return {
-      lowStock: buildPaginatedResult(
-        lowStockRows,
-        Number(lowStockCount[0]?.count ?? 0),
-        page,
-        limit,
-      ),
+      lowStock: {
+        data: lowStock.items,
+        metaData: {
+          page: lowStock.pagination.page,
+          pageSize: lowStock.pagination.limit,
+          total: lowStock.pagination.total,
+          totalPage: lowStock.pagination.totalPages,
+        },
+      },
       topMovedProducts: movements.map((m) => ({
         productId: m.productId,
         sku: productMap.get(m.productId)?.sku ?? '',

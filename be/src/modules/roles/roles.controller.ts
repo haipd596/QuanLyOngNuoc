@@ -3,7 +3,6 @@ import { Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ApiQuery } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -16,6 +15,10 @@ import {
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RolesService } from './roles.service';
+import {
+  buildPaginationInput,
+  extractQueryFilters,
+} from '../../common/utils/list-query.util';
 
 @Controller('roles')
 @ApiTags('Vai trò')
@@ -36,18 +39,28 @@ export class RolesController {
   @ResponseMessage('Lấy danh sách vai trò thành công')
   @ApiPaginationQuery()
   @ApiQuery({
-    name: 'keyword',
+    name: 'Keyword',
     required: false,
     description: 'Tìm theo tên vai trò hoặc mô tả',
     example: 'ADMIN',
   })
+  @ApiQuery({ name: 'Query.Id', required: false, example: 'cmai42t3b0000role001' })
+  @ApiQuery({ name: 'Query.Name', required: false, example: 'ADMIN' })
+  @ApiQuery({ name: 'Query.Description', required: false, example: 'Quản trị toàn hệ thống' })
   @ApiStandardPaginationResponse('Lấy danh sách vai trò thành công', 200, {
     id: 'cmai42t3b0000role001',
     name: 'ADMIN',
     description: 'Quản trị toàn hệ thống',
   })
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.rolesService.findAll(query, query.keyword);
+  findAll(
+    @Query('Keyword') keyword: string | undefined,
+    @Query('Page') page: string | undefined,
+    @Query('PageSize') pageSize: string | undefined,
+    @Query() rawQuery: Record<string, unknown>,
+  ) {
+    const filters = extractQueryFilters(rawQuery, ['Id', 'Name', 'Description']);
+    const paging = buildPaginationInput(page, pageSize);
+    return this.rolesService.findAll(paging, keyword, filters);
   }
 
   @Get(':id')

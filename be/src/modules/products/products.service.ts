@@ -22,17 +22,37 @@ export class ProductsService {
     });
   }
 
-  async findAll(query: PaginationQueryDto, keyword?: string) {
+  async findAll(
+    query: PaginationQueryDto,
+    keyword?: string,
+    filters?: Record<string, string>,
+  ) {
     const { page, limit, skip } = normalizePagination(query);
-    const where = keyword
-      ? {
-          OR: [
-            { name: { contains: keyword } },
-            { sku: { contains: keyword } },
-            { slug: { contains: keyword } },
-          ],
-        }
-      : undefined;
+    const andConditions: Record<string, unknown>[] = [];
+
+    if (keyword) {
+      andConditions.push({
+        OR: [
+          { name: { contains: keyword } },
+          { sku: { contains: keyword } },
+          { slug: { contains: keyword } },
+        ],
+      });
+    }
+
+    if (filters?.Id) andConditions.push({ id: { equals: filters.Id } });
+    if (filters?.Sku) andConditions.push({ sku: { contains: filters.Sku } });
+    if (filters?.Name) andConditions.push({ name: { contains: filters.Name } });
+    if (filters?.Slug) andConditions.push({ slug: { contains: filters.Slug } });
+    if (filters?.Unit) andConditions.push({ unit: { contains: filters.Unit } });
+    if (filters?.Status)
+      andConditions.push({ status: { equals: filters.Status } });
+    if (filters?.CategoryId)
+      andConditions.push({ categoryId: { equals: filters.CategoryId } });
+    if (filters?.SupplierId)
+      andConditions.push({ supplierId: { equals: filters.SupplierId } });
+
+    const where = andConditions.length > 0 ? { AND: andConditions } : undefined;
 
     const [items, total] = await Promise.all([
       this.prisma.product.findMany({
@@ -51,9 +71,18 @@ export class ProductsService {
     return buildPaginatedResult(items, total, page, limit);
   }
 
-  async findLowStock(query: PaginationQueryDto, keyword?: string) {
+  async findLowStock(
+    query: PaginationQueryDto,
+    keyword?: string,
+    filters?: Record<string, string>,
+  ) {
     const { page, limit, skip } = normalizePagination(query);
     const sqlKeyword = keyword ? `%${keyword}%` : null;
+    const queryId = filters?.Id ?? null;
+    const querySku = filters?.Sku ? `%${filters.Sku}%` : null;
+    const queryName = filters?.Name ? `%${filters.Name}%` : null;
+    const querySlug = filters?.Slug ? `%${filters.Slug}%` : null;
+    const queryStatus = filters?.Status ?? null;
     const [items, total] = await Promise.all([
       this.prisma.$queryRaw<
         Array<{
@@ -83,6 +112,11 @@ export class ProductsService {
             OR sku LIKE ${sqlKeyword}
             OR slug LIKE ${sqlKeyword}
           )
+          AND (${queryId} IS NULL OR id = ${queryId})
+          AND (${querySku} IS NULL OR sku LIKE ${querySku})
+          AND (${queryName} IS NULL OR name LIKE ${queryName})
+          AND (${querySlug} IS NULL OR slug LIKE ${querySlug})
+          AND (${queryStatus} IS NULL OR status = ${queryStatus})
         ORDER BY stockQuantity ASC
         LIMIT ${limit} OFFSET ${skip}
       `,
@@ -95,6 +129,11 @@ export class ProductsService {
             OR sku LIKE ${sqlKeyword}
             OR slug LIKE ${sqlKeyword}
           )
+          AND (${queryId} IS NULL OR id = ${queryId})
+          AND (${querySku} IS NULL OR sku LIKE ${querySku})
+          AND (${queryName} IS NULL OR name LIKE ${queryName})
+          AND (${querySlug} IS NULL OR slug LIKE ${querySlug})
+          AND (${queryStatus} IS NULL OR status = ${queryStatus})
       `,
     ]);
 

@@ -12,16 +12,34 @@ import { MoveStockDto } from './dto/move-stock.dto';
 export class InventoryService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async summary(query: PaginationQueryDto, keyword?: string) {
+  async summary(
+    query: PaginationQueryDto,
+    keyword?: string,
+    filters?: Record<string, string>,
+  ) {
     const { page, limit, skip } = normalizePagination(query);
-    const where = keyword
-      ? {
-          OR: [
-            { name: { contains: keyword } },
-            { sku: { contains: keyword } },
-          ],
-        }
-      : undefined;
+    const andConditions: Record<string, unknown>[] = [];
+
+    if (keyword) {
+      andConditions.push({
+        OR: [
+          { name: { contains: keyword } },
+          { sku: { contains: keyword } },
+        ],
+      });
+    }
+
+    if (filters?.Id) andConditions.push({ id: { equals: filters.Id } });
+    if (filters?.Sku) andConditions.push({ sku: { contains: filters.Sku } });
+    if (filters?.Name) andConditions.push({ name: { contains: filters.Name } });
+    if (filters?.Status)
+      andConditions.push({ status: { equals: filters.Status } });
+    if (filters?.CategoryId)
+      andConditions.push({ categoryId: { equals: filters.CategoryId } });
+    if (filters?.SupplierId)
+      andConditions.push({ supplierId: { equals: filters.SupplierId } });
+
+    const where = andConditions.length > 0 ? { AND: andConditions } : undefined;
 
     const [items, total] = await Promise.all([
       this.prisma.product.findMany({
@@ -44,7 +62,11 @@ export class InventoryService {
     return buildPaginatedResult(items, total, page, limit);
   }
 
-  async movements(query: PaginationQueryDto, keyword?: string) {
+  async movements(
+    query: PaginationQueryDto,
+    keyword?: string,
+    filters?: Record<string, string>,
+  ) {
     const { page, limit, skip } = normalizePagination(query);
     const enumKeyword = keyword?.toUpperCase();
     const isStockTypeKeyword =
@@ -52,26 +74,63 @@ export class InventoryService {
       enumKeyword === StockMovementType.EXPORT ||
       enumKeyword === StockMovementType.ADJUST;
 
-    const where = keyword
-      ? {
-          OR: [
-            { note: { contains: keyword } },
-            ...(isStockTypeKeyword
-              ? [{ type: { equals: enumKeyword as StockMovementType } }]
-              : []),
-            {
-              product: {
-                is: {
-                  OR: [
-                    { name: { contains: keyword } },
-                    { sku: { contains: keyword } },
-                  ],
-                },
+    const andConditions: Record<string, unknown>[] = [];
+
+    if (keyword) {
+      andConditions.push({
+        OR: [
+          { note: { contains: keyword } },
+          ...(isStockTypeKeyword
+            ? [{ type: { equals: enumKeyword as StockMovementType } }]
+            : []),
+          {
+            product: {
+              is: {
+                OR: [
+                  { name: { contains: keyword } },
+                  { sku: { contains: keyword } },
+                ],
               },
             },
-          ],
-        }
-      : undefined;
+          },
+        ],
+      });
+    }
+
+    if (filters?.Id) andConditions.push({ id: { equals: filters.Id } });
+    if (filters?.ProductId)
+      andConditions.push({ productId: { equals: filters.ProductId } });
+    if (filters?.Type) {
+      const type = filters.Type.toUpperCase();
+      if (
+        type === StockMovementType.IMPORT ||
+        type === StockMovementType.EXPORT ||
+        type === StockMovementType.ADJUST
+      ) {
+        andConditions.push({ type: { equals: type as StockMovementType } });
+      }
+    }
+    if (filters?.CreatedById)
+      andConditions.push({ createdById: { equals: filters.CreatedById } });
+    if (filters?.PurchaseOrderId)
+      andConditions.push({ purchaseOrderId: { equals: filters.PurchaseOrderId } });
+    if (filters?.SalesOrderId)
+      andConditions.push({ salesOrderId: { equals: filters.SalesOrderId } });
+    if (filters?.Note) andConditions.push({ note: { contains: filters.Note } });
+    if (filters?.ProductName || filters?.ProductSku) {
+      andConditions.push({
+        product: {
+          is: {
+            ...(filters.ProductName
+              ? { name: { contains: filters.ProductName } }
+              : {}),
+            ...(filters.ProductSku ? { sku: { contains: filters.ProductSku } } : {}),
+          },
+        },
+      });
+    }
+
+    const where = andConditions.length > 0 ? { AND: andConditions } : undefined;
 
     const [items, total] = await Promise.all([
       this.prisma.stockMovement.findMany({

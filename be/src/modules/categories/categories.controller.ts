@@ -3,7 +3,6 @@ import { Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ApiQuery } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
-import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -16,6 +15,10 @@ import {
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import {
+  buildPaginationInput,
+  extractQueryFilters,
+} from '../../common/utils/list-query.util';
 
 @Controller('categories')
 @ApiTags('Danh mục')
@@ -36,19 +39,30 @@ export class CategoriesController {
   @ResponseMessage('Lấy danh sách danh mục thành công')
   @ApiPaginationQuery()
   @ApiQuery({
-    name: 'keyword',
+    name: 'Keyword',
     required: false,
     description: 'Tìm theo tên danh mục, slug hoặc mô tả',
     example: 'ống',
   })
+  @ApiQuery({ name: 'Query.Id', required: false, example: 'cmai42t3b0000cat001' })
+  @ApiQuery({ name: 'Query.Name', required: false, example: 'Ống nước' })
+  @ApiQuery({ name: 'Query.Slug', required: false, example: 'ong-nuoc' })
+  @ApiQuery({ name: 'Query.Description', required: false, example: 'Danh mục ống và phụ kiện' })
   @ApiStandardPaginationResponse('Lấy danh sách danh mục thành công', 200, {
     id: 'cmai42t3b0000cat001',
     name: 'Ống nước',
     slug: 'ong-nuoc',
     description: 'Danh mục ống và phụ kiện',
   })
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.categoriesService.findAll(query, query.keyword);
+  findAll(
+    @Query('Keyword') keyword: string | undefined,
+    @Query('Page') page: string | undefined,
+    @Query('PageSize') pageSize: string | undefined,
+    @Query() rawQuery: Record<string, unknown>,
+  ) {
+    const filters = extractQueryFilters(rawQuery, ['Id', 'Name', 'Slug', 'Description']);
+    const paging = buildPaginationInput(page, pageSize);
+    return this.categoriesService.findAll(paging, keyword, filters);
   }
 
   @Get(':id')

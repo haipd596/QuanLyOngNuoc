@@ -96,30 +96,64 @@ export class SalesOrdersService {
     });
   }
 
-  async findAll(query: PaginationQueryDto, keyword?: string) {
+  async findAll(
+    query: PaginationQueryDto,
+    keyword?: string,
+    filters?: Record<string, string>,
+  ) {
     const { page, limit, skip } = normalizePagination(query);
-    const where = keyword
-      ? {
-          OR: [
-            { orderCode: { contains: keyword } },
-            { note: { contains: keyword } },
-            {
-              customer: {
-                is: {
-                  fullName: { contains: keyword },
-                },
+    const andConditions: Record<string, unknown>[] = [];
+
+    if (keyword) {
+      andConditions.push({
+        OR: [
+          { orderCode: { contains: keyword } },
+          { note: { contains: keyword } },
+          {
+            customer: {
+              is: {
+                fullName: { contains: keyword },
               },
             },
-            {
-              staff: {
-                is: {
-                  fullName: { contains: keyword },
-                },
+          },
+          {
+            staff: {
+              is: {
+                fullName: { contains: keyword },
               },
             },
-          ],
-        }
-      : undefined;
+          },
+        ],
+      });
+    }
+
+    if (filters?.Id) andConditions.push({ id: { equals: filters.Id } });
+    if (filters?.OrderCode)
+      andConditions.push({ orderCode: { contains: filters.OrderCode } });
+    if (filters?.CustomerId)
+      andConditions.push({ customerId: { equals: filters.CustomerId } });
+    if (filters?.StaffId) andConditions.push({ staffId: { equals: filters.StaffId } });
+    if (filters?.PaymentStatus)
+      andConditions.push({ paymentStatus: { equals: filters.PaymentStatus } });
+    if (filters?.OrderStatus)
+      andConditions.push({ orderStatus: { equals: filters.OrderStatus } });
+    if (filters?.Note) andConditions.push({ note: { contains: filters.Note } });
+    if (filters?.CustomerName) {
+      andConditions.push({
+        customer: {
+          is: { fullName: { contains: filters.CustomerName } },
+        },
+      });
+    }
+    if (filters?.StaffName) {
+      andConditions.push({
+        staff: {
+          is: { fullName: { contains: filters.StaffName } },
+        },
+      });
+    }
+
+    const where = andConditions.length > 0 ? { AND: andConditions } : undefined;
 
     const [items, total] = await Promise.all([
       this.prisma.salesOrder.findMany({

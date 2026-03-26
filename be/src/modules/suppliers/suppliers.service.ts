@@ -16,19 +16,36 @@ export class SuppliersService {
     return this.prisma.supplier.create({ data: dto });
   }
 
-  async findAll(query: PaginationQueryDto, keyword?: string) {
+  async findAll(
+    query: PaginationQueryDto,
+    keyword?: string,
+    filters?: Record<string, string>,
+  ) {
     const { page, limit, skip } = normalizePagination(query);
-    const where = keyword
-      ? {
-          OR: [
-            { name: { contains: keyword } },
-            { phone: { contains: keyword } },
-            { email: { contains: keyword } },
-            { address: { contains: keyword } },
-            { taxCode: { contains: keyword } },
-          ],
-        }
-      : undefined;
+    const andConditions: Record<string, unknown>[] = [];
+
+    if (keyword) {
+      andConditions.push({
+        OR: [
+          { name: { contains: keyword } },
+          { phone: { contains: keyword } },
+          { email: { contains: keyword } },
+          { address: { contains: keyword } },
+          { taxCode: { contains: keyword } },
+        ],
+      });
+    }
+
+    if (filters?.Id) andConditions.push({ id: { equals: filters.Id } });
+    if (filters?.Name) andConditions.push({ name: { contains: filters.Name } });
+    if (filters?.Phone) andConditions.push({ phone: { contains: filters.Phone } });
+    if (filters?.Email) andConditions.push({ email: { contains: filters.Email } });
+    if (filters?.Address)
+      andConditions.push({ address: { contains: filters.Address } });
+    if (filters?.TaxCode)
+      andConditions.push({ taxCode: { contains: filters.TaxCode } });
+
+    const where = andConditions.length > 0 ? { AND: andConditions } : undefined;
 
     const [items, total] = await Promise.all([
       this.prisma.supplier.findMany({
