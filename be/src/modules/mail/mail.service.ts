@@ -104,14 +104,18 @@ export class MailService implements OnModuleInit {
             messageId = await this.sendViaSmtp(input);
           }
 
-          await this.prisma.emailLog.create({
-            data: {
-              to: input.to,
-              subject: input.subject,
-              content: input.content ?? null,
-              status: 'SUCCESS',
-            },
-          });
+          void this.prisma.emailLog
+            .create({
+              data: {
+                to: input.to,
+                subject: input.subject,
+                content: input.content ?? null,
+                status: 'SUCCESS',
+              },
+            })
+            .catch((err: unknown) =>
+              this.logger.error(`emailLog.create failed: ${this.formatError(err)}`),
+            );
 
           this.logger.log(
             `sendMail success attempt ${attempt + 1}/${totalAttempts} provider=${provider} to=${input.to} messageId=${messageId}`,
@@ -131,15 +135,19 @@ export class MailService implements OnModuleInit {
       }
     }
 
-    await this.prisma.emailLog.create({
-      data: {
-        to: input.to,
-        subject: input.subject,
-        content: input.content ?? null,
-        status: 'FAILED',
-        error: this.formatError(lastError),
-      },
-    });
+    void this.prisma.emailLog
+      .create({
+        data: {
+          to: input.to,
+          subject: input.subject,
+          content: input.content ?? null,
+          status: 'FAILED',
+          error: this.formatError(lastError),
+        },
+      })
+      .catch((err: unknown) =>
+        this.logger.error(`emailLog.create failed: ${this.formatError(err)}`),
+      );
 
     this.logger.error(
       `sendMail final failure after ${totalAttempts} attempts to=${input.to} subject="${input.subject}"`,
