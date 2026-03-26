@@ -5,8 +5,9 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from '../../config/prisma.service';
+import { randomUUID } from 'crypto';
 import * as nodemailer from 'nodemailer';
+import { PrismaService } from '../../config/prisma.service';
 
 type SendMailInput = {
   to: string;
@@ -21,6 +22,8 @@ type SendMailResult = {
   subject: string;
 };
 
+type MailProvider = 'resend' | 'smtp' | 'log';
+
 @Injectable()
 export class MailService implements OnModuleInit {
   private readonly logger = new Logger(MailService.name);
@@ -31,26 +34,27 @@ export class MailService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
-    const resendApiKey = this.configService.get<string>('RESEND_API_KEY');
-    const host = this.configService.get<string>('MAIL_HOST');
-    const user = this.configService.get<string>('MAIL_USER');
-    const pass = this.configService.get<string>('MAIL_PASS');
-    const from = this.configService.get<string>('MAIL_FROM');
+    const provider = this.getPreferredProvider();
 
-    if (!resendApiKey) {
-      this.logger.warn(
-        'RESEND_API_KEY chua duoc cau hinh. He thong se fallback sang SMTP.',
-      );
-    } else {
+    if (provider === 'resend') {
       this.logger.log('Mail provider: Resend API');
+      return;
     }
 
-    const smtpReady = Boolean(host && user && pass && from);
-    if (!resendApiKey && !smtpReady) {
-      this.logger.warn(
-        'Thieu cau hinh gui mail: RESEND_API_KEY va SMTP (MAIL_HOST/MAIL_USER/MAIL_PASS/MAIL_FROM).',
-      );
+    if (provider === 'log') {
+      this.logger.warn('Mail provider: log (khong gui mail that)');
+      return;
     }
+
+    const smtp = this.getSmtpConfig();
+    if (!smtp) {
+      this.logger.warn(
+        'Thieu cau hinh gui mail: RESEND_API_KEY hoac SMTP (MAIL_HOST/MAIL_USER|MAIL_USERNAME/MAIL_PASS|MAIL_PASSWORD/MAIL_FROM).',
+      );
+      return;
+    }
+
+    this.logger.log(`Mail provider: SMTP ${smtp.host}:${smtp.port}`);
   }
 
   async sendTestMail(input: SendMailInput): Promise<SendMailResult> {
@@ -65,42 +69,6 @@ export class MailService implements OnModuleInit {
     }
   }
 
-  private createTransporter() {
-    const host = this.configService.get<string>('MAIL_HOST');
-    const port = Number(this.configService.get<string>('MAIL_PORT') ?? 587);
-    const user = this.configService.get<string>('MAIL_USER');
-    const pass = this.configService.get<string>('MAIL_PASS');
-    const from = this.configService.get<string>('MAIL_FROM');
-
-    if (!host || !user || !pass || !from) {
-      throw new InternalServerErrorException(
-        'Thieu cau hinh MAIL_HOST, MAIL_USER, MAIL_PASS hoac MAIL_FROM',
-      );
-    }
-
-    return {
-      transporter: nodemailer.createTransport({
-        host,
-        port,
-        secure: port === 465,
-        auth: { user, pass },
-        connectionTimeout: 10_000,
-        greetingTimeout: 10_000,
-        socketTimeout: 15_000,
-      }),
-      from,
-    };
-  }
-
-  private getResendConfig() {
-    const apiKey = this.configService.get<string>('RESEND_API_KEY');
-    const from = this.configService.get<string>('MAIL_FROM');
-    if (!apiKey || !from) {
-      return null;
-    }
-    return { apiKey, from };
-  }
-
   private async sendWithRetry(
     input: SendMailInput,
     retryCount: number,
@@ -110,21 +78,24 @@ export class MailService implements OnModuleInit {
 
     for (let attempt = 0; attempt <= retryCount; attempt += 1) {
       try {
-        const resendConfig = this.getResendConfig();
-        const provider = resendConfig ? 'resend' : 'smtp';
+        const provider = this.getPreferredProvider();
         this.logger.log(
           `sendMail start attempt ${attempt + 1}/${totalAttempts} provider=${provider} to=${input.to} subject="${input.subject}"`,
         );
 
-        const result = resendConfig
-          ? await this.sendViaResend(input, resendConfig.apiKey, resendConfig.from)
-          : await this.sendViaSmtp(input);
+        let messageId: string;
 
-        const finalResult = {
-          messageId: result.messageId,
-          to: input.to,
-          subject: input.subject,
-        };
+        if (provider === 'resend') {
+          const resend = this.getResendConfig();
+          if (!resend) {
+            throw new InternalServerErrorException('Thieu cau hinh RESEND_API_KEY hoac MAIL_FROM');
+          }
+          messageId = await this.sendViaResend(input, resend.apiKey, resend.from);
+        } else if (provider === 'log') {
+          messageId = this.sendViaLog(input);
+        } else {
+          messageId = await this.sendViaSmtp(input);
+        }
 
         await this.prisma.emailLog.create({
           data: {
@@ -136,10 +107,14 @@ export class MailService implements OnModuleInit {
         });
 
         this.logger.log(
-          `sendMail success attempt ${attempt + 1}/${totalAttempts} to=${input.to} messageId=${finalResult.messageId}`,
+          `sendMail success attempt ${attempt + 1}/${totalAttempts} to=${input.to} messageId=${messageId}`,
         );
 
-        return finalResult;
+        return {
+          messageId,
+          to: input.to,
+          subject: input.subject,
+        };
       } catch (error) {
         lastError = error;
         this.logger.error(
@@ -165,39 +140,113 @@ export class MailService implements OnModuleInit {
     throw new InternalServerErrorException('Gui email that bai');
   }
 
-  private formatError(error: unknown) {
-    if (!error) {
-      return 'Unknown error';
+  private getPreferredProvider(): MailProvider {
+    if (this.getResendConfig()) {
+      return 'resend';
     }
 
-    if (error instanceof Error) {
-      const code = (error as Error & { code?: string }).code;
-      return code ? `${code}: ${error.message}` : error.message;
+    const mailer = (this.configService.get<string>('MAIL_MAILER') ?? 'smtp')
+      .trim()
+      .toLowerCase();
+
+    if (mailer === 'log') {
+      return 'log';
     }
 
-    return String(error);
+    return 'smtp';
   }
 
-  private async sendViaSmtp(input: SendMailInput) {
-    const { transporter, from } = this.createTransporter();
-    const info = await transporter.sendMail({
+  private getResendConfig() {
+    const apiKey = this.configService.get<string>('RESEND_API_KEY')?.trim();
+    const from = this.getMailFrom();
+    if (!apiKey || !from) {
+      return null;
+    }
+    return { apiKey, from };
+  }
+
+  private getSmtpConfig() {
+    const host = this.configService.get<string>('MAIL_HOST')?.trim();
+    const port = Number(this.configService.get<string>('MAIL_PORT') ?? 587);
+    const user =
+      this.configService.get<string>('MAIL_USER')?.trim() ||
+      this.configService.get<string>('MAIL_USERNAME')?.trim();
+    const pass =
+      this.configService.get<string>('MAIL_PASS')?.trim() ||
+      this.configService.get<string>('MAIL_PASSWORD')?.trim();
+    const from = this.getMailFrom();
+
+    if (!host || !user || !pass || !from) {
+      return null;
+    }
+
+    return {
+      host,
+      port,
+      user,
+      pass,
       from,
+    };
+  }
+
+  private getMailFrom() {
+    const mailFrom = this.configService.get<string>('MAIL_FROM')?.trim();
+    if (mailFrom) {
+      return mailFrom;
+    }
+
+    const fromAddress = this.configService.get<string>('MAIL_FROM_ADDRESS')?.trim();
+    const fromName = this.configService.get<string>('MAIL_FROM_NAME')?.trim();
+
+    if (!fromAddress) {
+      return null;
+    }
+
+    return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
+  }
+
+  private async sendViaSmtp(input: SendMailInput): Promise<string> {
+    const smtp = this.getSmtpConfig();
+    if (!smtp) {
+      throw new InternalServerErrorException(
+        'Thieu cau hinh SMTP: MAIL_HOST, MAIL_PORT, MAIL_USER|MAIL_USERNAME, MAIL_PASS|MAIL_PASSWORD, MAIL_FROM',
+      );
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: smtp.host,
+      port: smtp.port,
+      secure: smtp.port === 465,
+      auth: { user: smtp.user, pass: smtp.pass },
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 15_000,
+    });
+
+    const info = await transporter.sendMail({
+      from: smtp.from,
       to: input.to,
       subject: input.subject,
       text: input.content ?? '',
       html: input.html,
     });
 
-    return {
-      messageId: String(info.messageId),
-    };
+    return String(info.messageId);
+  }
+
+  private sendViaLog(input: SendMailInput): string {
+    const messageId = `log-${Date.now()}-${randomUUID().slice(0, 8)}`;
+    this.logger.log(
+      `[MAIL_LOG] messageId=${messageId} to=${input.to} subject="${input.subject}" content="${input.content ?? ''}"`,
+    );
+    return messageId;
   }
 
   private async sendViaResend(
     input: SendMailInput,
     apiKey: string,
     from: string,
-  ) {
+  ): Promise<string> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15_000);
 
@@ -229,11 +278,22 @@ export class MailService implements OnModuleInit {
         throw new Error(message);
       }
 
-      return {
-        messageId: body.id,
-      };
+      return body.id;
     } finally {
       clearTimeout(timeout);
     }
+  }
+
+  private formatError(error: unknown) {
+    if (!error) {
+      return 'Unknown error';
+    }
+
+    if (error instanceof Error) {
+      const code = (error as Error & { code?: string }).code;
+      return code ? `${code}: ${error.message}` : error.message;
+    }
+
+    return String(error);
   }
 }
