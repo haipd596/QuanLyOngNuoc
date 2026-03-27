@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { ApiPaginationQuery } from '../../common/swagger/api-pagination-query.decorator';
 import { ApiStandardResponse } from '../../common/swagger/api-standard-response.decorator';
+import { ROLE_ADMIN } from '../../common/constants/roles.constant';
 import { ReportsService } from './reports.service';
 import {
   buildPaginationInput,
@@ -17,7 +18,7 @@ import {
 @ApiTags('Báo cáo')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles(ROLE_ADMIN)
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 

@@ -19,6 +19,10 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
+import {
+  PRODUCT_VIEWER_ROLES,
+  ROLE_ADMIN,
+} from '../../common/constants/roles.constant';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
@@ -35,7 +39,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @Roles('ADMIN')
+  @Roles(ROLE_ADMIN)
   @ResponseMessage('Tạo sản phẩm thành công')
   @ApiStandardResponse('Tạo sản phẩm thành công', 201)
   create(@Body() dto: CreateProductDto) {
@@ -43,7 +47,7 @@ export class ProductsController {
   }
 
   @Get()
-  @Roles('ADMIN', 'USER')
+  @Roles(...PRODUCT_VIEWER_ROLES)
   @ResponseMessage('Lấy danh sách sản phẩm thành công')
   @ApiPaginationQuery()
   @ApiQuery({
@@ -89,7 +93,7 @@ export class ProductsController {
   }
 
   @Get('low-stock')
-  @Roles('ADMIN', 'USER')
+  @Roles(ROLE_ADMIN)
   @ResponseMessage('Lấy danh sách sản phẩm tồn thấp thành công')
   @ApiPaginationQuery()
   @ApiQuery({
@@ -122,7 +126,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  @Roles('ADMIN', 'USER')
+  @Roles(...PRODUCT_VIEWER_ROLES)
   @ResponseMessage('Lấy chi tiết sản phẩm thành công')
   @ApiStandardResponse('Lấy chi tiết sản phẩm thành công')
   findOne(@Param('id') id: string) {
@@ -130,7 +134,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  @Roles('ADMIN')
+  @Roles(ROLE_ADMIN)
   @ResponseMessage('Cập nhật sản phẩm thành công')
   @ApiStandardResponse('Cập nhật sản phẩm thành công')
   update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
@@ -138,7 +142,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
+  @Roles(ROLE_ADMIN)
   @ResponseMessage('Xóa sản phẩm thành công')
   @ApiStandardResponse('Xóa sản phẩm thành công')
   remove(@Param('id') id: string) {

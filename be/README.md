@@ -11,7 +11,8 @@
 - Lệnh: `npm run seed`
 - Tài khoản mẫu:
 - Admin: `admin@ongnuocviet.vn` / `Admin@123`
-- User: `user@ongnuocviet.vn` / `User@123`
+- Seller: `user@ongnuocviet.vn` / `User@123`
+- Customer: `khach@ongnuocviet.vn` / `User@123`
 
 ## Chuẩn query danh sách
 Tất cả API danh sách dùng:

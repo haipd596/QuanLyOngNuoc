@@ -12,6 +12,7 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
+import { ROLE_ADMIN } from '../../common/constants/roles.constant';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -24,7 +25,7 @@ import {
 @ApiTags('Danh mục')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles(ROLE_ADMIN)
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 

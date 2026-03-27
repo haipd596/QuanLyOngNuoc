@@ -38,14 +38,14 @@ async function login(email, password) {
 }
 
 async function main() {
-  const userToken = await login('user@ongnuocviet.vn', 'User@123');
+  const sellerToken = await login('user@ongnuocviet.vn', 'User@123');
   const adminToken = await login('admin@ongnuocviet.vn', 'Admin@123');
 
-  const userHeaders = { Authorization: `Bearer ${userToken}` };
+  const sellerHeaders = { Authorization: `Bearer ${sellerToken}` };
   const adminHeaders = { Authorization: `Bearer ${adminToken}` };
 
   const products = await call('/products?Page=1&PageSize=5&Keyword=PVC', {
-    headers: userHeaders,
+    headers: sellerHeaders,
   });
   assert(products.response.status === 200, 'Lay danh sach san pham that bai');
   assert(Array.isArray(products.body?.data), 'Du lieu danh sach san pham phai la mang');
@@ -53,14 +53,14 @@ async function main() {
   assert(products.body.data.length > 0, 'Khong co san pham de chay smoke test guest checkout');
 
   const inventory = await call('/inventory/movements?Page=1&PageSize=5&Keyword=IMPORT', {
-    headers: userHeaders,
+    headers: sellerHeaders,
   });
   assert(inventory.response.status === 200, 'Lay lich su kho that bai');
   assert(Array.isArray(inventory.body?.data), 'Du lieu lich su kho phai la mang');
   assert(inventory.body?.metaData?.page !== undefined, 'Thieu metaData o lich su kho');
 
   const salesOrders = await call('/sales-orders?Page=1&PageSize=5&Keyword=SO-', {
-    headers: userHeaders,
+    headers: sellerHeaders,
   });
   assert(salesOrders.response.status === 200, 'Lay danh sach don ban that bai');
   assert(Array.isArray(salesOrders.body?.data), 'Du lieu don ban phai la mang');
@@ -122,7 +122,7 @@ async function main() {
   assert(aiRecalculate.body?.data?.recalculatedCount !== undefined, 'Thieu recalculatedCount');
 
   const aiList = await call('/ai/restock-recommendations?Page=1&PageSize=5&Keyword=HIGH', {
-    headers: userHeaders,
+    headers: sellerHeaders,
   });
   assert(aiList.response.status === 200, 'Lay danh sach AI kho that bai');
   assert(Array.isArray(aiList.body?.data), 'Du lieu AI kho phai la mang');

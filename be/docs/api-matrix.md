@@ -6,19 +6,19 @@ Base URL: `/api/v1`
 
 | Màn hình | API | Method | Vai trò | Mục đích |
 |---|---|---|---|---|
-| Đăng nhập | `/auth/login` | `POST` | `USER`, `ADMIN` | Đăng nhập hệ thống |
-| Tạo tài khoản | `/auth/register` | `POST` | `ADMIN` | Tạo tài khoản người dùng mới |
-| Nền hệ thống | `/auth/refresh` | `POST` | `USER`, `ADMIN` | Làm mới access token |
-| Thông tin tài khoản | `/auth/me` | `GET` | `USER`, `ADMIN` | Lấy thông tin tài khoản đang đăng nhập |
+| Đăng nhập | `/auth/login` | `POST` | `CUSTOMER`, `SELLER`, `ADMIN` | Đăng nhập hệ thống |
+| Tạo tài khoản | `/auth/register` | `POST` | `PUBLIC -> CUSTOMER` | Khách tự tạo tài khoản mặc định |
+| Nền hệ thống | `/auth/refresh` | `POST` | `CUSTOMER`, `SELLER`, `ADMIN` | Làm mới access token |
+| Thông tin tài khoản | `/auth/me` | `GET` | `CUSTOMER`, `SELLER`, `ADMIN` | Lấy thông tin tài khoản đang đăng nhập |
 
 ## 2) Màn hình Dashboard User
 
 | Màn hình | API | Method | Vai trò | Mục đích |
 |---|---|---|---|---|
-| Danh sách sản phẩm | `/products` | `GET` | `USER`, `ADMIN` | Xem và tìm sản phẩm |
-| Cảnh báo tồn thấp | `/products/low-stock` | `GET` | `USER`, `ADMIN` | Xem sản phẩm tồn kho thấp |
-| Tổng quan kho | `/inventory/summary` | `GET` | `USER`, `ADMIN` | Xem tổng quan tồn kho |
-| Lịch sử kho | `/inventory/movements` | `GET` | `USER`, `ADMIN` | Xem lịch sử nhập/xuất/điều chỉnh kho |
+| Danh sách sản phẩm | `/products` | `GET` | `CUSTOMER`, `SELLER`, `ADMIN` | Xem và tìm sản phẩm |
+| Cảnh báo tồn thấp | `/products/low-stock` | `GET` | `ADMIN` | Xem sản phẩm tồn kho thấp |
+| Tổng quan kho | `/inventory/summary` | `GET` | `SELLER`, `ADMIN` | Xem tổng quan tồn kho |
+| Lịch sử kho | `/inventory/movements` | `GET` | `SELLER`, `ADMIN` | Xem lịch sử nhập/xuất/điều chỉnh kho |
 
 Chuẩn query list áp dụng:
 - `Keyword`, `Page`, `PageSize`
@@ -28,27 +28,27 @@ Chuẩn query list áp dụng:
 
 | Màn hình | API | Method | Vai trò | Mục đích |
 |---|---|---|---|---|
-| Tạo đơn bán | `/sales-orders` | `POST` | `USER`, `ADMIN` | Tạo đơn bán hàng |
-| Danh sách đơn bán | `/sales-orders` | `GET` | `USER`, `ADMIN` | Xem và tìm đơn bán |
-| Chi tiết đơn bán | `/sales-orders/:id` | `GET` | `USER`, `ADMIN` | Xem chi tiết đơn |
-| Cập nhật trạng thái đơn | `/sales-orders/:id/status` | `PATCH` | `USER`, `ADMIN` | Đổi trạng thái đơn hàng |
-| Hủy đơn | `/sales-orders/:id/cancel` | `POST` | `USER`, `ADMIN` | Hủy đơn bán hàng |
+| Tạo đơn bán | `/sales-orders` | `POST` | `SELLER`, `ADMIN` | Tạo đơn bán hàng |
+| Danh sách đơn bán | `/sales-orders` | `GET` | `SELLER`, `ADMIN` | Xem và tìm đơn bán |
+| Chi tiết đơn bán | `/sales-orders/:id` | `GET` | `SELLER`, `ADMIN` | Xem chi tiết đơn |
+| Cập nhật trạng thái đơn | `/sales-orders/:id/status` | `PATCH` | `SELLER`, `ADMIN` | Đổi trạng thái đơn hàng |
+| Hủy đơn | `/sales-orders/:id/cancel` | `POST` | `SELLER`, `ADMIN` | Hủy đơn bán hàng |
 
 ## 4) Màn hình Khách hàng
 
 | Màn hình | API | Method | Vai trò | Mục đích |
 |---|---|---|---|---|
-| Danh sách khách hàng | `/customers` | `GET` | `USER`, `ADMIN` | Xem và tìm khách hàng |
-| Chi tiết khách hàng | `/customers/:id` | `GET` | `USER`, `ADMIN` | Xem chi tiết khách hàng |
-| Tạo khách hàng | `/customers` | `POST` | `USER`, `ADMIN` | Tạo mới khách hàng |
-| Sửa khách hàng | `/customers/:id` | `PATCH` | `USER`, `ADMIN` | Cập nhật khách hàng |
+| Danh sách khách hàng | `/customers` | `GET` | `SELLER`, `ADMIN` | Xem và tìm khách hàng |
+| Chi tiết khách hàng | `/customers/:id` | `GET` | `SELLER`, `ADMIN` | Xem chi tiết khách hàng |
+| Tạo khách hàng | `/customers` | `POST` | `SELLER`, `ADMIN` | Tạo mới khách hàng |
+| Sửa khách hàng | `/customers/:id` | `PATCH` | `SELLER`, `ADMIN` | Cập nhật khách hàng |
 | Xóa khách hàng | `/customers/:id` | `DELETE` | `ADMIN` | Xóa khách hàng |
 
 ## 5) Màn hình Kho hàng thao tác
 
 | Màn hình | API | Method | Vai trò | Mục đích |
 |---|---|---|---|---|
-| Nhập/Xuất/Điều chỉnh kho | `/inventory/move` | `POST` | `USER`, `ADMIN` | Tạo giao dịch nhập/xuất/điều chỉnh kho |
+| Nhập/Xuất/Điều chỉnh kho | `/inventory/move` | `POST` | `SELLER`, `ADMIN` | Tạo giao dịch nhập/xuất/điều chỉnh kho |
 
 ## 6) Màn hình Quản trị hệ thống
 
@@ -96,7 +96,7 @@ Chuẩn query list áp dụng:
 
 | Màn hình | API | Method | Vai trò | Mục đích |
 |---|---|---|---|---|
-| Danh sách sản phẩm | `/products` | `GET` | `USER`, `ADMIN` | Xem và tìm sản phẩm |
+| Danh sách sản phẩm | `/products` | `GET` | `CUSTOMER`, `SELLER`, `ADMIN` | Xem và tìm sản phẩm |
 | Tạo sản phẩm | `/products` | `POST` | `ADMIN` | Tạo sản phẩm mới |
 | Sửa sản phẩm | `/products/:id` | `PATCH` | `ADMIN` | Cập nhật sản phẩm |
 | Xóa sản phẩm | `/products/:id` | `DELETE` | `ADMIN` | Xóa sản phẩm |
@@ -202,8 +202,8 @@ Chuẩn query list áp dụng:
 
 | Man hinh | API | Method | Vai tro | Muc dich |
 |---|---|---|---|---|
-| Dang nhap Google | `/auth/google` | `GET` | `USER`, `ADMIN` | Chuyen huong den Google OAuth |
-| Callback Google | `/auth/google/callback` | `GET` | `USER`, `ADMIN` | Dang nhap/tao lien ket tai khoan bang Google |
+| Dang nhap Google | `/auth/google` | `GET` | `PUBLIC -> CUSTOMER` | Chuyen huong den Google OAuth |
+| Callback Google | `/auth/google/callback` | `GET` | `PUBLIC -> CUSTOMER` | Dang nhap/tao lien ket tai khoan bang Google |
 
 ## 10) Mail Service
 
@@ -220,7 +220,7 @@ Hook nghiep vu:
 
 | Man hinh | API | Method | Vai tro | Muc dich |
 |---|---|---|---|---|
-| Danh sach goi y nhap hang | `/ai/restock-recommendations` | `GET` | `USER`, `ADMIN` | Xem goi y nhap hang tu du lieu ban |
+| Danh sach goi y nhap hang | `/ai/restock-recommendations` | `GET` | `SELLER`, `ADMIN` | Xem goi y nhap hang tu du lieu ban |
 | Tinh lai goi y | `/ai/recalculate` | `POST` | `ADMIN` | Chay lai rule-based de cap nhat goi y |
 
 Cong thuc ban dau:

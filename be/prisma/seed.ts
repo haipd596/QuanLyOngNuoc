@@ -10,6 +10,9 @@ import {
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
+const ROLE_ADMIN = 'ADMIN';
+const ROLE_SELLER = 'SELLER';
+const ROLE_CUSTOMER = 'CUSTOMER';
 const daysAgo = (day: number) => {
   const date = new Date();
   date.setDate(date.getDate() - day);
@@ -40,17 +43,23 @@ async function clearDatabase() {
 async function main() {
   await clearDatabase();
 
-  const [adminRole, userRole] = await Promise.all([
+  const [adminRole, sellerRole, customerRole] = await Promise.all([
     prisma.role.create({
       data: {
-        name: 'ADMIN',
+        name: ROLE_ADMIN,
         description: 'Quản trị toàn hệ thống',
       },
     }),
     prisma.role.create({
       data: {
-        name: 'USER',
-        description: 'Nhân viên bán hàng và kho',
+        name: ROLE_SELLER,
+        description: 'Nguoi ban thao tac ban hang va kho',
+      },
+    }),
+    prisma.role.create({
+      data: {
+        name: ROLE_CUSTOMER,
+        description: 'Khach hang co tai khoan giao dich',
       },
     }),
   ]);
@@ -78,7 +87,7 @@ async function main() {
         passwordHash: userPassword,
         phone: '0901000002',
         status: UserStatus.ACTIVE,
-        roleId: userRole.id,
+        roleId: sellerRole.id,
         avatarUrl: 'https://i.pravatar.cc/300?img=17',
       },
       {
@@ -87,8 +96,17 @@ async function main() {
         passwordHash: userPassword,
         phone: '0901000003',
         status: UserStatus.ACTIVE,
-        roleId: userRole.id,
+        roleId: sellerRole.id,
         avatarUrl: 'https://i.pravatar.cc/300?img=26',
+      },
+      {
+        fullName: 'Pham Khach Hang',
+        email: 'khach@ongnuocviet.vn',
+        passwordHash: userPassword,
+        phone: '0901000004',
+        status: UserStatus.ACTIVE,
+        roleId: customerRole.id,
+        avatarUrl: 'https://i.pravatar.cc/300?img=32',
       },
     ],
   });
@@ -777,7 +795,7 @@ async function main() {
   });
 
   console.log('Đã seed dữ liệu mẫu thành công.');
-  console.log(`Vai trò tạo mới: ADMIN, USER`);
+  console.log(`Vai tro tao moi: ${ROLE_ADMIN}, ${ROLE_SELLER}, ${ROLE_CUSTOMER}`);
   console.log(`Số nhân viên tạo mới: ${staffUsers.count + 1}`);
   console.log('Tài khoản quản trị: admin@ongnuocviet.vn / Admin@123');
   console.log('Tài khoản nhân viên: user@ongnuocviet.vn / User@123');

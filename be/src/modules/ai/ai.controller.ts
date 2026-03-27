@@ -13,6 +13,10 @@ import {
   buildPaginationInput,
   extractQueryFilters,
 } from '../../common/utils/list-query.util';
+import {
+  INTERNAL_ROLES,
+  ROLE_ADMIN,
+} from '../../common/constants/roles.constant';
 import { AiService } from './ai.service';
 import { RecalculateAiDto } from './dto/recalculate-ai.dto';
 
@@ -24,7 +28,7 @@ export class AiController {
   constructor(private readonly aiService: AiService) {}
 
   @Get('restock-recommendations')
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Lấy danh sách gợi ý nhập hàng thành công')
   @ApiPaginationQuery()
   @ApiQuery({
@@ -68,11 +72,10 @@ export class AiController {
   }
 
   @Post('recalculate')
-  @Roles('ADMIN')
+  @Roles(ROLE_ADMIN)
   @ResponseMessage('Tính lại gợi ý nhập hàng thành công')
   @ApiStandardResponse('Tính lại gợi ý nhập hàng thành công', 201)
   recalculate(@Body() dto: RecalculateAiDto) {
     return this.aiService.recalculate(dto.targetDays);
   }
 }
-

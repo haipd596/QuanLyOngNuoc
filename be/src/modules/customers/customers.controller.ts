@@ -12,6 +12,10 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
+import {
+  INTERNAL_ROLES,
+  ROLE_ADMIN,
+} from '../../common/constants/roles.constant';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { CustomersService } from './customers.service';
@@ -28,7 +32,7 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Post()
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Tạo khách hàng thành công')
   @ApiStandardResponse('Tạo khách hàng thành công', 201)
   create(@Body() dto: CreateCustomerDto) {
@@ -36,7 +40,7 @@ export class CustomersController {
   }
 
   @Get()
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Lấy danh sách khách hàng thành công')
   @ApiPaginationQuery()
   @ApiQuery({
@@ -75,7 +79,7 @@ export class CustomersController {
   }
 
   @Get(':id')
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Lấy chi tiết khách hàng thành công')
   @ApiStandardResponse('Lấy chi tiết khách hàng thành công')
   findOne(@Param('id') id: string) {
@@ -83,7 +87,7 @@ export class CustomersController {
   }
 
   @Patch(':id')
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Cập nhật khách hàng thành công')
   @ApiStandardResponse('Cập nhật khách hàng thành công')
   update(@Param('id') id: string, @Body() dto: UpdateCustomerDto) {
@@ -91,7 +95,7 @@ export class CustomersController {
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
+  @Roles(ROLE_ADMIN)
   @ResponseMessage('Xóa khách hàng thành công')
   @ApiStandardResponse('Xóa khách hàng thành công')
   remove(@Param('id') id: string) {

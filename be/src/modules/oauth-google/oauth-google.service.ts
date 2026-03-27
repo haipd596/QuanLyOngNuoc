@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { ROLE_CUSTOMER } from '../../common/constants/roles.constant';
 import { PrismaService } from '../../config/prisma.service';
 
 type JwtPayload = {
@@ -104,7 +105,7 @@ export class OauthGoogleService {
       });
     } else {
       const defaultRole = await this.prisma.role.findUnique({
-        where: { name: 'USER' },
+        where: { name: ROLE_CUSTOMER },
         select: { id: true },
       });
 
@@ -126,7 +127,7 @@ export class OauthGoogleService {
     const tokens = await this.issueTokens({
       sub: user.id,
       email: user.email,
-      role: user.role?.name ?? 'USER',
+      role: user.role?.name ?? ROLE_CUSTOMER,
     });
 
     return {
@@ -137,7 +138,7 @@ export class OauthGoogleService {
         fullName: user.fullName,
         email: user.email,
         roleId: user.roleId,
-        role: user.role?.name ?? 'USER',
+        role: user.role?.name ?? ROLE_CUSTOMER,
         googleId: user.googleId,
       },
     };

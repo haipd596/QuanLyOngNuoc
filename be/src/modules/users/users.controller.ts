@@ -12,6 +12,7 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
+import { ROLE_ADMIN } from '../../common/constants/roles.constant';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -24,7 +25,7 @@ import {
 @ApiTags('Người dùng')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles(ROLE_ADMIN)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

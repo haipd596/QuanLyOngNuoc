@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { ROLE_SELLER } from '../../common/constants/roles.constant';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import {
   buildPaginatedResult,
@@ -28,6 +29,7 @@ export class UsersService {
     const passwordHash = dto.password
       ? await bcrypt.hash(dto.password, 10)
       : null;
+    const defaultRoleId = dto.roleId ?? (await this.findRoleIdByName(ROLE_SELLER));
 
     return this.prisma.user.create({
       data: {
@@ -35,7 +37,7 @@ export class UsersService {
         email: dto.email,
         passwordHash,
         phone: dto.phone,
-        roleId: dto.roleId,
+        roleId: defaultRoleId,
       },
       select: {
         id: true,
@@ -164,5 +166,13 @@ export class UsersService {
     await this.findOne(id);
     await this.prisma.user.delete({ where: { id } });
     return { message: 'Xóa thành công' };
+  }
+  private async findRoleIdByName(name: string) {
+    const role = await this.prisma.role.findUnique({
+      where: { name },
+      select: { id: true },
+    });
+
+    return role?.id;
   }
 }

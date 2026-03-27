@@ -12,6 +12,7 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
+import { ROLE_ADMIN } from '../../common/constants/roles.constant';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { SuppliersService } from './suppliers.service';
@@ -24,7 +25,7 @@ import {
 @ApiTags('Nhà cung cấp')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles(ROLE_ADMIN)
 export class SuppliersController {
   constructor(private readonly suppliersService: SuppliersService) {}
 

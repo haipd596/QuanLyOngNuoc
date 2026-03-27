@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { ROLE_CUSTOMER } from '../../common/constants/roles.constant';
 import { PrismaService } from '../../config/prisma.service';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
@@ -29,12 +30,13 @@ export class AuthService {
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
+    const defaultRoleId = dto.roleId ?? (await this.findRoleIdByName(ROLE_CUSTOMER));
     const user = await this.prisma.user.create({
       data: {
         fullName: dto.fullName,
         email: dto.email,
         passwordHash,
-        roleId: dto.roleId,
+        roleId: defaultRoleId,
       },
       include: {
         role: {
@@ -46,7 +48,7 @@ export class AuthService {
     const tokens = await this.issueTokens({
       sub: user.id,
       email: user.email,
-      role: user.role?.name ?? 'USER',
+      role: user.role?.name ?? ROLE_CUSTOMER,
     });
 
     return {
@@ -55,7 +57,7 @@ export class AuthService {
         fullName: user.fullName,
         email: user.email,
         roleId: user.roleId,
-        role: user.role?.name ?? 'USER',
+        role: user.role?.name ?? ROLE_CUSTOMER,
       },
       ...tokens,
     };
@@ -75,7 +77,7 @@ export class AuthService {
     const tokens = await this.issueTokens({
       sub: user.id,
       email: user.email,
-      role: user.role?.name ?? 'USER',
+      role: user.role?.name ?? ROLE_CUSTOMER,
     });
 
     return {
@@ -84,7 +86,7 @@ export class AuthService {
         fullName: user.fullName,
         email: user.email,
         roleId: user.roleId,
-        role: user.role?.name ?? 'USER',
+        role: user.role?.name ?? ROLE_CUSTOMER,
       },
       ...tokens,
     };
@@ -118,5 +120,14 @@ export class AuthService {
       expiresIn: '7d',
     });
     return { accessToken, refreshToken };
+  }
+
+  private async findRoleIdByName(name: string) {
+    const role = await this.prisma.role.findUnique({
+      where: { name },
+      select: { id: true },
+    });
+
+    return role?.id;
   }
 }

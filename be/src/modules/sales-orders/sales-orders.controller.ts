@@ -9,6 +9,7 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
+import { INTERNAL_ROLES } from '../../common/constants/roles.constant';
 import {
   buildPaginationInput,
   extractQueryFilters,
@@ -43,7 +44,7 @@ export class SalesOrdersController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth('BearerAuth')
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Tao don ban hang thanh cong')
   @ApiStandardResponse('Tao don ban hang thanh cong', 201)
   create(@Body() dto: CreateSalesOrderDto) {
@@ -53,7 +54,7 @@ export class SalesOrdersController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth('BearerAuth')
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Lay danh sach don ban hang thanh cong')
   @ApiPaginationQuery()
   @ApiQuery({
@@ -103,7 +104,7 @@ export class SalesOrdersController {
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth('BearerAuth')
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Lay chi tiet don ban hang thanh cong')
   @ApiStandardResponse('Lay chi tiet don ban hang thanh cong')
   findOne(@Param('id') id: string) {
@@ -113,7 +114,7 @@ export class SalesOrdersController {
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth('BearerAuth')
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Cap nhat trang thai don hang thanh cong')
   @ApiStandardResponse('Cap nhat trang thai don hang thanh cong')
   updateStatus(@Param('id') id: string, @Body() dto: UpdateSalesOrderStatusDto) {
@@ -123,7 +124,7 @@ export class SalesOrdersController {
   @Post(':id/cancel')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth('BearerAuth')
-  @Roles('ADMIN', 'USER')
+  @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Huy don hang thanh cong')
   @ApiStandardResponse('Huy don hang thanh cong', 201)
   cancel(@Param('id') id: string) {

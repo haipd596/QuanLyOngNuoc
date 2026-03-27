@@ -12,6 +12,7 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
+import { INTERNAL_ROLES } from '../../common/constants/roles.constant';
 import { MoveStockDto } from './dto/move-stock.dto';
 import { InventoryService } from './inventory.service';
 import {
@@ -23,7 +24,7 @@ import {
 @ApiTags('Kho hàng')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN', 'USER')
+@Roles(...INTERNAL_ROLES)
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
