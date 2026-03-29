@@ -24,6 +24,10 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
+    if (dto.password !== dto.confirmPassword) {
+      throw new BadRequestException('Mật khẩu xác nhận không khớp');
+    }
+
     const existed = await this.usersService.findByEmail(dto.email);
     if (existed) {
       throw new BadRequestException('Email đã tồn tại');

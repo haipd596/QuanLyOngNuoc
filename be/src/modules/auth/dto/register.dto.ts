@@ -27,6 +27,15 @@ export class RegisterDto {
   @MaxLength(100)
   password!: string;
 
+  @ApiProperty({
+    example: 'User@123',
+    description: 'Xác nhận lại mật khẩu đăng ký',
+  })
+  @IsString()
+  @MinLength(6)
+  @MaxLength(100)
+  confirmPassword!: string;
+
   @ApiPropertyOptional({
     example: 'cmai42t3b0000abc123xyz',
     description: 'ID vai trò, để trống sẽ dùng vai trò mặc định',
