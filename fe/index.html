@@ -2,9 +2,98 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AquaFlow | Pipeline Management</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="icon" type="image/svg+xml" href="/FIA.png" />
+    <link
+      rel="preload"
+      as="image"
+      href="https://cdn.parcellab.com/img/flags/vn.png"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="https://cdn.parcellab.com/img/flags/gb.png"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="https://cdn.parcellab.com/img/flags/cn.png"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="https://cdn.parcellab.com/img/flags/jp.png"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="https://cdn.parcellab.com/img/flags/kr.png"
+    />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    />
+    <script>
+      window.ENV = { VITE_API_DVC_URL: "%VITE_API_DVC_URL%" };
+    </script>
+    <script src="./libs/vgcaplugin.js?v=%VITE_APP_VERSION%"></script>
+    <script src="./scripts/getDvcBaseUrlGlobal.js?v=%VITE_APP_VERSION%"></script>
+    <script src="./scripts/common.js?v=%VITE_APP_VERSION%"></script>
+    <script src="./scripts/trigger-view-schema.js?v=%VITE_APP_VERSION%"></script>
+    <script src="./scripts/service.js?v=%VITE_APP_VERSION%"></script>
+    <script>
+      function emitEFormEvent(type, payload) {
+        window.dispatchEvent(
+          new CustomEvent(type, {
+            detail: payload,
+          }),
+        );
+      }
+      function callbackNopHoSo(jsonSchema) {
+        emitEFormEvent("EFORM_SUBMIT_RECORD", jsonSchema);
+      }
+      function callbackLuuHoSo(jsonSchema) {
+        emitEFormEvent("EFORM_SAVE_RECORD", jsonSchema);
+      }
+      function callbackSaveJson(jsonSchema) {
+        emitEFormEvent("EFORM_SAVE_JSON", jsonSchema);
+      }
+      function callExportData(jsonSchema) {
+        emitEFormEvent("EFORM_EXPORT_DATA", jsonSchema);
+      }
+      function callbackLuuKho(file) {
+        emitEFormEvent("EFORM_SAVE_STORE", jsonSchema);
+      }
+      function callbackQuayLai() {
+        emitEFormEvent("EFORM_CANCEL", {});
+      }
+      function callbackLuuToKhai(jsonSchema) {
+        emitEFormEvent("EFORM_SAVE_TO_KHAI", jsonSchema);
+      }
+      function callbackXuatToKhai(jsonSchema) {
+        emitEFormEvent("EFORM_EXPORT_TO_KHAI", jsonSchema);
+      }
+      function callbackVerify(file) {
+        emitEFormEvent("EFORM_VERIFY", jsonSchema);
+      }
+      function callbackGetCertificate() {
+        emitEFormEvent("EFORM_GET_CERT", jsonSchema);
+      }
+      function callbackSignDocument(jsonSchema) {
+        emitEFormEvent("EFORM_SIGN_DOCUMENT", jsonSchema);
+      }
+      function callBackTraCuuGiayPhep(value, dateValue) {
+        emitEFormEvent("EFORM_SEARCH_LICENSE", { value, dateValue });
+      }
+      function signUsbToken(file, indexFile) {
+        emitEFormEvent("EFORM_SEARCH_LICENSE", { file, indexFile });
+      }
+    </script>
+    <title>Ống nước việt</title>
   </head>
   <body>
     <div id="root"></div>

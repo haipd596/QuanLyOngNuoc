@@ -1,0 +1,95 @@
+stages:
+  - publish
+  - deploy
+
+variables:
+  DOCKER_IMAGE: "cmcportal-fe"
+
+workflow:
+  rules:
+    # dev_v1.0.0 → development
+    - if: '$CI_COMMIT_TAG =~ /^dev_/'
+      variables:
+        ENV_NAME: development
+        DOCKER_TAG: development
+        APP_PORT: "5177"
+        VITE_API_URL: "https://cmcdtqg-gateway.dieuhanhso.vn/admin/api"
+        VITE_ARTICLE_API_URL: "https://cmcdtqg-gateway.dieuhanhso.vn/qtbv/api"
+        VITE_API_DVC_URL: "https://eformapi.zamiga.vn"
+        VITE_RESOURCE_URL: "https://minio.zamiga.vn/"
+        VITE_RESOURCE_PROJECT_URL: "cmc-dtqg"
+        VITE_APP_VERSION: "$CI_COMMIT_TAG"
+
+    # staging_v1.0.0 → staging
+    - if: '$CI_COMMIT_TAG =~ /^staging_/'
+      variables:
+        ENV_NAME: staging
+        DOCKER_TAG: staging
+        APP_PORT: "5277"
+        VITE_API_URL: "https://cmcdtqg-gateway.dieuhanhso.vn/admin/api"
+        VITE_ARTICLE_API_URL: "https://cmcdtqg-gateway.dieuhanhso.vn/qtbv/api"
+        VITE_API_DVC_URL: "https://eformapi.zamiga.vn"
+        VITE_RESOURCE_URL: "https://minio.zamiga.vn/"
+        VITE_RESOURCE_PROJECT_URL: "cmc-dtqg"
+        VITE_APP_VERSION: "$CI_COMMIT_TAG"
+
+    # prod_v1.0.0 → production
+    - if: '$CI_COMMIT_TAG =~ /^prod_/'
+      variables:
+        ENV_NAME: production
+        DOCKER_TAG: production
+        APP_PORT: "5377"
+        VITE_API_URL: "https://cmcdtqg-gateway.dieuhanhso.vn/admin/api"
+        VITE_ARTICLE_API_URL: "https://cmcdtqg-gateway.dieuhanhso.vn/qtbv/api"
+        VITE_API_DVC_URL: "https://eformapi.zamiga.vn"
+        VITE_RESOURCE_URL: "https://minio.zamiga.vn/"
+        VITE_RESOURCE_PROJECT_URL: "cmc-dtqg"
+        VITE_APP_VERSION: "$CI_COMMIT_TAG"
+
+    - when: never
+
+publish:
+  stage: publish
+  image: docker:24
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    GIT_STRATEGY: clone
+  script:
+    - echo "Building $DOCKER_IMAGE:$DOCKER_TAG for $ENV_NAME"
+    - docker image prune -af
+    - |
+      docker build \
+        --build-arg VITE_API_URL="$VITE_API_URL" \
+        --build-arg VITE_DES_ENCRYPT_KEY="$VITE_DES_ENCRYPT_KEY" \
+        --build-arg VITE_ARTICLE_API_URL="$VITE_ARTICLE_API_URL" \
+        --build-arg VITE_TINYMCE_LICENSE_KEY="$VITE_TINYMCE_LICENSE_KEY" \
+        --build-arg VITE_RESOURCE_URL="$VITE_RESOURCE_URL" \
+        --build-arg VITE_RESOURCE_PROJECT_URL="$VITE_RESOURCE_PROJECT_URL" \
+        --build-arg VITE_API_DVC_URL="$VITE_API_DVC_URL" \
+        --build-arg VITE_APP_VERSION="$VITE_APP_VERSION" \
+        -t $DOCKER_IMAGE:$DOCKER_TAG .
+    - docker images
+  tags:
+    - zamiga
+  rules:
+    - if: '$ENV_NAME'
+
+deploy:
+  stage: deploy
+  image: docker:24
+  services:
+    - docker:24-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    GIT_STRATEGY: none
+  script:
+    - echo "Deploying $ENV_NAME on port $APP_PORT"
+    - docker compose -p ${DOCKER_IMAGE}_${ENV_NAME} up -d --no-build --remove-orphans
+  environment:
+    name: $ENV_NAME
+  tags:
+    - zamiga
+  rules:
+    - if: '$ENV_NAME'
