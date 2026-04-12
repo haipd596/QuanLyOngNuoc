@@ -1,0 +1,453 @@
+{
+  "ThongTinChung": {
+      "HoTenNguoiNopHoSo": "Nguyen Van A",
+      "CMNDNguoiNopHoSo": "",
+      "NgayCap": "15-05-2008",
+      "NoiCap": "Cong an TP. Ho Chi Minh",
+      "DienThoaiDiDongNguoiNop": "0901234567",
+      "EmailNguoiNop": "nguyenvana@example.com",
+      "Fax": "0834567890",
+      "DiaChiThuongTruNguoiNop": ""
+  },
+  "ThanhPhanHoSoQD": [
+      {
+          "GiayToId": {
+              "Id": 140,
+              "Ten": "Đơn đề nghị cấp giấy phép theo Mẫu 01, Phụ lục I Nghị định số 54/2024/NĐ-CP",
+              "Ma": "233389d7-d87a-4935-92fe-67df381021e9",
+              "UrlTaiMau": null
+          },
+          "Id": 143,
+          "ThuTuHienThi": 0,
+          "BatBuoc": 1,
+          "ID": 143,
+          "name": "",
+          "key": "_57Hrr",
+          "isSubForm": true,
+          "subForm": {
+              "schemaKey": "DIGITAL_PAPER",
+              "title": "Untitled Form 04",
+              "type": "object",
+              "fieldsInColumnIndex": [
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "INPUT_UNIT_34"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "GROUP_FIELDS_35"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "GROUP_FIELDS_36"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_185"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_186"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_187"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TABLE_199"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "GROUP_FIELDS_204"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_220"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TABLE_232"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_237"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_238"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TABLE_250"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_255"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "GROUP_FIELDS_256"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_271"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TABLE_283"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_288"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_289"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TABLE_301"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "TEXT_VIEW_306"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "GROUP_FIELDS_307"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "INPUT_7338"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "INPUT_7639"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "INPUT_7720"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "INPUT_7801"
+                  },
+                  {
+                      "columnIndex": 0,
+                      "fieldKeyCol": "INPUT_FUNCTION_1158"
+                  }
+              ],
+              "fields": []
+          },
+          "rowKey": 0,
+          "isSelected": false,
+          "file": {
+              "formData": {
+                  "TNN_TDNDD_ViTriCongTrinh": [
+                      {
+                          "TinhId": 5,
+                          "TinhIdHidden": "{\"label\":\"Thành phố Hà Nội\",\"value\":5}",
+                          "HuyenId": 69,
+                          "HuyenIdHidden": "{\"label\":\"Quận Hoàn Kiếm\",\"value\":69}",
+                          "XaId": 795,
+                          "XaIdHidden": "{\"label\":\"Phường Phúc Tân\",\"value\":795}",
+                          "DiaChi": "fsfsa",
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "key": "_uf1MEgYvcb",
+                          "feKey": "TNN_TDNDD_ViTriCongTrinh_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_DonDeNghi|0": [
+                      {
+                          "HeToaDo": "VN-2000",
+                          "KinhTuyenTruc": "104°00'",
+                          "MuiChieu": "3",
+                          "feKey": "TNN_TDNDD_DonDeNghi|0_0",
+                          "Reference": "[\r\n    {\r\n      \"Table\": \"mc_HoSo\",\r\n      \"FK_ID\": \"HoSoId\",\r\n      \"feKey\":\"\"\r\n    }\r\n]"
+                      }
+                  ],
+                  "TNN_TDNDD_DiemGoc": [
+                      {
+                          "TenDiem": "cds",
+                          "X": 3,
+                          "Y": 3,
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "TinhId": null,
+                          "TinhIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "HuyenId": null,
+                          "HuyenIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "XaId": null,
+                          "XaIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "key": "_V89EVIdRSh",
+                          "feKey": "TNN_TDNDD_DiemGoc_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_MucDich": [
+                      {
+                          "TenMucDich": "Khai thác nước",
+                          "LuuLuong": 0,
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "TinhId": null,
+                          "TinhIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "HuyenId": null,
+                          "HuyenIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "XaId": null,
+                          "XaIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "key": "_T4bIznJZMe",
+                          "feKey": "TNN_TDNDD_MucDich_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_DonDeNghi|1": [
+                      {
+                          "TongSoGieng": 0,
+                          "TongLuuLuong": 0,
+                          "feKey": "TNN_TDNDD_DonDeNghi|1_0",
+                          "Reference": "[\r\n    {\r\n      \"Table\": \"mc_HoSo\",\r\n      \"FK_ID\": \"HoSoId\",\r\n      \"feKey\":\"\"\r\n    }\r\n]"
+                      }
+                  ],
+                  "TNN_TDNDD_Gieng": [
+                      {
+                          "TenGieng": "dfgbgf",
+                          "LuuLuong": 0,
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "TinhId": null,
+                          "TinhIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "HuyenId": null,
+                          "HuyenIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "XaId": null,
+                          "XaIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "key": "_PxptRuNYOS",
+                          "feKey": "TNN_TDNDD_Gieng_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_TangChuaNuoc": [
+                      {
+                          "TenTang": "fsf",
+                          "SoLuongGieng": 2,
+                          "LuuLuong": 2,
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "TinhId": null,
+                          "TinhIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "HuyenId": null,
+                          "HuyenIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "XaId": null,
+                          "XaIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "key": "_e4kpszCxrp",
+                          "feKey": "TNN_TDNDD_TangChuaNuoc_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_DonDeNghi|2": [
+                      {
+                          "ThoiGianHoanThanhLBCKQTD_value": "2025-03-28",
+                          "ThoiGianHoanThanhLBCKQTD": "28/03/2025",
+                          "ThoiGianBatDauThiCong_value": "2025-03-20",
+                          "ThoiGianBatDauThiCong": "20/03/2025",
+                          "ThoiGianDuKienHoanThanhThiCong_value": "2025-03-27",
+                          "ThoiGianDuKienHoanThanhThiCong": "27/03/2025",
+                          "feKey": "TNN_TDNDD_DonDeNghi|2_0",
+                          "Reference": "[\r\n    {\r\n      \"Table\": \"mc_HoSo\",\r\n      \"FK_ID\": \"HoSoId\",\r\n      \"feKey\":\"\"\r\n    }\r\n]"
+                      }
+                  ],
+                  "ThuTuXuLy": "TNN_TDNDD_DonDeNghi, TNN_TDNDD_ViTriCongTrinh, TNN_TDNDD_DiemGoc, TNN_TDNDD_MucDich, TNN_TDNDD_Gieng, TNN_TDNDD_TangChuaNuoc",
+                  "Table": "",
+                  "Table2Line": "TNN_TDNDD_ViTriCongTrinh, TNN_TDNDD_MucDich, TNN_TDNDD_Gieng, TNN_TDNDD_TangChuaNuoc",
+                  "Single": "TNN_TDNDD_DonDeNghi ",
+                  "INPUT_FUNCTION": "function transformData(formData) {\n  debugger;\n  const arr = [{\n    ...formData[\"TNN_TDNDD_DonDeNghi|0\"][0],\n    ...formData[\"TNN_TDNDD_DonDeNghi|1\"][0],\n    ...formData[\"TNN_TDNDD_DonDeNghi|2\"][0]\n  }];\n  formData[\"TNN_TDNDD_DonDeNghi\"] = arr;\n  if (!formData[\"TNN_TDNDD_ViTriCongTrinh\"][0].XaId) {\n    formData[\"TNN_TDNDD_ViTriCongTrinh\"][0].HuyenIdHidden = \"{\\\"label\\\":\\\"\\\",\\\"value\\\":0}\";\n    formData[\"TNN_TDNDD_ViTriCongTrinh\"][0].XaIdHidden = \"{\\\"label\\\":\\\"\\\",\\\"value\\\":0}\";\n    formData[\"TNN_TDNDD_ViTriCongTrinh\"][0].TinhIdHidden = \"{\\\"label\\\":\\\"\\\",\\\"value\\\":0}\";\n  }\n  return formData;\n}",
+                  "TNN_TDNDD_DonDeNghi": [
+                      {
+                          "HeToaDo": "VN-2000",
+                          "KinhTuyenTruc": "104°00'",
+                          "MuiChieu": "3",
+                          "feKey": "TNN_TDNDD_DonDeNghi|2_0",
+                          "Reference": "[\r\n    {\r\n      \"Table\": \"mc_HoSo\",\r\n      \"FK_ID\": \"HoSoId\",\r\n      \"feKey\":\"\"\r\n    }\r\n]",
+                          "TongSoGieng": 0,
+                          "TongLuuLuong": 0,
+                          "ThoiGianHoanThanhLBCKQTD_value": "2025-03-28",
+                          "ThoiGianHoanThanhLBCKQTD": "28/03/2025",
+                          "ThoiGianBatDauThiCong_value": "2025-03-20",
+                          "ThoiGianBatDauThiCong": "20/03/2025",
+                          "ThoiGianDuKienHoanThanhThiCong_value": "2025-03-27",
+                          "ThoiGianDuKienHoanThanhThiCong": "27/03/2025"
+                      }
+                  ]
+              },
+              "originalData": {
+                  "TNN_TDNDD_ViTriCongTrinh": [
+                      {
+                          "TinhId": 5,
+                          "TinhIdHidden": "{\"label\":\"Thành phố Hà Nội\",\"value\":5}",
+                          "HuyenId": 69,
+                          "HuyenIdHidden": "{\"label\":\"Quận Hoàn Kiếm\",\"value\":69}",
+                          "XaId": 795,
+                          "XaIdHidden": "{\"label\":\"Phường Phúc Tân\",\"value\":795}",
+                          "DiaChi": "fsfsa",
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "key": "_uf1MEgYvcb",
+                          "feKey": "TNN_TDNDD_ViTriCongTrinh_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_DonDeNghi|0": [
+                      {
+                          "HeToaDo": "VN-2000",
+                          "KinhTuyenTruc": "104°00'",
+                          "MuiChieu": "3",
+                          "feKey": "TNN_TDNDD_DonDeNghi|0_0",
+                          "Reference": "[\r\n    {\r\n      \"Table\": \"mc_HoSo\",\r\n      \"FK_ID\": \"HoSoId\",\r\n      \"feKey\":\"\"\r\n    }\r\n]"
+                      }
+                  ],
+                  "TNN_TDNDD_DiemGoc": [
+                      {
+                          "TenDiem": "cds",
+                          "X": 3,
+                          "Y": 3,
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "TinhId": null,
+                          "TinhIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "HuyenId": null,
+                          "HuyenIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "XaId": null,
+                          "XaIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "key": "_V89EVIdRSh",
+                          "feKey": "TNN_TDNDD_DiemGoc_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_MucDich": [
+                      {
+                          "TenMucDich": "Khai thác nước",
+                          "LuuLuong": 0,
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "TinhId": null,
+                          "TinhIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "HuyenId": null,
+                          "HuyenIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "XaId": null,
+                          "XaIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "key": "_T4bIznJZMe",
+                          "feKey": "TNN_TDNDD_MucDich_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_DonDeNghi|1": [
+                      {
+                          "TongSoGieng": 0,
+                          "TongLuuLuong": 0,
+                          "feKey": "TNN_TDNDD_DonDeNghi|1_0",
+                          "Reference": "[\r\n    {\r\n      \"Table\": \"mc_HoSo\",\r\n      \"FK_ID\": \"HoSoId\",\r\n      \"feKey\":\"\"\r\n    }\r\n]"
+                      }
+                  ],
+                  "TNN_TDNDD_Gieng": [
+                      {
+                          "TenGieng": "dfgbgf",
+                          "LuuLuong": 0,
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "TinhId": null,
+                          "TinhIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "HuyenId": null,
+                          "HuyenIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "XaId": null,
+                          "XaIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "key": "_PxptRuNYOS",
+                          "feKey": "TNN_TDNDD_Gieng_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_TangChuaNuoc": [
+                      {
+                          "TenTang": "fsf",
+                          "SoLuongGieng": 2,
+                          "LuuLuong": 2,
+                          "Reference": "[{\"Table\":\"mc_HoSo\",\"FK_ID\":\"HoSoId\",\"feKey\":\"\"}]",
+                          "TinhId": null,
+                          "TinhIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "HuyenId": null,
+                          "HuyenIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "XaId": null,
+                          "XaIdHidden": "{\"label\":\"\",\"value\":0}",
+                          "key": "_e4kpszCxrp",
+                          "feKey": "TNN_TDNDD_TangChuaNuoc_0",
+                          "isSelected": false
+                      }
+                  ],
+                  "TNN_TDNDD_DonDeNghi|2": [
+                      {
+                          "ThoiGianHoanThanhLBCKQTD_value": "2025-03-28",
+                          "ThoiGianHoanThanhLBCKQTD": "28/03/2025",
+                          "ThoiGianBatDauThiCong_value": "2025-03-20",
+                          "ThoiGianBatDauThiCong": "20/03/2025",
+                          "ThoiGianDuKienHoanThanhThiCong_value": "2025-03-27",
+                          "ThoiGianDuKienHoanThanhThiCong": "27/03/2025",
+                          "feKey": "TNN_TDNDD_DonDeNghi|2_0",
+                          "Reference": "[\r\n    {\r\n      \"Table\": \"mc_HoSo\",\r\n      \"FK_ID\": \"HoSoId\",\r\n      \"feKey\":\"\"\r\n    }\r\n]"
+                      }
+                  ],
+                  "ThuTuXuLy": "TNN_TDNDD_DonDeNghi, TNN_TDNDD_ViTriCongTrinh, TNN_TDNDD_DiemGoc, TNN_TDNDD_MucDich, TNN_TDNDD_Gieng, TNN_TDNDD_TangChuaNuoc",
+                  "Table": "",
+                  "Table2Line": "TNN_TDNDD_ViTriCongTrinh, TNN_TDNDD_MucDich, TNN_TDNDD_Gieng, TNN_TDNDD_TangChuaNuoc",
+                  "Single": "TNN_TDNDD_DonDeNghi ",
+                  "INPUT_FUNCTION": "function transformData(formData) {\n  debugger;\n  const arr = [{\n    ...formData[\"TNN_TDNDD_DonDeNghi|0\"][0],\n    ...formData[\"TNN_TDNDD_DonDeNghi|1\"][0],\n    ...formData[\"TNN_TDNDD_DonDeNghi|2\"][0]\n  }];\n  formData[\"TNN_TDNDD_DonDeNghi\"] = arr;\n  if (!formData[\"TNN_TDNDD_ViTriCongTrinh\"][0].XaId) {\n    formData[\"TNN_TDNDD_ViTriCongTrinh\"][0].HuyenIdHidden = \"{\\\"label\\\":\\\"\\\",\\\"value\\\":0}\";\n    formData[\"TNN_TDNDD_ViTriCongTrinh\"][0].XaIdHidden = \"{\\\"label\\\":\\\"\\\",\\\"value\\\":0}\";\n    formData[\"TNN_TDNDD_ViTriCongTrinh\"][0].TinhIdHidden = \"{\\\"label\\\":\\\"\\\",\\\"value\\\":0}\";\n  }\n  return formData;\n}"
+              },
+              "fileNodeObject": [
+                  {
+                      "NodeId": "2dcad680-785c-4082-b36e-dde5e485996a",
+                      "FileName": "dummy-pdf_2.pdf",
+                      "FileSizeInBytes": 7478,
+                      "PhysicalName": "dummy-pdf_2_17321519_24-08-24.pdf",
+                      "Extension": ".pdf"
+                  }
+              ],
+              "previewFile": "http://preview.dm"
+          }
+      },
+      {
+          "GiayToId": {
+              "Id": 314,
+              "Ten": "Đề án thăm dò nước dưới đất đối với công trình có quy mô từ 200 m3/ngày đêm trở lên theo Mẫu 35, Phụ lục I Nghị định số 54/2024/NĐ-CP",
+              "Ma": "dd463cfb-a35f-46b7-b4c2-f8c26f003f0e",
+              "UrlTaiMau": null
+          },
+          "Id": 144,
+          "ThuTuHienThi": 1,
+          "BatBuoc": 0,
+          "ID": 144,
+          "name": "",
+          "key": "_FZ1eg",
+          "isSubForm": false,
+          "rowKey": 1,
+          "isSelected": false
+      }
+  ],
+  "DangKyNhanSMS": false,
+  "DangKyChuyenPhatNhanh": [
+      {
+          "checkboxToggle.#cb#": {
+              "checked": false,
+              "label": "Đăng ký dịch vụ bưu chính công ích",
+              "fieldInForm": [
+                  "NguoiGui",
+                  "SoDienThoaiNguoiGui",
+                  "DiaChiNG",
+                  "DiaChiNguoiGui",
+                  "DangKyNopTaiNha",
+                  "NguoiNhan",
+                  "SoDienThoaiNguoiNhan",
+                  "DiaChiNN",
+                  "DiaChiNguoiNhan",
+                  "DangKyTraKetQuaTaiNha"
+              ]
+          },
+          "feKey": "DangKyChuyenPhatNhanh_0",
+          "Reference": "[]"
+      }
+  ],
+  "XacNhanDongY": true,
+  "MaXacThuc": "gWOO",
+  "INPUT_FUNCTION": "function transformData(formData) {\n  console.log(\"data\", formData);\n  const data = formData[\"ThanhPhanHoSoQD\"][0].file.formData;\n  const arr = [{\n  ...formData[\"ThanhPhanHoSoQD\"][0].file.formData[\"TNN_TDNDD_DonDeNghi|0\"][0],\n  ...formData[\"ThanhPhanHoSoQD\"][0].file.formData[\"TNN_TDNDD_DonDeNghi|1\"][0],\n  ...formData[\"ThanhPhanHoSoQD\"][0].file.formData[\"TNN_TDNDD_DonDeNghi|2\"][0],\n}];\nformData[\"ThanhPhanHoSoQD\"][0].file.formData[\"TNN_TDNDD_DonDeNghi\"] = arr;\nreturn formData\n}"
+}

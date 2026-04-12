@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "layout": "vertical",
+  "currentTheme": "GREEN",
+  "fields": [
+    {
+      "configChanged": {
+        "formItemPropsAllowConfig.rules.props.defaultValue": [
+          {
+            "required": false,
+            "message": "Chưa nhập dữ liệu"
+          },
+          {
+            "whitespace": true,
+            "message": "Trường văn bản không được để trống"
+          },
+          {
+            "pattern": "[^@]{2,64}@[^.]{2,253}\\.[0-9a-z-.]{2,63}",
+            "message": "Định dạng email chưa đúng !"
+          }
+        ]
+      },
+      "fieldName": "INPUT",
+      "version": 1,
+      "key": "INPUT_7",
+      "isShowField": true,
+      "fieldsInColumnIndex": [],
+      "extraDataSourceField": [],
+      "isNotCompactJsonOutput": false
+    }
+  ]
+}
