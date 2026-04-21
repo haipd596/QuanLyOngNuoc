@@ -92,7 +92,8 @@ export class SalesOrdersService {
     const { normalizedItems, totalAmount } = await this.buildNormalizedItems(dto.items);
 
     const discountAmount = dto.discountAmount ?? 0;
-    const finalAmount = Math.max(totalAmount - discountAmount, 0);
+    const shippingFee = dto.shippingFee ?? 0;
+    const finalAmount = Math.max(totalAmount - discountAmount + shippingFee, 0);
     const orderCode = `SO-${Date.now()}`;
 
     const order = await this.prisma.$transaction(async (tx) => {
@@ -106,7 +107,10 @@ export class SalesOrdersService {
           guestAddress: dto.guestAddress?.trim() || null,
           totalAmount,
           discountAmount,
+          shippingFee,
           finalAmount,
+          shippingMethod: dto.shippingMethod ?? 'STANDARD',
+          paymentMethod: dto.paymentMethod,
           paymentStatus: PaymentStatus.UNPAID,
           orderStatus: OrderStatus.PENDING,
           note: dto.note,
@@ -148,6 +152,7 @@ export class SalesOrdersService {
 
     return order;
   }
+
 
   async findAll(
     query: PaginationQueryDto,
