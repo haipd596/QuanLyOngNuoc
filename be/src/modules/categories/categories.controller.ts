@@ -5,6 +5,7 @@ import { ApiQuery } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { ApiPaginationQuery } from '../../common/swagger/api-pagination-query.decorator';
@@ -25,11 +26,11 @@ import {
 @ApiTags('Danh mục')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(ROLE_ADMIN)
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @Roles(ROLE_ADMIN)
   @ResponseMessage('Tạo danh mục thành công')
   @ApiStandardResponse('Tạo danh mục thành công', 201)
   create(@Body() dto: CreateCategoryDto) {
@@ -37,6 +38,7 @@ export class CategoriesController {
   }
 
   @Get()
+  @Public()
   @ResponseMessage('Lấy danh sách danh mục thành công')
   @ApiPaginationQuery()
   @ApiQuery({
@@ -67,6 +69,7 @@ export class CategoriesController {
   }
 
   @Get(':id')
+  @Public()
   @ResponseMessage('Lấy chi tiết danh mục thành công')
   @ApiStandardResponse('Lấy chi tiết danh mục thành công')
   findOne(@Param('id') id: string) {
@@ -74,6 +77,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @Roles(ROLE_ADMIN)
   @ResponseMessage('Cập nhật danh mục thành công')
   @ApiStandardResponse('Cập nhật danh mục thành công')
   update(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
@@ -81,6 +85,7 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @Roles(ROLE_ADMIN)
   @ResponseMessage('Xóa danh mục thành công')
   @ApiStandardResponse('Xóa danh mục thành công')
   remove(@Param('id') id: string) {

@@ -12,6 +12,7 @@ import { UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { ApiPaginationQuery } from '../../common/swagger/api-pagination-query.decorator';
@@ -47,7 +48,7 @@ export class ProductsController {
   }
 
   @Get()
-  @Roles(...PRODUCT_VIEWER_ROLES)
+  @Public()
   @ResponseMessage('Lấy danh sách sản phẩm thành công')
   @ApiPaginationQuery()
   @ApiQuery({
@@ -126,7 +127,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  @Roles(...PRODUCT_VIEWER_ROLES)
+  @Public()
   @ResponseMessage('Lấy chi tiết sản phẩm thành công')
   @ApiStandardResponse('Lấy chi tiết sản phẩm thành công')
   findOne(@Param('id') id: string) {
