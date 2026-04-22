@@ -60,6 +60,7 @@ export class ProductsService {
         include: {
           category: true,
           supplier: true,
+          images: { orderBy: { isMain: 'desc' } },
         },
         orderBy: { createdAt: 'desc' },
         skip,
@@ -143,7 +144,11 @@ export class ProductsService {
   async findOne(id: string) {
     const item = await this.prisma.product.findUnique({
       where: { id },
-      include: { category: true, supplier: true },
+      include: {
+        category: true,
+        supplier: true,
+        images: { orderBy: { isMain: 'desc' } },
+      },
     });
     if (!item) {
       throw new NotFoundException('Không tìm thấy sản phẩm');
