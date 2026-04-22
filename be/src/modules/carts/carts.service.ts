@@ -6,9 +6,9 @@ import { AddToCartDto } from './dto/add-to-cart.dto';
 export class CartsService {
   constructor(private prisma: PrismaService) {}
 
-  async getCart(sessionId: string) {
+  async getCart(userId: string) {
     let cart = await this.prisma.cart.findUnique({
-      where: { sessionId },
+      where: { userId },
       include: {
         items: {
           include: {
@@ -24,16 +24,16 @@ export class CartsService {
 
     if (!cart) {
       cart = await this.prisma.cart.create({
-        data: { sessionId },
+        data: { userId },
         include: { items: { include: { product: { include: { images: true } } } } }
       });
     }
     return cart;
   }
 
-  async countItems(sessionId: string) {
+  async countItems(userId: string) {
     const cart = await this.prisma.cart.findUnique({
-      where: { sessionId },
+      where: { userId },
       include: { items: true },
     });
     if (!cart) return { count: 0 };
@@ -42,10 +42,10 @@ export class CartsService {
     return { count };
   }
 
-  async addToCart(dto: AddToCartDto) {
-    let cart = await this.prisma.cart.findUnique({ where: { sessionId: dto.sessionId } });
+  async addToCart(userId: string, dto: AddToCartDto) {
+    let cart = await this.prisma.cart.findUnique({ where: { userId } });
     if (!cart) {
-      cart = await this.prisma.cart.create({ data: { sessionId: dto.sessionId } });
+      cart = await this.prisma.cart.create({ data: { userId } });
     }
 
     const product = await this.prisma.product.findUnique({ where: { id: dto.productId } });
@@ -71,13 +71,13 @@ export class CartsService {
       });
     }
 
-    return this.getCart(dto.sessionId);
+    return this.getCart(userId);
   }
 
-  async updateQuantity(sessionId: string, productId: string, quantity: number) {
-    if (quantity <= 0) return this.removeItem(sessionId, productId);
+  async updateQuantity(userId: string, productId: string, quantity: number) {
+    if (quantity <= 0) return this.removeItem(userId, productId);
     
-    const cart = await this.prisma.cart.findUnique({ where: { sessionId } });
+    const cart = await this.prisma.cart.findUnique({ where: { userId } });
     if (!cart) throw new NotFoundException('Giỏ hàng không tồn tại');
 
     const product = await this.prisma.product.findUnique({ where: { id: productId } });
@@ -94,16 +94,16 @@ export class CartsService {
       throw new NotFoundException('Không tìm thấy sản phẩm trong giỏ');
     }
     
-    return this.getCart(sessionId);
+    return this.getCart(userId);
   }
 
-  async removeItem(sessionId: string, productId: string) {
-    const cart = await this.prisma.cart.findUnique({ where: { sessionId } });
+  async removeItem(userId: string, productId: string) {
+    const cart = await this.prisma.cart.findUnique({ where: { userId } });
     if (cart) {
       await this.prisma.cartItem.deleteMany({
         where: { cartId: cart.id, productId }
       });
     }
-    return this.getCart(sessionId);
+    return this.getCart(userId);
   }
 }
