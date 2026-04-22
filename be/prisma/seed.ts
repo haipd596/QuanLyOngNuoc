@@ -241,17 +241,27 @@ async function main() {
     data: [
       {
         productId: products[0].id,
-        imageUrl: 'https://images.unsplash.com/photo-1581092919535-7146ff1a590d',
+        imageUrl: 'https://ongnhuagiare.vn/wp-content/uploads/2024/11/1.png',
+        isMain: true,
+      },
+      {
+        productId: products[1].id,
+        imageUrl: 'https://www.ongpvcgiare.vn/wp-content/uploads/2025/10/Ong-Nhua-D27-Binh-Minh-1.png',
+        isMain: true,
+      },
+      {
+        productId: products[2].id,
+        imageUrl: 'https://vanminhhoa.com/wp-content/uploads/2025/04/van-21-la-gi.jpg.webp',
         isMain: true,
       },
       {
         productId: products[3].id,
-        imageUrl: 'https://images.unsplash.com/photo-1621905252472-943afaa20e16',
+        imageUrl: 'https://bizweb.dktcdn.net/thumb/large/100/201/056/products/cb.jpg?v=1624438178433',
         isMain: true,
       },
       {
         productId: products[4].id,
-        imageUrl: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952',
+        imageUrl: 'http://bizweb.dktcdn.net/thumb/grande/100/344/421/products/day-cap-dien-don-cv-2-5-cadivi-a25a7169-4896-484b-9e02-27fc06416560.jpg?v=1574669764303',
         isMain: true,
       },
     ],
