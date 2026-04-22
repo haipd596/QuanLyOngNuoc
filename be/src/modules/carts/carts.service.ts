@@ -31,6 +31,17 @@ export class CartsService {
     return cart;
   }
 
+  async countItems(sessionId: string) {
+    const cart = await this.prisma.cart.findUnique({
+      where: { sessionId },
+      include: { items: true },
+    });
+    if (!cart) return { count: 0 };
+    
+    const count = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+    return { count };
+  }
+
   async addToCart(dto: AddToCartDto) {
     let cart = await this.prisma.cart.findUnique({ where: { sessionId: dto.sessionId } });
     if (!cart) {

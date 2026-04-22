@@ -21,6 +21,14 @@ export class CartsController {
     return this.cartsService.getCart(sessionId);
   }
 
+  @Get('count')
+  @Public()
+  @ResponseMessage('Lấy số lượng sản phẩm giỏ hàng')
+  @ApiQuery({ name: 'sessionId', required: true })
+  countItems(@Query('sessionId') sessionId: string) {
+    return this.cartsService.countItems(sessionId);
+  }
+
   @Post('add')
   @Public()
   @ResponseMessage('Thêm vào giỏ hàng thành công')
