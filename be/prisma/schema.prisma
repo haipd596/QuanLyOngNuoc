@@ -131,8 +131,37 @@ model Customer {
   address       String?
   note          String?
   salesOrders   SalesOrder[]
+  cart          Cart?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+}
+
+model Cart {
+  id          String     @id @default(cuid())
+  sessionId   String?    @unique // Dành cho khách vãng lai
+  customerId  String?    @unique // Dành cho khách hàng thân thiết
+  items       CartItem[]
+  
+  customer    Customer?  @relation(fields: [customerId], references: [id])
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int      @default(1)
+  
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@index([productId])
 }
 
 model Product {
@@ -155,6 +184,7 @@ model Product {
   stockMovements  StockMovement[]
   purchaseItems   PurchaseOrderItem[]
   salesItems      SalesOrderItem[]
+  cartItems       CartItem[]
   aiSuggestions   AIStockRecommendation[]
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt

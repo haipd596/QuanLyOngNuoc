@@ -20,6 +20,7 @@ import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { UsersModule } from './modules/users/users.module';
 import { MailModule } from './modules/mail/mail.module';
 import { AiModule } from './modules/ai/ai.module';
+import { CartsModule } from './modules/carts/carts.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { AiModule } from './modules/ai/ai.module';
     ReportsModule,
     MailModule,
     AiModule,
+    CartsModule,
   ],
   providers: [
     JwtAuthGuard,
