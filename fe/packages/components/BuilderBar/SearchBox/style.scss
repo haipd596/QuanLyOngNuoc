@@ -1,0 +1,66 @@
+.fixex-to-top {
+	position: relative;
+}
+.search-box {
+	display: flex;
+	flex-direction: row;
+	padding: 4px;
+	margin: 12px;
+	color: var(--color-text);
+	border: 1px solid var(--main-background-color);
+	background-color: white;
+	border-radius: var(--border-radius-global);
+	font-size: 14px;
+
+	.search-box__icon {
+		margin-right: 6px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.cmdk-icon {
+		display: flex;
+		position: absolute;
+		top: 60%;
+		right: 5px;
+		align-items: center;
+		border-radius: 0.25rem;
+		line-height: 1rem;
+		box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+		border: 1px solid rgb(204, 202, 202);
+		transform: translate(-50%, -50%);
+		padding: 3px;
+		padding-right: 10px;
+
+		img {
+			width: 13px;
+			height: 13px;
+		}
+
+		span {
+			display: block;
+		}
+
+		&.windows {
+			right: -12px;
+			span {
+				margin-right: 5px;
+			}
+		}
+	}
+
+	input {
+		background-color: inherit;
+		font-family: inherit;
+		margin: 0;
+		border: none;
+		padding: 0;
+		color: var(--color-text);
+
+		&:focus {
+			outline: 2px solid transparent;
+			outline-offset: 2px;
+		}
+	}
+}

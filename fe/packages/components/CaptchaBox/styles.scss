@@ -1,0 +1,46 @@
+.captcha_container {
+  width: 100%;
+  display: flex;
+
+  gap: 16px;
+
+  .box_captcha {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    width: 100%;
+    max-width: 120px;
+
+
+    .box_captcha_text {
+      display: flex;
+      letter-spacing: 5px;
+      line-height: 30px;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      margin: 0px 5px;
+
+      span {
+        display: inline-block;
+        font-family: "Mom";
+        font-size: 18px;
+      }
+    }
+
+    .box_icon_captcha {
+      .reload-btn {
+        cursor: pointer;
+        background: none;
+        border: none;
+        box-shadow: none;
+        margin-right: -10px;
+      }
+
+      .box_icon_captcha .reload-btn:hover {
+        background: none;
+      }
+    }
+  }
+}

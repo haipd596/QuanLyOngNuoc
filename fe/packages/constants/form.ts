@@ -1,0 +1,3 @@
+export const FORM_LEVELS = {
+  DIGITAL_PAPER: 'DIGITAL_PAPER',
+};

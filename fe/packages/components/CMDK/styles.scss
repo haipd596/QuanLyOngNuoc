@@ -1,0 +1,21 @@
+.command-palette {
+	.cmdk-custom-item {
+		color: white;
+		font-weight: 600;
+		.translation {
+			color: tomato;
+			font-size: 0.6rem;
+		}
+
+		@media (prefers-color-scheme: light) {
+			color: black;
+		}
+	}
+
+	img {
+		@media (prefers-color-scheme: dark) {
+			filter: invert(91%) sepia(2%) saturate(375%) hue-rotate(149deg)
+				brightness(109%) contrast(89%);
+		}
+	}
+}

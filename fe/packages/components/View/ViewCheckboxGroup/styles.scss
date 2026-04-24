@@ -1,0 +1,19 @@
+
+.wrapper-view-checkbox {
+
+  .checkbox-icon-right {
+    flex-direction: row-reverse;
+  }
+
+  .ant-checkbox-wrapper {
+    align-items: flex-start;
+  }
+
+  .ant-checkbox {
+    align-self: flex-start;
+    top: 4px;
+  }
+  .styles_checkboxgroup_special{
+    margin-block-end: 0px !important;
+  }
+}

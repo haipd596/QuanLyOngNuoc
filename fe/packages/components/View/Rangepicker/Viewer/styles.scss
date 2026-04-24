@@ -1,0 +1,15 @@
+.rowTwoDatePicker {
+  .startDate {
+    width: 100%;
+  }
+  .endDate {
+    width: 100%;
+  }
+
+  .colEndDate,
+  .colStartDate {
+    .ant-row {
+      align-items: baseline;
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+	"loai_tai_lieu": "Document Type",
+  "cung_cap": "Provide",
+  "nam_hoac_ky": "Year or Period",
+  "cap_don_vi_hanh_chinh": "Administrative Level",
+  "huyen_tinh": "District/Province",
+  "vung": "Region",
+  "ca_nuoc": "Nationwide",
+  "so_luong": "Quantity",
+
+	"Title_1": "I. Land statistics information and data",
+  "Content_1.1": "Set of land statistics documents (PDF format)",
+  "Content_1.2": "Set of land statistics data",
+  "Title_2": "II. Land inventory information and data",
+  "Content_2.1": "Current land use map",
+  "Content_2.2": "Spatial data on current land use",
+  "Content_2.3": "Land inventory map",
+  "Content_2.4": "Spatial data on land inventory",
+  "Content_2.5": "Set of land inventory documents (PDF format)",
+  "Content_2.6": "Set of land inventory data",
+  "Title_3": "III. Thematic land inventory information and data",
+  "Content_3.1": "Thematic land inventory map",
+  "Content_3.2": "Spatial data on thematic land inventory",
+  "Content_3.3": "Set of thematic land inventory documents (PDF format)",
+  "Content_3.4": "Set of thematic land inventory data",
+  "Title_4": "IV. Other information and data",
+  "Content_4.1": "Other information",
+
+  "Other_info": "Other information...",
+  "Select_year": "Select year"
+}

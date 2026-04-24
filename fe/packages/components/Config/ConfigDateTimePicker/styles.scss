@@ -1,0 +1,22 @@
+.config-editor {
+  .config-properties-group {
+    .Custom_datetimepicker {
+      padding: 0;
+      border: 1px solid black;
+      background: #f7f7f8;
+      border-radius: var(--border-radius-global);
+      width: 100%;
+      input {
+        min-width: 0;
+        border: 0;
+        background: none;
+      }
+      .ant-picker-suffix {
+        margin-right: 5px;
+      }
+      .ant-picker-clear {
+        margin-right: 5px;
+      }
+    }
+  }
+}

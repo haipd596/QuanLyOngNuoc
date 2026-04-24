@@ -1,0 +1,31 @@
+{
+	"loai_tai_lieu": "Loại tài liệu",
+	"cung_cap": "Cung cấp",
+	"nam_hoac_ky": "Năm hoặc kỳ",
+	"cap_don_vi_hanh_chinh": "Cấp đơn vị hành chính",
+	"huyen_tinh": "Huyện/Tỉnh",
+	"vung": "Vùng",
+	"ca_nuoc": "Cả nước",
+	"so_luong": "Số lượng",
+	
+	"Title_1": "I. Thông tin, dữ liệu về thống kê đất đai",
+  "Content_1.1": "Bộ tài liệu kết quả thống kê đất đai (dạng file PDF)",
+  "Content_1.2": "Bộ số liệu kết quả thống kê đất đai",
+  "Title_2": "II. Thông tin, dữ liệu về kiểm kê đất đai",
+  "Content_2.1": "Bản đồ hiện trạng sử dụng đất",
+  "Content_2.2": "Dữ liệu không gian hiện trạng sử dụng đất",
+  "Content_2.3": "Bản đồ kiểm kê đất đai",
+  "Content_2.4": "Dữ liệu không gian kiểm kê đất đai",
+  "Content_2.5": "Bộ tài liệu kết quả kiểm kê đất đai (dạng file PDF)",
+  "Content_2.6": "Bộ số liệu kết quả kiểm kê đất đai",
+  "Title_3": "III. Thông tin, dữ liệu về kiểm kê chuyên đề",
+  "Content_3.1": "Bản đồ kiểm kê đất đai chuyên đề",
+  "Content_3.2": "Dữ liệu không gian kiểm kê theo chuyên đề",
+  "Content_3.3": "Bộ tài liệu kết quả kiểm kê đất đai theo chuyên đề (dạng file PDF)",
+  "Content_3.4": "Bộ số liệu kết quả kiểm kê đất đai theo chuyên đề",
+  "Title_4": "IV. Thông tin, dữ liệu khác",
+  "Content_4.1": "Thông tin khác",
+
+	"Other_info": "Thông tin khác...",
+	"Select_year": "Chọn năm"
+}

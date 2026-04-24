@@ -1,0 +1,54 @@
+.name-chat {
+  max-width: 200px;
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plus_action {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.delete_action {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom_yearpicker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .yearpicker_label {
+    margin: 0px 4px 0px 0px;
+  }
+  .ant-picker-input {
+    width: 55px !important;
+    color: white;
+    input {
+      font-weight: 500;
+    }
+  }
+  .ant-picker-suffix {
+    color: white;
+  }
+  .ant-picker-clear {
+    color: white;
+  }
+}
+
+.custom_content_center {
+  text-align: center;
+  .ant-select-selection-item {
+    text-align: center;
+  }
+}
+
+.custom_text_table {
+  .ant-input-number-input-wrap > input {
+    text-align: center;
+  }
+}

@@ -1,0 +1,23 @@
+.non-active-field {
+  height: 100%;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  padding: 70px 50px ;
+  align-items: flex-start;
+  justify-content: center;
+
+  h3 {
+    text-transform: capitalize;
+  }
+
+  p {
+    font-weight: 400;
+    margin-block: 5px;
+  }
+
+  img {
+    width: 120px;
+  }
+}

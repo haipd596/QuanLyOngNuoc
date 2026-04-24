@@ -1,0 +1,141 @@
+.form-table {
+  .btn-add-column {
+    padding: 4px 7px;
+    pointer-events: all;
+    margin-bottom: 10px;
+    margin-top: 5px;
+  }
+}
+
+.builder-block--inner {
+  .table-form-control {
+    .ant-table-title {
+      padding: 10px;
+    }
+
+    .ant-table-header {
+      .btn-action-column {
+        text-align: center;
+      }
+
+      .ant-table-cell {
+        padding: 10px;
+      }
+    }
+
+    .ant-table-tbody {
+      .ant-table-cell {
+        padding: 10px;
+      }
+    }
+
+    .btn-action-column {
+      text-align: center;
+
+      .ant-btn {
+        padding: 4px;
+        height: 23px;
+        width: 23px;
+        font-size: 13px;
+        border-radius: 5px;
+        pointer-events: all;
+      }
+
+      .anticon {
+        font-size: 13px;
+      }
+
+      .anticon-plus {
+        color: white;
+      }
+    }
+  }
+}
+
+.builder-block--inner.viewer {
+  .ant-table-tbody {
+    .ant-table-cell {
+      padding: 10px;
+      font-size: var(--table-cell-text-size, 13px);
+      color: var(--table-cell-text-color, grey);
+    }
+  }
+}
+
+.modal-field-table {
+  .ant-modal-content {
+    padding: 15px;
+  }
+
+  .ant-modal-body {
+    border: 1px solid #faf5f5;
+
+    .side-field {
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 600px;
+
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: #e0e5f2;
+        border-radius: 2px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #b6c7f1;
+      }
+    }
+  }
+
+  .wrapper-config-field-table {
+    // border-left: 1px solid #7E8EF1;
+    .config-field {
+      height: calc(100vh - 152px);
+    }
+  }
+
+  // Override css form base
+  .config-action-wrapper {
+    cursor: auto;
+
+    .config-action-inner {
+      .actions {
+        padding: 0 3px;
+        right: 7px;
+
+        span {
+          font-size: 12px;
+          color: #00aebc;
+        }
+      }
+
+      .anticon-delete {
+        display: none;
+      }
+    }
+  }
+
+  .view-actions {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 600px;
+    &::-webkit-scrollbar {
+      width: 0px;
+    }
+
+    .wrapper-view-field-table {
+      border-right: none;
+    }
+  }
+
+  .custom_btn_modal_table{
+    color: #fff;
+    background: #87b4d4;
+}
+.custom_btn_modal_table:hover{
+    color: #fff;
+}
+}

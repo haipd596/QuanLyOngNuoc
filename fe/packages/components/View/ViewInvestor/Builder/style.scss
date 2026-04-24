@@ -1,0 +1,23 @@
+.builder-investor {
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .ant-radio-wrapper {
+    padding: 8px 0;
+
+    &:hover {
+      .ant-typography {
+        color: #1890ff;
+      }
+    }
+  }
+
+  .ant-space-vertical {
+    width: 100%;
+  }
+}

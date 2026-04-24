@@ -1,0 +1,120 @@
+.theme-dvc {
+  // Themconfig
+  --primary-color: #7a1f36;
+  --main-background-color-row-hover: #f6faf5;
+  --main-background-color-header-hover: #5f172a;
+  --main-background-color-row: #e5f7e2;
+  --border-table-width: 1px;
+
+  /* -------------------------------- TABLE ------------------------------- */
+
+  // bugs auto inc width when embed dvc page !!!
+  .page-container .ant-table-wrapper {
+    table-layout: auto !important;
+  }
+
+  .ant-table-container table > tbody > tr > td {
+    border-inline-end-width: var(--border-table-width) !important;
+    border-inline-start-width: 0px !important;
+    border-bottom-width: var(--border-table-width);
+  }
+
+  .ant-table-body {
+    overflow-y: auto !important;
+  }
+
+  .ant-table-tbody > tr > td {
+    padding: 0.2rem 1.2rem !important;
+}
+
+  .ant-table-container {
+    border-inline-start-width: 0px !important;
+    border-inline-end-width: 0px !important;
+    border-right-width: 0px !important;
+    // th {
+    //   color: white !important
+    // }
+
+    .fa-solid {
+      font-size: 18px;
+    }
+  }
+
+  .config_form_item .ant-form-item {
+    margin-bottom: 0px !important;
+  }
+
+  /* ------------------------------- FORM LABEL ------------------------------- */
+  .ant-form-item-row label,
+  .label-checkbox-toggle-content {
+    font-weight: unset;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .ant-form-item .ant-form-item-label > label::after {
+    content: "";
+  }
+  // .ant-form-item .ant-row {
+  //   align-items: baseline;
+  // }
+
+  /* ----------------------------- TITLE, HEADING ----------------------------- */
+  .custom-text.ant-typography {
+    margin-top: 0.67em;
+    margin-bottom: 0.5em;
+  }
+
+  .fa-solid {
+    // color: var(--primary-color);
+    font-size: 18px;
+  }
+
+  /* --------------------------------- BUTTON --------------------------------- */
+  .button-group {
+    justify-content: center;
+    gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .ant-btn {
+    box-shadow: none;
+  }
+
+  input[type="button"],
+  input[type="reset"],
+  input[type="submit"],
+  button {
+    min-width: unset;
+    margin-left: 0;
+  }
+
+  .ant-picker-month-btn,
+  .ant-picker-header-prev-btn,
+  .ant-picker-header-super-prev-btn,
+  .ant-picker-header-super-next-btn,
+  .ant-picker-header-next-btn {
+    margin-left: 10px;
+    min-width: unset;
+  }
+
+  .ant-picker{
+    padding-right: 11px;
+  }
+
+  .ant-picker-cell-inner{
+    text-align: center;
+  }
+
+  /* ---------------------------------- ICON ---------------------------------- */
+  .anticon {
+    // color: var(--primary-color);
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  // .label {
+  //   color: var(--primary-color);
+  // }
+}

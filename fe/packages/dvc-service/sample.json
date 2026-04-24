@@ -1,0 +1,85 @@
+{
+  "Header": null,
+  "Body": {
+    "CongdanCollection": {
+      "CongDan": {
+        "SoDinhDanh": "068194008217",
+        "SoCMND": "241585151",
+        "HoVaTen": {
+          "Ho": null,
+          "ChuDem": null,
+          "Ten": "NGUYỄN THỊ KHIÊM"
+        },
+        "GioiTinh": "2",
+        "DanToc": "01",
+        "TonGiao": "00",
+        "TinhTrangHonNhan": "2",
+        "NhomMau": "00",
+        "NgayThangNamSinh": {
+          "Nam": "1930",
+          "NgayThangNam": "19300310"
+        },
+        "NoiDangKyKhaiSinh": {
+          "MaTinhThanh": "52",
+          "MaQuanHuyen": "543",
+          "MaPhuongXa": "21685",
+          "ChiTiet": "PHƯỜNG HOÀI ĐỨC, THỊ XÃ HOÀI NHƠN, TỈNH BÌNH ĐỊNH",
+          "QuocGia": "VN"
+        },
+        "QuocTich": null,
+        "QueQuan": {
+          "MaTinhThanh": "52",
+          "MaQuanHuyen": "543",
+          "MaPhuongXa": "21685",
+          "ChiTiet": "PHƯỜNG HOÀI ĐỨC, THỊ XÃ HOÀI NHƠN, TỈNH BÌNH ĐỊNH",
+          "QuocGia": "VN"
+        },
+        "ThuongTru": {
+          "MaTinhThanh": "52",
+          "MaQuanHuyen": "548",
+          "MaPhuongXa": "21859",
+          "ChiTiet": "XÓM TRUNG TÍN, THÔN TRUNG CHÁNH",
+          "QuocGia": "VN"
+        },
+        "NoiOHienTai": {
+          "MaTinhThanh": "52",
+          "MaQuanHuyen": "548",
+          "MaPhuongXa": "21859",
+          "ChiTiet": "XÓM TRUNG TÍN, THÔN TRUNG CHÁNH",
+          "QuocGia": "VN"
+        },
+        "Cha": {
+          "HoVaTen": "NGUYỄN QUYỆT",
+          "QuocTich": "VN",
+          "SoDinhDanh": "642519472345",
+          "SoCMND": "738475123"
+        },
+        "Me": {
+          "HoVaTen": "NGUYỄN THỊ BƯỚC",
+          "QuocTich": "VN",
+          "SoDinhDanh": "873648127342",
+          "SoCMND": "129374917"
+        },
+        "VoChong": {
+          "HoVaTen": "HUỲNH VĂN CỨNG",
+          "QuocTich": "VN",
+          "SoDinhDanh": "874126472176",
+          "SoCMND": "643712634"
+        },
+        "NguoiDaiDien": {
+          "HoVaTen": "PHUNG VAN HAN",
+          "QuocTich": "VN",
+          "SoDinhDanh": "172638436327",
+          "SoCMND": "173689273"
+        },
+        "ChuHo": {
+          "QuanHe": "CH01",
+          "SoDinhDanh": "068194008217",
+          "SoCMND": "210434187",
+          "HoVaTen": "NGUYỄN THỊ KHIÊM"
+        },
+        "SoSoHoKhau": "cm41"
+      }
+    }
+  }
+}

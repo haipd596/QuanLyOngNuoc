@@ -1,0 +1,17 @@
+.customUpload {
+  display: flex;
+  .ant-upload-list.ant-upload-list-text {
+    display: flex;
+    margin-left: 10px;
+  }
+}
+
+.custom_upload_list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  .file_list {
+    margin-left: 15px;
+  }
+}

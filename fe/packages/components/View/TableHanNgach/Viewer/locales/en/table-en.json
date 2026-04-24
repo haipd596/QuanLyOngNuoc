@@ -1,0 +1,16 @@
+{
+	"checkbox1_529": "Proposing the adjustment,supplementation of production quota allocation",
+	"checkbox2_529": "Proposing the adjustment, supplementation of import quota allocation",
+	"title_table_529": "Table: Information about the request for adjustment, supplementation of quota for production, import of controlled substances",
+	"table_529_substance_name": "Name of substances",
+	"table_529_header_content_1": "Allocated quota during the year",
+	"table_529_header_content_2": "Adjustment or supplementation request",
+	"table_529_amount_kg": "Amount (kg)",
+	"table_529_amount_ton":"Amount (ton of CO2eq)",
+	"table_529_total_1":"Total quota (ton of CO2eq)",
+	"table_529_total_2":"Total quota for adjustment and supplementation (ton of CO2eq)",
+	"table_529_DeIncrease": "Increase/decrease between the adjusted volume and the allocated volume (ton of CO2eq)",
+	"table_529_reason": "Reason for requesting adjustment or supplementation",
+	"table_529_content_1": "Quota for the production of controlled substances",
+	"table_529_content_2": "Quota for the import of controlled substances"
+}

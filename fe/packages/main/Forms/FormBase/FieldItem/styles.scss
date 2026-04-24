@@ -1,0 +1,39 @@
+.view-mode-only {
+  .show-in-details {
+    display: none;
+  }
+}
+
+.details-mode-only {
+  input,
+  textarea,
+  .ant-select-selector,
+  .ant-checkbox-wrapper,
+  .ant-picker-outlined,
+  .ant-select,
+  .ant-input-number-input{
+    // border: none !important;
+    // border: 1px solid #d9d9d9 !important;
+    pointer-events: none !important;
+    cursor: text;
+    background-color: transparent !important;
+    color: black !important;
+  }
+
+  .hidden-in-details {
+    display: none !important;
+  }
+
+  .show-in-details {
+    display: block;
+  }
+
+  .ant-tabs-tab-active {
+    border-bottom: 1px solid black;
+  }
+
+  .ant-form-item-row {
+    // align-items: baseline;
+    align-items: center;
+  }
+}

@@ -1,0 +1,84 @@
+.modal-select-images {
+  .ant-modal-header {
+    background-color: #87b4d4;
+    border-radius: 0;
+    padding: 8px;
+  }
+
+  .ant-modal-title {
+    color: white;
+    font-weight: 400;
+    font-size: 15px;
+  }
+
+  .ant-modal-close {
+    .anticon {
+      color: white;
+      top: 5px;
+    }
+  }
+
+  .ant-modal-content {
+    padding: 0;
+    border-radius: 0;
+
+    .ant-modal-body {
+      overflow: auto;
+      padding: 15px 30px;
+      height: 500px;
+    }
+  }
+
+  .tab-select-warehouse {
+
+    .ant-tabs-nav {
+      flex-wrap: wrap;
+    }
+
+    .ant-tabs-nav-operations {
+      display: none;
+    }
+
+    .ant-tabs-extra-content {
+      width: 100%;
+    }
+
+    .ant-tabs-nav-wrap {
+
+      &:before,
+      &:after {
+        display: none;
+      }
+
+      .ant-tabs-nav-list {
+        transform: translateX(0) !important;
+        margin-bottom: 10px;
+      }
+    }
+
+    .ant-tabs-tab-active {
+      background-color: #87b4d4;
+      padding: 0 5px;
+
+      .ant-tabs-tab-btn {
+        color: white;
+      }
+
+    }
+
+    .ant-tabs,
+    .ant-tabs-tab {
+      padding: 5px;
+    }
+
+    .ant-tabs-ink-bar,
+    .ant-tabs-ink-bar-animated {
+      display: none;
+    }
+  }
+}
+
+.file_icon {
+  color: #2386ca;
+  font-size: 20px;
+}

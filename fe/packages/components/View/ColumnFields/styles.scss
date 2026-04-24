@@ -1,0 +1,55 @@
+.wrapper-view-container {
+  
+  .hidden_btn_luuhoso {
+    display: none;
+  }
+  .ant-col {
+    .item-field {
+      // .ant-col {
+      //   padding-left: 0 !important;
+      //   padding-right: 0 !important;
+      // }
+      border: 1px solid #d2e8f4;
+    }
+
+
+    .btn-add-field {
+      text-align: center;
+      cursor: pointer;
+
+      .ant-btn {
+        margin: 5px 0 5px 0;
+        padding: 8px;
+        height: 15px;
+        width: 10px;
+        min-width: 10px;
+        pointer-events: all;
+
+        .anticon {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .view-field {
+      border: none;
+      text-align: left;
+    }
+  }
+}
+
+.modal-field-control {
+  width: 45% !important;
+
+  .list-field {
+    margin-left: -15px;
+    margin-right: -20px;
+
+    height: 600px;
+    overflow-y: scroll;
+  }
+
+  .base-icon-wrapper {
+    flex-basis: 20%;
+  }
+}

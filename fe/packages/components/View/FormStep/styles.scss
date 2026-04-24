@@ -1,0 +1,73 @@
+.form-step {
+  .ant-tabs-nav::before {
+    border-bottom: 0px;
+  }
+  .ant-tabs-nav-more {
+    display: none;
+  }
+
+  .ant-tabs-nav-list {
+    width: 100%;
+    overflow: auto;
+
+    .ant-tabs-tab {
+      flex-grow: 1;
+      justify-content: center;
+    }
+  }
+
+  .ant-col {
+    min-height: unset;
+  }
+
+  .form-each-step-vertical {
+    .ant-form-item-row {
+      flex-direction: column;
+    }
+  }
+
+  .form-each-step-horizontal {
+    .ant-form-item-row {
+      flex-direction: row !important;
+    }
+  }
+  .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
+    display: none;
+  }
+  .border_progressBar {
+    .ant-progress-inner {
+      border-radius: 5px !important;
+    }
+    .ant-progress-bg {
+      border-radius: 5px !important;
+      position: relative;
+    }
+    .ant-progress-bg::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.3) 0,
+        rgba(255, 255, 255, 0.3) 15px,
+        transparent 15px,
+        transparent 30px
+      );
+    }
+  }
+}
+
+.builder-block--inner.viewer {
+  .ant-tabs-ink-bar {
+    background-color: var(--active-indicator-color, blue);
+  }
+}
+
+.builder-block--inner.builder {
+  .ant-tabs-ink-bar {
+    background-color: grey;
+  }
+}

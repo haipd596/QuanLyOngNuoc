@@ -1,0 +1,17 @@
+.switch-mode-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  .switch-mode-inner {
+    display: flex;
+    
+    .switch-item {
+      &.active {
+        background-color: #FF5F00;
+        color: white;
+      }
+    }
+  }
+}

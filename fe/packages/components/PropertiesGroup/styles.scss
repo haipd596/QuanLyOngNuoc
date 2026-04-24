@@ -1,0 +1,34 @@
+.properties-group {
+  .properties-group__title {
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px;
+    margin-bottom: 3px;
+    padding-inline: 10px;
+    color: var(--color-text);
+    user-select: none;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-transform: capitalize;
+
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sider-header-border);
+    }
+  }
+
+  &.fav {
+    .properties-group__title {
+      display: none;
+    }
+  }
+
+  .properties-group__content {
+    &.hide {
+      display: none;
+    }
+  }
+}

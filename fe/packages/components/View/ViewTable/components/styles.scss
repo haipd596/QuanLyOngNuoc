@@ -1,0 +1,32 @@
+.wrapper-builder-field-table {
+  border-right: 1px solid #7E8EF1;
+  padding: 5px;
+  min-height: 82vh;
+
+  .config-action-wrapper {
+
+      &:hover {
+        cursor: pointer;
+      }
+  }
+}
+
+.wrapper-view-field-table {
+  padding: 5px;
+  border-right: 1px solid #d9d9d9;
+
+  .config-action-wrapper {
+    border: none;
+    margin-bottom: 0;
+    cursor: auto;
+    pointer-events: none;
+
+    .config-action-inner {
+      padding: 0;
+    }
+
+    .actions {
+      display: none;
+    }
+  }
+}

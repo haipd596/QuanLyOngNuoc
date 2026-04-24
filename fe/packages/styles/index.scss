@@ -1,0 +1,100 @@
+@mixin prefix($prefix) {
+  #{$prefix} {
+    @content;
+  }
+}
+@import url(https://kit-pro.fontawesome.com/releases/v6.6.0/css/pro.min.css);
+
+// Global SCSS
+:root {
+  --main-background-color: #7a1f36;
+  --sider-main-pallet: rgb(241, 242, 244);
+  --color-text: hsl(225, 10%, 15%);
+  --sider-header-border: rgb(213, 215, 221);
+  --sider-width: 270px;
+  --active-color: #ff8f00;
+  --border-radius-global: 3px;
+
+  // Color pallets
+
+  // Teal
+  --pallet-teal-1: #f15f84;
+  --pallet-teal-2: #cf395f;
+  --pallet-teal-3: #7a1f36;
+  --pallet-teal-4: #af1d41;
+  --pallet-teal-5: #7a1f36;
+  --primary-eform-color: #7a1f36;
+}
+
+@include prefix(".f-eform-builder") {
+  margin: 0;
+  overflow: hidden;
+  height: 100%;
+  @import "global.scss";
+  @import "reset.scss";
+  @import "theme-dvc.scss";
+  @import "../../packages/components/Actions/styles.scss";
+  @import "../../packages/components/BuilderBar/BaseIcon/style.scss";
+  @import "../../packages/components/BuilderBar/Header/style.scss";
+  @import "../../packages/components/BuilderBar/SearchBox/style.scss";
+  @import "../../packages/components/BuilderBar/styles.scss";
+  @import "../../packages/components/CaptchaBox/styles.scss";
+  @import "../../packages/components/ChangeSchemas/styles.scss";
+  @import "../../packages/components/CircularTextIcon/styles.scss";
+  @import "../../packages/components/Config/ConfigArray/styles.scss";
+  @import "../../packages/components/Config/ConfigAsyncAction/styles.scss";
+  @import "../../packages/components/Config/ConfigCodeBlock/styles.scss";
+  @import "../../packages/components/Config/ConfigDatePicker/styles.scss";
+  @import "../../packages/components/Config/ConfigDateTimePicker/styles.scss";
+  @import "../../packages/components/Config/ConfigInput/styles.scss";
+  @import "../../packages/components/Config/ConfigNumberColumns/styles.scss";
+  @import "../../packages/components/Config/ConfigUploadColumns/styles.scss";
+  @import "../../packages/components/ConfigFieldSideBar/ConfigProperties/ConfigGroup/styles.scss";
+  @import "../../packages/components/ConfigFieldSideBar/ConfigProperties/styles.scss";
+  @import "../../packages/components/ConfigFieldSideBar/HeaderBox/style.scss";
+  @import "../../packages/components/ConfigFieldSideBar/NonActiveField/style.scss";
+  @import "../../packages/components/ConfigFieldSideBar/styles.scss";
+  @import "../../packages/components/ConfigFieldSideBar/StylingProperties/styles.scss";
+  @import "../../packages/components/DigitalPaper/Builder/ModalDigitalPaperBuilder/styles.scss";
+  @import "../../packages/components/DigitalPaper/Viewer/ModalDigitalPaper/style.scss";
+  @import "../../packages/components/FAddress/styles.scss";
+  @import "../../packages/components/FormViewDvcCallback/styles.scss";
+  @import "../../packages/components/FullViewForm/styles.scss";
+  @import "../../packages/components/GroupSelect/styles.scss";
+  @import "../../packages/components/IconWrapper/styles.scss";
+  @import "../../packages/components/ModalSelectFilePDF/styles.scss";
+  @import "../../packages/components/ModalSelectSchema/styles.scss";
+  @import "../../packages/components/NotSupport/styles.scss";
+  @import "../../packages/components/PropertiesGroup/styles.scss";
+  @import "../../packages/components/SelectSchema/styles.scss";
+  @import "../../packages/components/SwitchMode/styles.scss";
+  @import "../../packages/components/Toolbar/styles.scss";
+  @import "../../packages/components/View/ColumnFields/styles.scss";
+  @import "../../packages/components/View/FileButtonGroup/styles.scss";
+  @import "../../packages/components/View/FormStep/ChildrenEmpty/styles.scss";
+  @import "../../packages/components/View/FormStep/styles.scss";
+  @import "../../packages/components/View/FormStep/TabLabel/styles.scss";
+  @import "../../packages/components/View/ModalGetInfo/Viewer/styles.scss";
+  @import "../../packages/components/View/ViewDigitalSignature/Viewer/styles.scss";
+  @import "../../packages/components/View/ViewDocument/components/DocumentModal/styles.scss";
+  @import "../../packages/components/View/ViewDocument/components/SelectAddress/styles.scss";
+  @import "../../packages/components/View/ViewDocument/components/ThreadThree/styles.scss";
+  @import "../../packages/components/View/ViewDocument/styles.scss";
+  @import "../../packages/components/View/ViewFieldTableSingle/styles.scss";
+  @import "../../packages/components/View/ViewInfo/Builder/style.scss";
+  @import "../../packages/components/View/ViewInfo/Viewer/FormRequestCSDL/styles.scss";
+  @import "../../packages/components/View/ViewInfo/Viewer/style.scss";
+  @import "../../packages/components/View/ViewSelectFileFields/ImagesGrid/styles.scss";
+  @import "../../packages/components/View/ViewSelectFileFields/styles.scss";
+  @import "../../packages/components/View/ViewTab/index.scss";
+  @import "../../packages/components/View/ViewTab/TabTitle/styles.scss";
+  @import "../../packages/components/View/ViewTable/components/styles.scss";
+  @import "../../packages/components/View/ViewTable/styles.scss";
+  @import "../../packages/components/View/ViewUpload/styles.scss";
+  @import "../../packages/main/BuilderBlock/styles.scss";
+  @import "../../packages/main/Forms/FormBase/ConfigButton/styles.scss";
+  @import "../../packages/main/Forms/FormBase/FieldItem/styles.scss";
+  @import "../../packages/main/Forms/FormBase/styles.scss";
+  @import "../../packages/main/styles.scss";
+  // @import "../../pages/ViewPage/styles.scss";
+}

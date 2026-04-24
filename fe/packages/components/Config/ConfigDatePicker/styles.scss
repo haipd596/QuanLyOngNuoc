@@ -1,0 +1,31 @@
+.config-editor {
+  .config-properties-group {
+    border-bottom: 1px solid #D9D9D9;
+    &:last-child {
+      border-top: 1px solid #D9D9D9;
+    }
+    >.each-config{
+      p{
+        margin: 0 0 5px;
+      }
+    }
+    .Custom_datepicker {
+      padding: 0;
+      border: 1px solid black;
+      background: #f7f7f8;
+      border-radius: var(--border-radius-global);
+      width: 100%;
+      input {
+        min-width: 0;
+        border: 0;
+        background: none;
+      }
+      .ant-picker-suffix {
+        margin-right: 5px;
+      }
+      .ant-picker-clear {
+        margin-right: 5px;
+      }
+    }
+  }
+}

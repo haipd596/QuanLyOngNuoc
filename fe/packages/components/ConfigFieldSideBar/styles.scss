@@ -1,0 +1,46 @@
+$border-purple: #7e8ef1;
+
+.config-field {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .config-editor {
+    overflow-y: auto;
+    flex: 1;
+
+    .label {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin: 0;
+    }
+  }
+
+  .field-config-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: 8px;
+  }
+
+  .ant-tabs-nav {
+    // background-color: palegoldenrod;
+    padding: 0 16px;
+    margin-bottom: 0;
+
+    .ant-tabs-tab {
+      padding: 8px 0;
+    }
+
+    // .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    //   color: var(--main-background-color);
+    // }
+
+    .ant-tabs-ink-bar {
+      position: absolute;
+      // background: var(--main-background-color);
+      pointer-events: none;
+    }
+  }
+}

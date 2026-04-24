@@ -1,0 +1,18 @@
+.upload-zone {
+  .ant-upload {
+    // width: 100%;
+
+    span.ant-upload {
+      display: inline-block;
+      // width: 100%;
+
+      .ant-btn {
+        // width: 100%;
+      }
+    }
+  }
+  .icon_upload {
+    color: #2386ca;
+    font-size: 20px;
+  }
+}

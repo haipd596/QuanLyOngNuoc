@@ -1,0 +1,24 @@
+.editable-cell {
+  position: relative;
+}
+
+.editable-cell-value-wrap {
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.editable-cell-value-wrap {
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  // height: 20px;
+}
+
+// This is a placeholder inside div tag
+[contentEditable="true"]:empty:not(:focus):before {
+  content: attr(data-text);
+  color: #ccc;
+}
+
+.editable-cell-value-wrap .placeholder {
+  color: rgba(0,0,0,0.25);
+}

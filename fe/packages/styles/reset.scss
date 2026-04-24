@@ -1,0 +1,32 @@
+input[type="button"],
+input[type="reset"],
+input[type="submit"],
+button {
+  min-width: unset;
+}
+
+.ant-float-btn {
+  inset-inline-end: 40px;
+  inset-block-end: 110px;
+}
+
+.ms-webpart-zone.ms-fullWidth {
+  > div {
+    margin: auto auto 0;
+  }
+}
+.editable-cell-value-wrap {
+  height: auto;
+}
+
+.page-header.navbar.navbar-fixed-top {
+  z-index: 999;
+}
+
+.theme-dvc .label {
+  background: none;
+}
+
+.ant-table-wrapper .ant-table .ant-table-header > table {
+  visibility: unset !important;
+}

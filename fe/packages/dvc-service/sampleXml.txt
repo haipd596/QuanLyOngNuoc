@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+	xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+	<soapenv:Header
+		xmlns:dan="http://dancuquocgia.bca"/>
+		<soapenv:Body
+			xmlns:dan="http://dancuquocgia.bca">
+			<ns1:CongdanCollection
+				xmlns:ns1="http://www.mic.gov.vn/dancu/1.0">
+				<ns1:CongDan>
+					<ns1:SoDinhDanh>068194008217</ns1:SoDinhDanh>
+						<ns1:SoCMND>241585151</ns1:SoCMND>
+							<ns1:HoVaTen>
+								<ns1:Ho/>
+								<ns1:ChuDem/>
+								<ns1:Ten>NGUYỄN THỊ KHIÊM</ns1:Ten></ns1:HoVaTen>
+									<ns1:GioiTinh>2</ns1:GioiTinh>
+										<ns1:DanToc>01</ns1:DanToc>
+											<ns1:TonGiao>00</ns1:TonGiao>
+												<ns1:TinhTrangHonNhan>2</ns1:TinhTrangHonNhan>
+													<ns1:NhomMau>00</ns1:NhomMau>
+														<ns1:NgayThangNamSinh>
+															<ns1:Nam>1930</ns1:Nam>
+																<ns1:NgayThangNam>19300310</ns1:NgayThangNam></ns1:NgayThangNamSinh>
+																	<ns1:NoiDangKyKhaiSinh>
+																		<ns1:MaTinhThanh>52</ns1:MaTinhThanh>
+																			<ns1:MaQuanHuyen>543</ns1:MaQuanHuyen>
+																				<ns1:MaPhuongXa>21685</ns1:MaPhuongXa>
+																					<ns1:ChiTiet>PHƯỜNG HOÀI ĐỨC, THỊ XÃ HOÀI NHƠN, TỈNH BÌNH ĐỊNH</ns1:ChiTiet>
+																						<ns1:QuocGia>VN</ns1:QuocGia></ns1:NoiDangKyKhaiSinh>
+																							<ns1:QuocTich/>
+																							<ns1:QueQuan>
+																								<ns1:MaTinhThanh>52</ns1:MaTinhThanh>
+																									<ns1:MaQuanHuyen>543</ns1:MaQuanHuyen>
+																										<ns1:MaPhuongXa>21685</ns1:MaPhuongXa>
+																											<ns1:ChiTiet>PHƯỜNG HOÀI ĐỨC, THỊ XÃ HOÀI NHƠN, TỈNH BÌNH ĐỊNH</ns1:ChiTiet>
+																												<ns1:QuocGia>VN</ns1:QuocGia></ns1:QueQuan>
+																													<ns1:ThuongTru>
+																														<ns1:MaTinhThanh>52</ns1:MaTinhThanh>
+																															<ns1:MaQuanHuyen>548</ns1:MaQuanHuyen>
+																																<ns1:MaPhuongXa>21859</ns1:MaPhuongXa>
+																																	<ns1:ChiTiet>XÓM TRUNG TÍN, THÔN TRUNG CHÁNH</ns1:ChiTiet>
+																																		<ns1:QuocGia>VN</ns1:QuocGia></ns1:ThuongTru>
+																																			<ns1:NoiOHienTai>
+																																				<ns1:MaTinhThanh>52</ns1:MaTinhThanh>
+																																					<ns1:MaQuanHuyen>548</ns1:MaQuanHuyen>
+																																						<ns1:MaPhuongXa>21859</ns1:MaPhuongXa>
+																																							<ns1:ChiTiet>XÓM TRUNG TÍN, THÔN TRUNG CHÁNH</ns1:ChiTiet>
+																																								<ns1:QuocGia>VN</ns1:QuocGia></ns1:NoiOHienTai>
+																																									<ns1:Cha>
+																																										<ns1:HoVaTen>NGUYỄN QUYỆT</ns1:HoVaTen>
+																																											<ns1:QuocTich>VN</ns1:QuocTich>
+																																												<ns1:SoDinhDanh>642519472345</ns1:SoDinhDanh>
+																																													<ns1:SoCMND>738475123</ns1:SoCMND></ns1:Cha>
+																																														<ns1:Me>
+																																															<ns1:HoVaTen>NGUYỄN THỊ BƯỚC</ns1:HoVaTen>
+																																																<ns1:QuocTich>VN</ns1:QuocTich>
+																																																	<ns1:SoDinhDanh>873648127342</ns1:SoDinhDanh>
+																																																		<ns1:SoCMND>129374917</ns1:SoCMND></ns1:Me>
+																																																			<ns1:VoChong>
+																																																				<ns1:HoVaTen>HUỲNH VĂN CỨNG</ns1:HoVaTen>
+																																																					<ns1:QuocTich>VN</ns1:QuocTich>
+																																																						<ns1:SoDinhDanh>874126472176</ns1:SoDinhDanh>
+																																																							<ns1:SoCMND>643712634</ns1:SoCMND></ns1:VoChong>
+																																																								<ns1:NguoiDaiDien>
+																																																									<ns1:HoVaTen>PHUNG VAN HAN</ns1:HoVaTen>
+																																																										<ns1:QuocTich>VN</ns1:QuocTich>
+																																																											<ns1:SoDinhDanh>172638436327</ns1:SoDinhDanh>
+																																																												<ns1:SoCMND>173689273</ns1:SoCMND></ns1:NguoiDaiDien>
+																																																													<ns1:ChuHo>
+																																																														<ns1:QuanHe>CH01</ns1:QuanHe>
+																																																															<ns1:SoDinhDanh>068194008217</ns1:SoDinhDanh>
+																																																																<ns1:SoCMND>210434187</ns1:SoCMND>
+																																																																	<ns1:HoVaTen>NGUYỄN THỊ KHIÊM</ns1:HoVaTen></ns1:ChuHo>
+																																																																		<ns1:SoSoHoKhau>cm41</ns1:SoSoHoKhau></ns1:CongDan></ns1:CongdanCollection></soapenv:Body></soapenv:Envelope>

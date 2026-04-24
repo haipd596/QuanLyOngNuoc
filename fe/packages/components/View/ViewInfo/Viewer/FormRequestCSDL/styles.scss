@@ -1,0 +1,72 @@
+.f-modal-csdl-quoc-gia {
+  &-wrap {
+  }
+  .ant-modal-close svg {
+    fill: #fff;
+  }
+
+  &.ant-modal {
+  }
+  .ant-modal-content {
+    border-radius: 0;
+    padding: 0;
+  }
+  .f-modal-csdl-quoc-gia__title {
+    height: 55px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    font-size: 20px;
+    background: #7a1f36;
+    color: #fff;
+  }
+  .ant-modal-body {
+    padding: 0;
+  }
+  .f-modal-csdl-quoc-gia__content {
+    padding: 5px 20px 15px;
+    .ant-tabs-nav {
+      display: none;
+    }
+  }
+  .f-modal-csdl-quoc-gia__footer {
+    // display: block;
+  }
+}
+.frmGetOrganizationInfoRequest {
+  padding: 20px 0;
+}
+
+.f-address-csdl {
+  width: 100%;
+  position: relative;
+  .f-address-container {
+    margin-top: 10px;
+    > div.ant-row {
+      display: flex;
+      flex-wrap: wrap;
+      > div.ant-col {
+        width: 50%;
+        &:nth-child(2n) {
+        }
+      }
+      .ant-form-item-label {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  .f-address-csdl__address {
+    position: absolute;
+    padding-right: 0 !important;
+    right: 0;
+    bottom: 0;
+    left: 50%;
+    .ant-form-item-label {
+      display: flex;
+      align-items: center;
+    }
+  }
+}

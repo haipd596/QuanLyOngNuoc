@@ -1,0 +1,54 @@
+.config-action-wrapper {
+  border: 1px dashed #2980b9;
+  position: relative;
+  cursor: move;
+  margin-bottom: 15px;
+
+  &:hover {
+    border: 2px solid #41b06e;
+  }
+
+  .config-action-inner {
+    padding: 15px 0px 15px 0px;
+
+    input,
+    .ant-table-wrapper {
+      pointer-events: none;
+    }
+
+    &:hover {
+      .actions {
+        display: block;
+      }
+    }
+
+    .actions {
+      background-color: white;
+      padding: 0 5px;
+      position: absolute;
+      bottom: 100%;
+      right: 10px;
+      transform: translateY(50%);
+
+      span {
+        color: #b0b0b0;
+      }
+
+      & > *:not(:last-child) {
+        margin-right: 4px;
+      }
+
+      .delete {
+        color: red;
+      }
+    }
+  }
+
+  &.active {
+    border: 2px solid var(--active-color);
+  }
+}
+
+.before_add_element {
+  margin-right: 5px;
+}

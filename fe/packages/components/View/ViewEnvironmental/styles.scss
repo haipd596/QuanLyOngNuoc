@@ -1,0 +1,20 @@
+.wrapper-environmental {
+  .items-collapse {
+    margin-left: 50px;
+  }
+  .sub-title {
+    span {
+      font-weight: 600;
+    }
+  }
+
+  .ant-form-item-required {
+    &::before {
+      display: none !important;
+    }
+  }
+
+  .ant-form-item {
+    margin-bottom: 5px;
+  }
+}

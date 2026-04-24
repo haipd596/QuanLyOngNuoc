@@ -1,0 +1,23 @@
+.viewer-subform {
+  .ant-modal-content {
+    max-height: 800px;
+    overflow: auto;
+    padding: 40px 24px;
+  }
+  .title_modal_digitalpaper{
+    display: flex;
+    justify-content: center;
+    padding-bottom: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .btn_license_lookup{
+    margin-bottom: 10px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+  }
+}

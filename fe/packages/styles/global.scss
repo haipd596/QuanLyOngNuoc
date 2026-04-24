@@ -1,0 +1,197 @@
+// Animation Key-frames Definition
+@keyframes rotate {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes fade-down {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes fade-left {
+  from {
+    opacity: 0;
+    transform: translateX(30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+@keyframes fade-right {
+  from {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+// Slightly text span animation
+@keyframes text-span {
+  0% {
+    letter-spacing: 1px;
+  }
+  50% {
+    letter-spacing: 2px;
+  }
+  100% {
+    letter-spacing: 3px;
+  }
+}
+#root {
+  padding-left: calc(100vw - 100%);
+  > .ant-layout {
+    .ant-layout {
+      overflow-x: hidden;
+    }
+  }
+}
+.ant-layout-sider.ant-layout-sider-dark {
+  &.form-builder-sider-left {
+    position: static; // overwriting ant default
+    background-color: var(--sider-main-pallet);
+    width: var(--sider-width);
+    border: solid 1px var(--main-background-color);
+    border-right: none;
+  }
+}
+.form-builder-content {
+  height: 100%;
+  border: 1px solid var(--main-background-color);
+}
+.form-builder-sider-left {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--main-background-color / 80) white;
+  .sidebar-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: var(--sider-main-pallet);
+  }
+  .search-box {
+    padding: 8px;
+    top: 70px;
+    z-index: 2;
+  }
+}
+.form-builder-sider-right {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--main-background-color / 80) white;
+  border: 1px solid var(--main-background-color);
+  border-left: none;
+}
+.ant-input-number {
+  width: 100%;
+}
+// Set default 1rem font size to 14px
+html {
+  font-size: 90%;
+  overflow: hidden; // Prevent unwanted scrollbar
+}
+.ant-layout-sider-children {
+  position: relative;
+  .fixed-to-top {
+    background-color: var(--sider-main-pallet);
+    position: sticky;
+    top: 0;
+    z-index: 900;
+  }
+  .builder-bar {
+    position: relative;
+    z-index: 1;
+  }
+}
+.div--form-block__tab-label {
+  position: sticky; // Make the tab label stick to the top
+  top: 0;
+  margin-bottom: 10px;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  align-items: center;
+  background: var(--main-background-color);
+  color: white;
+  padding: 5px;
+  label {
+    font-weight: bold;
+    // font-size: 1rem;
+  }
+}
+/* ---------------------------------- TABLE --------------------------------- */
+.ant-table-wrapper table {
+  .ant-table-thead {
+    .ant-table-cell, th {
+      text-align: center !important;
+      color: white !important
+    }
+  }
+  colgroup {
+    display: none;
+  }
+  tr {
+    .stt-table {
+      width: 60px;
+    }
+    .file-table {
+      width: 300px;
+    }
+    .action-table {
+      width: 140px;
+    }
+    &.ant-table-measure-row {
+      display: none;
+    }
+    td,
+    th {
+      &.ant-table-cell-scrollbar {
+        display: none;
+      }
+    }
+  }
+}
+.wrapper-viewer-info {
+  .ant-input.ant-input-disabled {
+    padding: 4px 11px !important;
+  }
+}
+
+.page-header-fixed {
+  // margin-top: 60px;
+  padding-top: 20px;
+}
+
+
+.title-header {
+  .html-viewer {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 500;
+    margin: 40px 0px;
+  }
+}

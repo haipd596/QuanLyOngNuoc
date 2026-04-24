@@ -1,0 +1,33 @@
+.currency-header-container {
+  display: flex;
+  align-items: center; // Căn giữa theo chiều dọc
+  justify-content: center;
+  flex-direction: column;
+  white-space: nowrap; // Ngăn không cho xuống dòng
+  font-weight: 600;
+  .ant-select.ant-select-in-form-item {
+    width: 150px;
+  }
+  .ant-select-single.ant-select-sm.ant-select-open .ant-select-selection-item {
+    color: #fff;
+  }
+  .ant-select-single.ant-select-sm:not(.ant-select-customize-input)
+    .ant-select-selector {
+    color: #fff;
+    width: 200px;
+  }
+  .ant-select-selection-item {
+    font-weight: 600;
+  }
+  .ant-select .ant-select-arrow {
+    color: #fff;
+  }
+}
+.addrow-button {
+  display: flex;
+  margin-top: 20px;
+  justify-content: end;
+  .ant-btn {
+    width: 180px;
+  }
+}

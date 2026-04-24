@@ -1,0 +1,29 @@
+.table-col-ellipsis {
+  max-width: 300px;
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plus_action {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.delete_action {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom_content_center {
+  text-align: center;
+  .ant-input-number-input-wrap > input {
+    text-align: center;
+  }
+  .ant-select-selection-item {
+    text-align: center;
+  }
+}

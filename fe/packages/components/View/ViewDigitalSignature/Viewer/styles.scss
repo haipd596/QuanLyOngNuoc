@@ -1,0 +1,47 @@
+.f-upload-signal-digital {
+  .ant-upload.ant-upload-select {
+    position: relative;
+    z-index: 2;
+  }
+
+  .ant-upload-list-item {
+    height: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .ant-upload-list-text {
+    position: relative;
+    width: 100%;
+    transform: translateY(-100%);
+    z-index: 1;
+  }
+
+  .ant-upload-list-item-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    z-index: 0;
+
+    .ant-upload-list-item-name,
+    .ant-upload-list-item-actions,
+    .ant-upload-icon {
+      display: none;
+    }
+  }
+
+  .ant-btn {
+    padding: 0;
+  }
+
+  .ant-divider {
+    margin: 0;
+  }
+
+  .group-button {
+    a {
+      position: relative;
+      bottom: 1px;
+    }
+  }
+}

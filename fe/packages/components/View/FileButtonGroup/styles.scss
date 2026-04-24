@@ -1,0 +1,17 @@
+.file-button-group {
+  .ant-form-item {
+    margin: 0;
+  }
+
+  // .ant-col {
+  //   flex: 0 0 50% !important;
+  //   max-width: 50% !important;
+  // }
+
+  @media (max-width: 1200px) {
+      .ant-col {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+  }
+}

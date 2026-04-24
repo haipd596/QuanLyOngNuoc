@@ -1,0 +1,56 @@
+.f-form-auto-fill {
+  border: 1px solid #ddddaa;
+  padding-left: 5px;
+  padding-right: 5px;
+  li {
+    span {
+      display: flex;
+      align-items: center;
+    }
+    textarea {
+      height: 50px;
+    }
+  }
+}
+
+.f-form-custom-fill__title {
+  display: flex;
+  position: relative;
+  .f-btn-add {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: -16px;
+    bottom: 0;
+  }
+}
+
+.f-form-custom-fill__content {
+  border: 1px solid #ddddaa;
+  display: flex;
+  > .f-list {
+    flex-grow: 1;
+    border-right: 1px solid #ddddaa;
+    width: 100%;
+    padding: 5px;
+  }
+  > button.f-btn-remove {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+  }
+}
+
+.f-form-custom-fill__title {
+  border-top: 1px solid #ddddaa;
+  border-left: 1px solid #ddddaa;
+  border-right: 1px solid #ddddaa;
+  padding: 0 50px 0 10px;
+}
+
+.f-form-custom-fill__content__control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}

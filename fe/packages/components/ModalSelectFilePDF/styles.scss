@@ -1,0 +1,164 @@
+.modal-select-images {
+  .ant-modal-header {
+    background-color: #87b4d4;
+    border-radius: 0;
+    padding: 8px;
+  }
+
+  .ant-modal-title {
+    color: white;
+    font-weight: 400;
+    font-size: 15px;
+  }
+
+  .ant-modal-close {
+    color: white;
+    top: 5px;
+  }
+
+  .ant-modal-content {
+    padding: 0;
+    border-radius: 0;
+
+    .ant-modal-body {
+      overflow: auto;
+      padding: 15px 30px;
+      height: 500px;
+    }
+  }
+
+  .tab-select-warehouse {
+    .ant-tabs-nav {
+      flex-wrap: wrap;
+    }
+
+    .ant-tabs-nav-operations {
+      display: none;
+    }
+
+    .ant-tabs-extra-content {
+      width: 100%;
+    }
+
+    .ant-tabs-nav-wrap {
+
+      &:before,
+      &:after {
+        display: none;
+      }
+
+      .ant-tabs-nav-list {
+        transform: translateX(0) !important;
+        margin-bottom: 10px;
+      }
+    }
+
+    .ant-tabs-tab-active {
+      background-color: #87b4d4;
+      padding: 0 5px;
+
+      .ant-tabs-tab-btn {
+        color: white;
+      }
+
+    }
+
+    .ant-tabs,
+    .ant-tabs-tab {
+      padding: 5px;
+      margin-right: 5px !important;
+      margin: 0;
+    }
+
+    .ant-tabs-ink-bar,
+    .ant-tabs-ink-bar-animated {
+      display: none;
+    }
+
+    .input-search-pdf {
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      padding: 6px 11px;
+
+      &::placeholder {
+        color: #c4bebe !important;
+        font-weight: 400 !important;
+        font-size: 14px !important;
+      }
+    }
+  }
+
+  .wrapper-table-pdf {
+    .ant-table-thead {
+      display: none;
+    }
+
+    .ant-table-tbody {
+      .ant-table-cell {
+        padding: 3px 0;
+      }
+    }
+
+    .ant-table-footer {
+      padding: 5px 0;
+      background-color: white;
+    }
+
+    .ant-pagination {
+      margin: 0;
+      position: absolute;
+      top: auto;
+      text-align: right;
+      right: 0;
+      bottom: 0;
+    }
+
+    .ant-pagination-item {
+      border-radius: 0;
+      border-color: #ddd;
+      margin-inline-end: 0;
+    }
+
+    .ant-pagination-next,
+    .ant-pagination-prev {
+      border-radius: 0;
+      margin-inline-end: 0;
+      border: 1px solid #ddd !important;
+    }
+
+    .ant-pagination-item-active {
+      border-color: #1677ff;
+    }
+
+    .ant-pagination-options {
+      display: inline-block;
+      margin-inline-start: 16px;
+      vertical-align: middle;
+      position: absolute;
+      right: 100%;
+      top: 0;
+    }
+
+    .ant-select-selector {
+      border: none;
+      padding: 0;
+    }
+
+    .ant-select-arrow {
+      display: none;
+    }
+
+    .ant-select-selection-item {
+      padding-inline-end: 5px;
+    }
+
+    .ant-table-tbody >tr >td {
+      border-bottom: 1px solid rgb(236 236 236);
+    }
+  }
+}
+
+.file_icon {
+  color: #2386ca;
+  font-size: 20px;
+}

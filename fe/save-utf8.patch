@@ -1,0 +1,89 @@
+diff --git a/src/apps/admin/components/sidebar/Sidebar.tsx b/src/apps/admin/components/sidebar/Sidebar.tsx
+index 2b5b4a1b..79d01814 100644
+--- a/src/apps/admin/components/sidebar/Sidebar.tsx
++++ b/src/apps/admin/components/sidebar/Sidebar.tsx
+@@ -34,6 +34,8 @@ import {
+   DANH_MUC_CONG_TRINH_XAY_DUNG_ROUTE,
+   DANH_MUC_DAI_DIEN_XTDT_ROUTE,
+   DANH_MUC_DAN_TOC_ROUTE,
++  DANH_MUC_QUOC_TICH_ROUTE,
++  DANH_MUC_TON_GIAO_ROUTE,
+   DANH_MUC_CHUC_VU_ROUTE,
+   DANH_MUC_DICH_VU_XUAT_NHAP_KHAU_ROUTE,
+   DANH_MUC_DOANH_NGHIEP_ROUTE,
+@@ -176,6 +178,8 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
+           label: "Danh muc nhan than",
+           children: [
+             { key: DANH_MUC_DAN_TOC_ROUTE, label: "Danh muc dan toc" },
++            { key: DANH_MUC_QUOC_TICH_ROUTE, label: "Danh muc quoc tich" },
++            { key: DANH_MUC_TON_GIAO_ROUTE, label: "Danh muc ton giao" },
+             { key: DANH_MUC_CHUC_VU_ROUTE, label: "Danh muc chuc vu" },
+           ]
+         },
+diff --git a/src/apps/quan-ly-danh-muc-du-lieu/Route.tsx b/src/apps/quan-ly-danh-muc-du-lieu/Route.tsx
+index e79502de..5447c013 100644
+--- a/src/apps/quan-ly-danh-muc-du-lieu/Route.tsx
++++ b/src/apps/quan-ly-danh-muc-du-lieu/Route.tsx
+@@ -25,6 +25,8 @@ import danhMucChuyenVienKhuKinhTeRoute from './pages/danh-muc-chuyen-vien-khu-ki
+ import danhMucCongTrinhXayDungRoute from './pages/danh-muc-cong-trinh-xay-dung/route';
+ import danhMucDaiDienXtdtRoute from './pages/danh-muc-dai-dien-xtdt/route';
+ import danhMucDanTocRoute from './pages/danh-muc-dan-toc/route';
++import danhMucQuocTichRoute from './pages/danh-muc-quoc-tich/route';
++import danhMucTonGiaoRoute from './pages/danh-muc-ton-giao/route';
+ import danhMucChucVuRoute from './pages/danh-muc-chuc-vu/route';
+ import danhMucNgheNghiepRoute from './pages/danh-muc-nghe-nghiep/route';
+ import danhMucDichVuXuatNhapKhauRoute from './pages/danh-muc-dich-vu-xuat-nhap-khau/route';
+@@ -83,6 +85,8 @@ quanLyDanhMucDuLieuRoute.addChildren([
+   danhMucCongTrinhXayDungRoute,
+   danhMucDaiDienXtdtRoute,
+   danhMucDanTocRoute,
++  danhMucQuocTichRoute,
++  danhMucTonGiaoRoute,
+   danhMucChucVuRoute,
+   danhMucNgheNghiepRoute,
+   danhMucDichVuXuatNhapKhauRoute,
+@@ -143,6 +147,8 @@ export const quanLyDanhMucDuLieuRoutes = [
+   danhMucCongTrinhXayDungRoute,
+   danhMucDaiDienXtdtRoute,
+   danhMucDanTocRoute,
++  danhMucQuocTichRoute,
++  danhMucTonGiaoRoute,
+   danhMucChucVuRoute,
+   danhMucNgheNghiepRoute,
+   danhMucDichVuXuatNhapKhauRoute,
+diff --git a/src/apps/quan-ly-danh-muc-du-lieu/constants/index.ts b/src/apps/quan-ly-danh-muc-du-lieu/constants/index.ts
+index fa701e2f..9994015f 100644
+--- a/src/apps/quan-ly-danh-muc-du-lieu/constants/index.ts
++++ b/src/apps/quan-ly-danh-muc-du-lieu/constants/index.ts
+@@ -19,6 +19,8 @@ export const DANH_MUC_CONG_TRINH_XAY_DUNG_ROUTE = `${QUAN_LY_DANH_MUC_DU_LIEU_RO
+ export const DANH_MUC_DAI_DIEN_XTDT_ROUTE = `${QUAN_LY_DANH_MUC_DU_LIEU_ROUTE}/danh-muc-dai-dien-xtdt`;
+ 
+ export const DANH_MUC_DAN_TOC_ROUTE = `${QUAN_LY_DANH_MUC_DU_LIEU_ROUTE}/danh-muc-dan-toc`;
++export const DANH_MUC_QUOC_TICH_ROUTE = `${QUAN_LY_DANH_MUC_DU_LIEU_ROUTE}/danh-muc-quoc-tich`;
++export const DANH_MUC_TON_GIAO_ROUTE = `${QUAN_LY_DANH_MUC_DU_LIEU_ROUTE}/danh-muc-ton-giao`;
+ export const DANH_MUC_CHUC_VU_ROUTE = `${QUAN_LY_DANH_MUC_DU_LIEU_ROUTE}/danh-muc-chuc-vu`;
+ export const DANH_MUC_NGHE_NGHIEP_ROUTE = `${QUAN_LY_DANH_MUC_DU_LIEU_ROUTE}/danh-muc-nghe-nghiep`;
+ 
+* Unmerged path src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-chuc-vu/components/Modal/ChucVuModal.tsx
+* Unmerged path src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-chuc-vu/hooks/useAction.ts
+* Unmerged path src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-chuc-vu/hooks/useColumns.tsx
+* Unmerged path src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-gioi-tinh/components/Modal/GioiTinhModal.tsx
+diff --git a/src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-nghe-nghiep/components/TimKiemNangCao.tsx b/src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-nghe-nghiep/components/TimKiemNangCao.tsx
+index d104bec4..25eec0fb 100644
+--- a/src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-nghe-nghiep/components/TimKiemNangCao.tsx
++++ b/src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-nghe-nghiep/components/TimKiemNangCao.tsx
+@@ -15,12 +15,6 @@ export const TimKiemNangCaoNgheNghiep = ({ visible, onSearch, onClose, onReset,
+       <Form.Item name="ten" label="Tên nghề nghiệp">
+         <Input placeholder="Nhập tên nghề nghiệp" allowClear />
+       </Form.Item>
+-      <Form.Item name="ngonNgu" label="Ngon ngu">
+-        <Select allowClear placeholder="Chọn ngôn ngữ">
+-          <Select.Option value="vi">Tiếng Việt</Select.Option>
+-          <Select.Option value="en">Tiếng Anh</Select.Option>
+-        </Select>
+-      </Form.Item>
+       <Form.Item name="hoatDong" label="Hoạt động">
+         <Select allowClear placeholder="Chọn trạng thái">
+           <Select.Option value={true}>Hoạt động</Select.Option>
+* Unmerged path src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-nghe-nghiep/hooks/useAction.ts
+* Unmerged path src/apps/quan-ly-danh-muc-du-lieu/pages/danh-muc-nghe-nghiep/hooks/useColumn.tsx

@@ -1,0 +1,100 @@
+.modal-select-tthc-root {
+  .ant-modal-content {
+    .ant-modal-body {
+      .modal-header {
+        display: flex;
+        border-bottom: 1px solid var(--main-background-color);
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+
+        .header-left-tthc {
+          .modal-header--title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            margin-bottom: 10px;
+            font-variation-settings: "opsz"52.7, "GRAD"478;
+            font-weight: 870;
+            font-size: 34px;
+            line-height: 30px;
+            letter-spacing: 0.05em;
+            font-style: normal;
+          }
+          .modal-header--description {
+            margin-block: 5px;
+          }
+        }
+      }
+
+      .modal-content {
+        min-height: 300px;
+
+        .tthc-item-selected {
+          border: 1px solid var(--primary-eform-color);
+        }
+
+        .tthc-item-container {
+          width: 100%;
+          border: 1px solid #DDD;
+          margin-bottom: 10px;         
+          border-radius: 6px;
+          display: flex;
+          align-items: 'center';
+
+          .tthc-item-content {
+            padding: 4px 10px;
+          }
+          
+          &:hover {
+            border: 1px solid var(--primary-eform-color);
+          }
+        }
+
+        .tthc-item-container.item-select {
+          border: 1px solid var(--primary-eform-color);
+        }
+        .modal-content__title {
+          font-size: 15px;
+          font-weight: 400;
+        }
+        
+        .hint {
+          display: block;
+          color: gray;
+          font-size: 10px;
+          margin-top: -5px;
+          margin-bottom: 5px;
+          font-style: italic;
+          transform: translateY(-3px);
+        }
+
+        button.existing-quantity {
+          width: 20px;
+          height: 20px;
+          min-width: unset;
+
+          font-size: 9px;
+          border: 1px solid var(--main-background-color);
+        }
+      }
+    }
+
+    
+
+    .ant-modal-footer {
+      .modal-cancel-button {
+        width: 75px;
+      }
+    }
+  }
+  .modal-cancel-button {
+    background-color: var(--pallet-teal-2);
+    color: white;
+    border: 1px solid transparent;
+
+    &:hover {
+      background-color: var(--pallet-teal-1) !important;
+      color: white !important;
+    }
+  }
+}

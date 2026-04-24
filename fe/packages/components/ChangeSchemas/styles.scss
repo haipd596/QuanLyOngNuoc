@@ -1,0 +1,13 @@
+
+// $gap-save-schema: 4px;
+// $width-select-schema: calc(100% - 64px - $gap-save-schema*2);
+
+// @mixin test {
+//   max-width: $width-select-schema;
+//   flex: 1 1 $width-select-schema;
+// }
+
+.change-schema-wrapper {
+  padding: 0 12px;
+  margin-bottom: 8px;
+}

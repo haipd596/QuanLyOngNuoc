@@ -1,0 +1,14 @@
+.loading-outer {
+  position: relative;
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+
+  .spinning {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
+}
