@@ -16,7 +16,6 @@ import {
 } from "@/shared/components/online-offline";
 import ErrorBoundary from "@shared/components/error-boundary/ErrorBoundary";
 import { Detector } from "react-detect-offline";
-import { ReactQueryDevtools } from "react-query/devtools";
 import "./assets/scss/index.scss";
 
 import { Provider } from "react-redux";
@@ -76,7 +75,6 @@ createRoot(document.getElementById("root")!).render(
             </StyleProvider>
           </AntdApp>
         </AntdConfigProvider>
-        <ReactQueryDevtools initialIsOpen={false} position="bottom-left" />
       </QueryClientProvider>
     </Provider>
     {SHOW_DETECTOR_INTERNET && (

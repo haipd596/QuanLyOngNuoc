@@ -20,11 +20,11 @@ export default defineConfig({
       logLevel: 'info',
       urlPrefixes: ['/builders', '/api'],
       middlewares: [
-        cookieParser(),
-        bodyParser.json({limit: '50mb'}),
-        bodyParser.urlencoded(),
-        bodyParser.text(),
-        bodyParser.raw()
+        cookieParser() as any,
+        bodyParser.json({limit: '50mb'}) as any,
+        bodyParser.urlencoded() as any,
+        bodyParser.text() as any,
+        bodyParser.raw() as any
       ],
     }),
     viteStaticCopy({

@@ -1,6 +1,12 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { UserStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { ROLE_CUSTOMER } from '../../common/constants/roles.constant';
 import { PrismaService } from '../../config/prisma.service';
@@ -33,8 +39,12 @@ export class AuthService {
       throw new BadRequestException('Email đã tồn tại');
     }
 
+    const defaultRoleId = await this.findRoleIdByName(ROLE_CUSTOMER);
+    if (!defaultRoleId) {
+      throw new InternalServerErrorException('Chưa cấu hình vai trò mặc định CUSTOMER');
+    }
+
     const passwordHash = await bcrypt.hash(dto.password, 10);
-    const defaultRoleId = dto.roleId ?? (await this.findRoleIdByName(ROLE_CUSTOMER));
     const user = await this.prisma.user.create({
       data: {
         fullName: dto.fullName,
@@ -78,6 +88,10 @@ export class AuthService {
       throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
     }
 
+    if (user.status !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException('Tài khoản đang bị khóa hoặc chưa kích hoạt');
+    }
+
     const tokens = await this.issueTokens({
       sub: user.id,
       email: user.email,
@@ -101,7 +115,15 @@ export class AuthService {
       const payload = await this.jwtService.verifyAsync<JwtPayload>(refreshToken, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       });
-      return this.issueTokens(payload);
+      const user = await this.usersService.findOne(payload.sub);
+      if (user.status !== UserStatus.ACTIVE) {
+        throw new UnauthorizedException();
+      }
+      return this.issueTokens({
+        sub: user.id,
+        email: user.email,
+        role: user.role?.name ?? ROLE_CUSTOMER,
+      });
     } catch {
       throw new UnauthorizedException('Refresh token không hợp lệ');
     }
@@ -114,6 +136,9 @@ export class AuthService {
   private async issueTokens(payload: JwtPayload) {
     const accessSecret = this.configService.get<string>('JWT_ACCESS_SECRET') ?? '';
     const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET') ?? '';
+    if (!accessSecret || !refreshSecret) {
+      throw new InternalServerErrorException('Thiếu cấu hình JWT secret');
+    }
 
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: accessSecret,

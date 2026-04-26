@@ -1,95 +1,83 @@
 import styled from "styled-components";
 
-/* ===== Section ===== */
 export const Section = styled.section`
-  max-width: 50%;
-  margin: 0 auto 6rem auto;
-  padding: 0 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto 64px;
+  padding: 0 24px;
 `;
 
-/* ===== Banner Wrapper ===== */
 export const BannerWrapper = styled.div`
-  position: relative;
-  background: var(--primary);
-  border-radius: 2rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  height: 250px; /* Chiều cao banner mobile */
+  border-radius: 8px;
+  background: var(--primary);
+  min-height: 330px;
+  box-shadow: 0 24px 52px rgba(15, 23, 42, 0.16);
 
-  @media (min-width: 768px) {
-    flex-direction: row;
-    height: 400px; /* Chiều cao banner desktop */
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
   }
 `;
 
-/* ===== Overlay Pattern ===== */
-export const OverlayPattern = styled.div`
-  position: absolute;
-  inset: 0;
-  opacity: 0.1;
-  background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0);
-  background-size: 24px 24px;
-`;
-
-/* ===== Content ===== */
 export const BannerContent = styled.div`
-  position: relative;
-  z-index: 10;
-  flex: 1;
-  padding: 2rem;
+  padding: 44px;
+  color: #fff;
 
-  @media (min-width: 768px) {
-    padding: 4rem;
+  @media (max-width: 620px) {
+    padding: 28px;
   }
 `;
 
 export const BannerTitle = styled.h2`
-  font-size: 2rem;
+  max-width: 640px;
+  font-size: 34px;
   font-weight: 900;
-  line-height: 1.2;
-  color: orange;
-
-  @media (min-width: 768px) {
-    font-size: 3rem;
-  }
+  line-height: 1.18;
+  color: #fff;
+  margin: 0;
 `;
 
 export const BannerDesc = styled.p`
-  margin-top: 2rem;
-  font-size: 1.5rem;
-  color: #fff;
-  line-height: 1.6;
+  max-width: 680px;
+  margin: 16px 0 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.86);
+  line-height: 1.7;
 `;
 
-/* ===== Button ===== */
+export const HighlightList = styled.ul`
+  display: grid;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding-left: 20px;
+  color: #fff;
+  font-size: 15px;
+`;
+
 export const BannerButton = styled.button`
-  margin-top: 2rem;
-  padding: 0.8rem 2rem;
-  font-weight: 700;
-  color: white;
-  background: var(--secondary);
-  border-radius: 9999px;
+  margin-top: 26px;
+  min-height: 44px;
+  padding: 0 20px;
+  font-weight: 800;
+  color: var(--primary);
+  background: #fff;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
 
   &:hover {
-    transform: scale(1.05); /* phóng to nhẹ */
+    background: #f3f8fc;
   }
 `;
 
-/* ===== Image ===== */
 export const BannerImageWrapper = styled.div`
-  flex: 1;
-  width: 100%;
-  height: 100%; /* Chiếm toàn bộ chiều cao BannerWrapper */
+  min-height: 100%;
 `;
 
 export const BannerImage = styled.img`
   width: 100%;
   height: 100%;
+  min-height: 300px;
   object-fit: cover;
 `;
-

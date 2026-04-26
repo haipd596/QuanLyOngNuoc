@@ -2,11 +2,8 @@ import {
   Outlet,
   createRootRoute,
   createRouter,
-  // redirect
 } from '@tanstack/react-router'
 import NotFound404 from '@shared/components/404'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-// import tokenManager from '@utils/tokenManager';
 import { publicRoute } from './apps/home/Route';
 import authRoute from './apps/auth/Route';
 import userRoute from './apps/user/Route';
@@ -34,7 +31,6 @@ function RootComponent() {
   return (
     <>
       <Outlet />
-      <TanStackRouterDevtools position="bottom-right" />
     </>
   )
 }

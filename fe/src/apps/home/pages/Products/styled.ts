@@ -1,167 +1,160 @@
-import styled from 'styled-components';
-import { Card, Button, Radio } from 'antd';
+import { Button, Card, Radio } from "antd";
+import styled from "styled-components";
 
-// ─── Layout ───────────────────────────────────────────────────────────────────
+export const PageIntro = styled.div`
+  margin-bottom: 28px;
 
-export const ProductsContainer = styled.div`
-  display: flex;
-  gap: 24px;
-  padding: 24px;
-  max-width: 85%;
-  margin: 0 auto;
-  min-height: calc(100vh - 300px);
+  span {
+    display: block;
+    color: var(--secondary);
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-    padding: 16px;
-    gap: 16px;
+  h1 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 34px;
+    font-weight: 900;
+  }
+
+  p {
+    max-width: 720px;
+    margin: 10px 0 0;
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.7;
   }
 `;
 
-// ─── Sidebar ──────────────────────────────────────────────────────────────────
+export const CategoryPanel = styled.aside`
+  position: sticky;
+  top: 104px;
+  border: 1px solid var(--border-secondary);
+  border-radius: 8px;
+  background: #fff;
+  padding: 16px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
 
-export const CategoriesSidebar = styled.div`
-  width: 220px;
-  flex-shrink: 0;
-
-  @media (max-width: 768px) {
-    width: 100%;
+  @media (max-width: 767px) {
+    position: static;
   }
 `;
 
 export const CategoryTitle = styled.h3`
   font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--primary, #1890ff);
+  font-weight: 900;
+  margin: 0 0 12px;
+  color: var(--primary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
 `;
 
 export const CategoryList = styled(Radio.Group)`
-  display: flex !important;
-  flex-direction: column;
-  gap: 6px;
+  display: grid !important;
+  gap: 8px;
   width: 100%;
 `;
 
 export const CategoryItem = styled(Radio.Button)`
   width: 100% !important;
-  border-radius: 6px !important;
-  border-left-width: 1px !important; /* reset Ant Design's left-border quirk on Radio.Button groups */
   height: auto !important;
-  padding:6px 14px !important;
+  min-height: 40px;
+  border-radius: 8px !important;
+  border-left-width: 1px !important;
+  padding: 8px 14px !important;
   font-size: 14px;
   text-align: left;
   transition: all 0.2s ease;
 
-  /* Override default Ant Radio.Button group connected borders */
   &::before {
     display: none !important;
   }
 
   &:not(.ant-radio-button-wrapper-checked) {
-    color: #333;
-    border-color: #d9d9d9;
+    color: var(--text-primary);
+    border-color: var(--border-secondary);
 
     &:hover {
-      color: var(--primary, #1890ff);
-      border-color: var(--primary, #1890ff);
+      color: var(--primary);
+      border-color: var(--primary);
+      background: var(--bg-surface-low);
     }
   }
 
   &.ant-radio-button-wrapper-checked {
-    background-color: var(--primary, #1890ff) !important;
-    border-color: var(--primary, #1890ff) !important;
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
     color: #fff !important;
-    font-weight: 600;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--primary, #1890ff) 35%, transparent);
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(11, 79, 138, 0.18);
   }
 `;
 
-// ─── Products Content ─────────────────────────────────────────────────────────
+export const ProductsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 20px;
 
-export const ProductsContent = styled.div`
-  flex: 1;
-  min-width: 0;
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const ProductsHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
   gap: 16px;
+  margin-bottom: 20px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 720px) {
+    align-items: stretch;
     flex-direction: column;
-    align-items: flex-start;
   }
 `;
 
-export const ProductsTitle = styled.h1`
-  font-size: 22px;
-  font-weight: 700;
+export const ProductsTitle = styled.h2`
   margin: 0;
-  color: #111;
+  color: var(--primary);
+  font-size: 24px;
+  font-weight: 900;
 `;
 
 export const FilterWrapper = styled.div`
   display: flex;
   gap: 12px;
 
-  @media (max-width: 768px) {
+  @media (max-width: 720px) {
     width: 100%;
 
-    .ant-input-affix-wrapper {
+    .ant-input-search {
       width: 100% !important;
     }
   }
 `;
 
-// ─── Product Grid ─────────────────────────────────────────────────────────────
-
-export const ProductsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  }
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 16px;
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-`;
-
-// ─── Product Card ─────────────────────────────────────────────────────────────
-
 export const ProductCardWrapper = styled(Card)`
   width: 100%;
-  border-radius: 10px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--border-secondary) !important;
+  box-shadow: none !important;
   overflow: hidden;
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 
   &:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.13) !important;
+    box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12) !important;
     transform: translateY(-3px);
   }
 
   .ant-card-body {
+    min-height: 190px;
     padding: 14px !important;
     display: flex;
     flex-direction: column;
   }
 
-  /* Remove default cover padding/margin if any */
   .ant-card-cover img {
     border-radius: 0;
   }
@@ -169,39 +162,39 @@ export const ProductCardWrapper = styled(Card)`
 
 export const ProductImage = styled.img`
   width: 100%;
-  height: 150px;
+  height: 180px;
   object-fit: cover;
-  background-color: #f0f0f0;
+  background-color: var(--bg-surface-low);
 `;
 
 export const ProductName = styled.h4`
-  font-size: 14px;
-  font-weight: 600;
-  margin: 0 0 6px 0;
-  color: #111;
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0 0 7px;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  min-height: 40px;
+  min-height: 42px;
   line-height: 1.4;
 `;
 
 export const ProductDescription = styled.p`
-  font-size: 12px;
-  color: #888;
-  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 10px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
 
 export const ProductPrice = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--primary, #1890ff);
-  margin: auto 0 12px 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--secondary);
+  margin: auto 0 12px;
 `;
 
 export const ProductFooter = styled.div`
@@ -211,36 +204,30 @@ export const ProductFooter = styled.div`
 
 export const AddToCartButton = styled(Button)`
   flex: 1;
-  border-color: var(--primary, #1890ff) !important;
-  color: var(--primary, #1890ff) !important;
-  border-radius: 6px !important;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  min-height: 40px;
+  border-radius: 8px !important;
+  font-weight: 800;
 
-  &:hover {
-    background-color: var(--primary, #1890ff) !important;
-    color: #fff !important;
-  }
-
-  /* When type="primary" is passed, keep solid style */
   &.ant-btn-primary {
-    background-color: var(--primary, #1890ff) !important;
-    border-color: var(--primary, #1890ff) !important;
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
     color: #fff !important;
 
     &:hover {
-      filter: brightness(1.1);
+      background-color: #073e70 !important;
+      border-color: #073e70 !important;
     }
   }
 `;
-
-// ─── Empty State ──────────────────────────────────────────────────────────────
 
 export const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
-  color: #aaa;
+  min-height: 360px;
+  border: 1px dashed var(--border-primary);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: var(--bg-surface-low);
 `;

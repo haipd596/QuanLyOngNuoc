@@ -1,35 +1,62 @@
-import { ArrowRightOutlined } from "@ant-design/icons";
-import { Accent, Badge, BannerImage, ButtonGroup, Container, Content, Description, ImageWrapper, PrimaryButton, SecondaryButton, Section, Title } from "./styled";
+import { ArrowRightOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import { heroStats } from "../../home.data";
+import {
+  Accent,
+  Badge,
+  BannerImage,
+  ButtonGroup,
+  Container,
+  Content,
+  Description,
+  ImageWrapper,
+  PrimaryButton,
+  SecondaryButton,
+  Section,
+  Stat,
+  Stats,
+  Title,
+} from "./styled";
 
 const Banner = () => {
   return (
     <Section>
       <Container>
         <Content>
-          <Badge>CHẤT LƯỢNG CÔNG TRÌNH</Badge>
+          <Badge>
+            <CheckCircleOutlined /> Vật tư điện nước chính hãng
+          </Badge>
 
           <Title>
-            GIẢI PHÁP <br />
-            <Accent>BỀN VỮNG</Accent>
-            <br />
-            CHO MỌI NHÀ.
+            Giải pháp <Accent>điện nước</Accent> cho công trình và gia đình.
           </Title>
 
           <Description>
-            Cung cấp hệ thống vật tư nước và thiết bị điện đạt chuẩn quốc tế.
-            Uy tín tạo nên giá trị cốt lõi cho mọi công trình Việt.
+            Cung cấp ống nước, phụ kiện, van, máy bơm và thiết bị điện đạt
+            chuẩn, có báo giá rõ ràng, giao hàng nhanh và hỗ trợ kỹ thuật cho
+            từng đơn hàng.
           </Description>
 
           <ButtonGroup>
-            <PrimaryButton>Mua ngay <ArrowRightOutlined /></PrimaryButton>
-            <SecondaryButton>Xem catalog</SecondaryButton>
+            <PrimaryButton>
+              Xem sản phẩm <ArrowRightOutlined />
+            </PrimaryButton>
+            <SecondaryButton>Nhận báo giá</SecondaryButton>
           </ButtonGroup>
+
+          <Stats>
+            {heroStats.map((item) => (
+              <Stat key={item.label}>
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </Stat>
+            ))}
+          </Stats>
         </Content>
 
         <ImageWrapper>
           <BannerImage
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMsMxmDwzGO8pWi80httoCLUnMfjYlupWirbBu06ponzLSflu1o0ZX778uhtENogdCbEVVuxDI4Vq_4ePGaKJf6WhqGP_MszMRGvFnAukd-VsajYqSvEgA0VgiuDUj_LOjp-BgO3By_FHUTyEjGu3LgMGTPHtJ6J4OX3D-GNlTwcsdl0cLujzd1svHj8LJK2NZ3Gpg1A84Zgm1fZxyCoaDWDDRQNiqF8e48TK3YyXW7Plj3k6WJubzP2seBXYyTH1lTQHpx7qKy78"
-            alt="Industrial materials"
+            src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80"
+            alt="Kỹ thuật viên lắp đặt hệ thống điện nước"
           />
         </ImageWrapper>
       </Container>

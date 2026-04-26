@@ -7,6 +7,7 @@ import {
   CheckoutType,
   OrderStatus,
   PaymentStatus,
+  Prisma,
   StockMovementType,
 } from '@prisma/client';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
@@ -32,7 +33,7 @@ export class SalesOrdersService {
 
     const discountAmount = dto.discountAmount ?? 0;
     const finalAmount = Math.max(totalAmount - discountAmount, 0);
-    const orderCode = `SO-${Date.now()}`;
+    const orderCode = this.generateOrderCode();
 
     const order = await this.prisma.$transaction(async (tx) => {
       const created = await tx.salesOrder.create({
@@ -58,12 +59,7 @@ export class SalesOrdersService {
       });
 
       for (const item of normalizedItems) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: {
-            stockQuantity: { decrement: item.quantity },
-          },
-        });
+        await this.decrementStockOrThrow(tx, item.productId, item.quantity);
         await tx.stockMovement.create({
           data: {
             productId: item.productId,
@@ -94,7 +90,7 @@ export class SalesOrdersService {
     const discountAmount = dto.discountAmount ?? 0;
     const shippingFee = dto.shippingFee ?? 0;
     const finalAmount = Math.max(totalAmount - discountAmount + shippingFee, 0);
-    const orderCode = `SO-${Date.now()}`;
+    const orderCode = this.generateOrderCode();
 
     const order = await this.prisma.$transaction(async (tx) => {
       const created = await tx.salesOrder.create({
@@ -124,12 +120,7 @@ export class SalesOrdersService {
       });
 
       for (const item of normalizedItems) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: {
-            stockQuantity: { decrement: item.quantity },
-          },
-        });
+        await this.decrementStockOrThrow(tx, item.productId, item.quantity);
         await tx.stockMovement.create({
           data: {
             productId: item.productId,
@@ -398,26 +389,42 @@ export class SalesOrdersService {
   private async buildNormalizedItems(
     items: Array<{ productId: string; quantity: number; unitPrice?: number }>,
   ) {
-    const productIds = items.map((item) => item.productId);
+    const mergedItems = Array.from(
+      items
+        .reduce((map, item) => {
+          const current = map.get(item.productId);
+          if (!current) {
+            map.set(item.productId, { ...item });
+            return map;
+          }
+          current.quantity += item.quantity;
+          if (current.unitPrice === undefined) {
+            current.unitPrice = item.unitPrice;
+          }
+          return map;
+        }, new Map<string, { productId: string; quantity: number; unitPrice?: number }>())
+        .values(),
+    );
+    const productIds = mergedItems.map((item) => item.productId);
     const products = await this.prisma.product.findMany({
       where: { id: { in: productIds } },
       select: { id: true, sku: true, stockQuantity: true, salePrice: true },
     });
 
     if (products.length !== productIds.length) {
-      throw new BadRequestException('Mot so san pham khong ton tai');
+      throw new BadRequestException('Một số sản phẩm không tồn tại');
     }
 
     const productMap = new Map(products.map((p) => [p.id, p]));
     let totalAmount = 0;
 
-    const normalizedItems = items.map((item) => {
+    const normalizedItems = mergedItems.map((item) => {
       const product = productMap.get(item.productId);
       if (!product) {
-        throw new BadRequestException(`Khong tim thay san pham: ${item.productId}`);
+        throw new BadRequestException(`Không tìm thấy sản phẩm: ${item.productId}`);
       }
       if (product.stockQuantity < item.quantity) {
-        throw new BadRequestException(`Ton kho khong du cho ma SKU ${product.sku}`);
+        throw new BadRequestException(`Tồn kho không đủ cho mã SKU ${product.sku}`);
       }
       const unitPrice = item.unitPrice ?? Number(product.salePrice);
       const subtotal = unitPrice * item.quantity;
@@ -435,5 +442,30 @@ export class SalesOrdersService {
       normalizedItems,
       totalAmount,
     };
+  }
+
+  private generateOrderCode() {
+    const random = Math.random().toString(36).slice(2, 7).toUpperCase();
+    return `SO-${Date.now()}-${random}`;
+  }
+
+  private async decrementStockOrThrow(
+    tx: Prisma.TransactionClient,
+    productId: string,
+    quantity: number,
+  ) {
+    const result = await tx.product.updateMany({
+      where: {
+        id: productId,
+        stockQuantity: { gte: quantity },
+      },
+      data: {
+        stockQuantity: { decrement: quantity },
+      },
+    });
+
+    if (result.count !== 1) {
+      throw new BadRequestException('Tồn kho không đủ, vui lòng kiểm tra lại đơn hàng');
+    }
   }
 }

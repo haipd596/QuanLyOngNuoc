@@ -1,15 +1,15 @@
-import MainLayout from '../../components/MainLayout';
-import { HOME_ROUTE } from '../../constants';
+import MainLayout from "../../components/MainLayout";
+import { HOME_ROUTE } from "../../constants";
 
-import { Row, Col, Pagination } from 'antd';
-import { useState } from 'react';
+import { Col, Pagination, Row } from "antd";
+import { useState } from "react";
 
-import CategoriesSidebar from './components/CategoriesSidebar';
-import ProductGrid from './components/ProductGrid';
-
-import useFilter from '~/shared/hooks/useFilter';
-import { ISanPham, TFilter, useSanPhamQuery } from './services';
-import { useAddToCartAction } from './hooks/useAction';
+import useFilter from "~/shared/hooks/useFilter";
+import { useAddToCartAction } from "./hooks/useAction";
+import { ISanPham, TFilter, useSanPhamQuery } from "./services";
+import CategoriesSidebar from "./components/CategoriesSidebar";
+import ProductGrid from "./components/ProductGrid";
+import { PageIntro } from "./styled";
 
 export const initialFilter: TFilter = {
   page: 1,
@@ -21,8 +21,7 @@ export const initialFilter: TFilter = {
 
 const ProductsPage = () => {
   const { filter, setFilter } = useFilter(initialFilter);
-
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const { data, isLoading } = useSanPhamQuery(filter);
   const { addProductToCart, isAdding, pendingProductId } = useAddToCartAction();
@@ -30,21 +29,18 @@ const ProductsPage = () => {
   const products = data?.data ?? [];
   const meta = data?.metaData;
 
-  // ───────── CATEGORY ─────────
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
-
     setFilter({
       ...filter,
       page: 1,
       Query: {
         ...filter.Query,
-        CategoryId: categoryId === 'all' ? undefined : categoryId,
+        CategoryId: categoryId === "all" ? undefined : categoryId,
       },
     });
   };
 
-  // ───────── PAGINATION ─────────
   const handleChangePage = (page: number, pageSize: number) => {
     setFilter({
       ...filter,
@@ -52,31 +48,33 @@ const ProductsPage = () => {
       pageSize,
     });
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <MainLayout
       breadcrumb={[
-        { label: 'Trang chủ', href: HOME_ROUTE },
-        { label: 'Sản phẩm' },
+        { label: "Trang chủ", href: HOME_ROUTE },
+        { label: "Sản phẩm" },
       ]}
     >
-      <div style={{ maxWidth: 1475, margin: '0 auto', padding: 24 }}>
-        <Row gutter={[24, 24]}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "36px 24px 64px" }}>
+        <PageIntro>
+          <span>Cửa hàng điện nước ONV</span>
+          <h1>Danh sách sản phẩm</h1>
+          <p>
+            Tìm kiếm vật tư điện nước, xem giá bán và thêm nhanh vào giỏ hàng.
+            Dữ liệu được lấy từ API sản phẩm của hệ thống.
+          </p>
+        </PageIntro>
 
-          {/* SIDEBAR */}
-          <Col xs={24} sm={24} md={6} lg={5} xl={4}>
-            <CategoriesSidebar
-              selected={selectedCategory}
-              onChange={handleCategoryChange}
-            />
+        <Row gutter={[24, 24]}>
+          <Col xs={24} md={7} lg={5}>
+            <CategoriesSidebar selected={selectedCategory} onChange={handleCategoryChange} />
           </Col>
 
-          {/* CONTENT */}
-          <Col xs={24} sm={24} md={18} lg={19} xl={20}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
+          <Col xs={24} md={17} lg={19}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <ProductGrid
                 products={products}
                 loading={isLoading}
@@ -91,13 +89,11 @@ const ProductsPage = () => {
                   pageSize={filter.pageSize}
                   total={meta?.total || 0}
                   onChange={handleChangePage}
-                  style={{ textAlign: 'center' }}
+                  align="center"
                 />
               )}
-
             </div>
           </Col>
-
         </Row>
       </div>
     </MainLayout>

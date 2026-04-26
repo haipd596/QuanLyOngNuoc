@@ -16,10 +16,10 @@ body {
   line-height: 1.4;
   color: var(--text-primary) !important;
   background-color: var(--bg-primary);
-  min-width: 1400px;
+  min-width: 320px;
   height: var(--device-height);
   overflow-y: auto;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 // Ẩn overlay khi export pdf bị lỗi

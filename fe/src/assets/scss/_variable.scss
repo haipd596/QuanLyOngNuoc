@@ -1,26 +1,25 @@
 :root {
-  /* ===== CORE COLORS (from tailwind) ===== */
-  --primary: #001e40;
-  --secondary: #904d00;
-  --secondary-container: #fd8b00;
-  --tertiary: #381300;
+  --primary: #0b4f8a;
+  --secondary: #f27a1a;
+  --secondary-container: #ff8f2a;
+  --tertiary: #12324a;
 
   /* ===== BACKGROUND ===== */
-  --bg-primary: #f9f9f9;
-  --bg-surface: #f9f9f9;
-  --bg-surface-low: #f3f3f3;
-  --bg-surface-high: #e8e8e8;
-  --bg-surface-highest: #e2e2e2;
+  --bg-primary: #f5f8fb;
+  --bg-surface: #ffffff;
+  --bg-surface-low: #eef5fb;
+  --bg-surface-high: #e4edf5;
+  --bg-surface-highest: #d8e6f2;
 
   /* ===== TEXT ===== */
-  --text-primary: #1a1c1c;
-  --text-secondary: #43474f;
+  --text-primary: #17212b;
+  --text-secondary: #526172;
   --text-on-primary: #ffffff;
   --text-on-secondary: #ffffff;
 
   /* ===== BORDER ===== */
-  --border-primary: #737780;
-  --border-secondary: #c3c6d1;
+  --border-primary: #d7e2ec;
+  --border-secondary: #e6edf3;
 
   /* ===== STATE ===== */
   --success: #34c759;
@@ -33,5 +32,5 @@
   --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.25);
 
   /* ===== HOVER ===== */
-  --hover-primary: rgba(0, 30, 64, 0.08);
+  --hover-primary: rgba(11, 79, 138, 0.08);
 }

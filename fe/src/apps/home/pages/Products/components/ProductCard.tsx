@@ -24,7 +24,7 @@ const ProductCard = ({ product, onAddToCart, isLoading }: Props) => {
   const mainImage =
     product.images?.find((i) => i.isMain)?.imageUrl ||
     product.images?.[0]?.imageUrl ||
-    "https://via.placeholder.com/300x200?text=No+Image";
+    "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=700&q=80";
 
   return (
     <ProductCardWrapper
@@ -34,7 +34,7 @@ const ProductCard = ({ product, onAddToCart, isLoading }: Props) => {
       <ProductName title={product.name}>{product.name}</ProductName>
 
       <ProductDescription title={product.description || ""}>
-        {product.description || "Không có mô tả"}
+        {product.description || "Chưa có mô tả chi tiết"}
       </ProductDescription>
 
       <ProductPrice>{formatPrice(product.salePrice)}</ProductPrice>
@@ -47,7 +47,7 @@ const ProductCard = ({ product, onAddToCart, isLoading }: Props) => {
           disabled={isLoading}
           onClick={() => onAddToCart(product)}
         >
-          Thêm
+          Thêm vào giỏ
         </AddToCartButton>
       </ProductFooter>
     </ProductCardWrapper>

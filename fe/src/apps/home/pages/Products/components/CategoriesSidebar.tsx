@@ -1,6 +1,6 @@
-import { Spin } from 'antd';
-import { useDanhMucQuery } from '../services';
-import { CategoryTitle, CategoryList, CategoryItem } from '../styled';
+import { Spin } from "antd";
+import { CategoryItem, CategoryList, CategoryPanel, CategoryTitle } from "../styled";
+import { useDanhMucQuery } from "../services";
 
 type Props = {
   selected: string;
@@ -12,15 +12,12 @@ const CategoriesSidebar = ({ selected, onChange }: Props) => {
   const categories = data?.data ?? [];
 
   return (
-    <div>
-      <CategoryTitle>Danh mục</CategoryTitle>
+    <CategoryPanel>
+      <CategoryTitle>Danh mục sản phẩm</CategoryTitle>
 
       <Spin spinning={isLoading}>
-        <CategoryList
-          value={selected}
-          onChange={(e) => onChange(e.target.value)}
-        >
-          <CategoryItem value="all">Tất cả</CategoryItem>
+        <CategoryList value={selected} onChange={(e) => onChange(e.target.value)}>
+          <CategoryItem value="all">Tất cả sản phẩm</CategoryItem>
 
           {categories.map((c: any) => (
             <CategoryItem key={c.id} value={c.id}>
@@ -29,7 +26,7 @@ const CategoriesSidebar = ({ selected, onChange }: Props) => {
           ))}
         </CategoryList>
       </Spin>
-    </div>
+    </CategoryPanel>
   );
 };
 

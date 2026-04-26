@@ -1,5 +1,5 @@
-import { Input } from 'antd';
-import { ProductsHeader, ProductsTitle, FilterWrapper } from '../styled';
+import { Input } from "antd";
+import { FilterWrapper, ProductsHeader, ProductsTitle } from "../styled";
 
 const { Search } = Input;
 

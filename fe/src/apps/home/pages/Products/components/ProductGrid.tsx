@@ -1,7 +1,7 @@
-import { Spin, Empty } from 'antd';
-import { ProductsGrid, EmptyState } from '../styled';
-import ProductCard from './ProductCard';
-import { ISanPham } from '../services';
+import { Empty, Spin } from "antd";
+import { ISanPham } from "../services";
+import { EmptyState, ProductsGrid } from "../styled";
+import ProductCard from "./ProductCard";
 
 type Props = {
   products: ISanPham[];
@@ -21,7 +21,7 @@ const ProductGrid = ({
   if (loading) {
     return (
       <EmptyState>
-        <Spin />
+        <Spin tip="Đang tải sản phẩm" />
       </EmptyState>
     );
   }
@@ -29,7 +29,7 @@ const ProductGrid = ({
   if (!products.length) {
     return (
       <EmptyState>
-        <Empty description="Không tìm thấy sản phẩm" />
+        <Empty description="Không tìm thấy sản phẩm phù hợp" />
       </EmptyState>
     );
   }

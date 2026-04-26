@@ -1,149 +1,144 @@
-import styled from "styled-components";
 import { Card as AntCard } from "antd";
+import styled from "styled-components";
 
-/* ===== Section ===== */
 export const Section = styled.section`
-  padding: 6rem 0;
+  padding: 64px 0;
   background: #fff;
 `;
 
 export const Container = styled.div`
-  max-width: 90%;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 24px;
 `;
 
-/* ===== Header ===== */
 export const Header = styled.div`
-  text-align: center;
-  margin-bottom: 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 28px;
+
+  @media (max-width: 720px) {
+    display: block;
+  }
 `;
 
 export const Tag = styled.span`
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
   color: var(--secondary);
+  text-transform: uppercase;
+  margin-bottom: 8px;
 `;
 
 export const Title = styled.h2`
-  font-size: 3rem;
+  font-size: 34px;
   font-weight: 900;
   color: var(--primary);
-  margin-top: 0.5rem;
+  margin: 0;
 `;
 
-/* ===== Grid ===== */
 export const Grid = styled.div`
   display: grid;
-  gap: 2rem;
+  gap: 20px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
+  @media (max-width: 1060px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
   }
 `;
 
-/* ===== Card (Antd override) ===== */
 export const Card = styled(AntCard)`
-  border-radius: 0.75rem !important;
+  border-radius: 8px !important;
   overflow: hidden;
   cursor: pointer;
-  border: none !important;
+  border: 1px solid var(--border-secondary) !important;
+  box-shadow: none;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
 
   .ant-card-body {
-    padding: 1rem 1.25rem;
+    padding: 16px;
   }
-
-  transition: all 0.3s ease;
 
   &:hover {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-    transform: translateY(-4px);
-  }
-
-  .ant-card-cover img {
-    transition: transform 0.5s ease;
-  }
-
-  &:hover .ant-card-cover img {
-    transform: scale(1.1);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+    transform: translateY(-3px);
   }
 `;
 
-/* ===== Image wrapper ===== */
 export const ImageBox = styled.div`
   position: relative;
   width: 100%;
-  height: 220px;
-  background: var(--bg-secondary);
+  aspect-ratio: 4 / 3;
+  background: var(--bg-surface-low);
   overflow: hidden;
 
   img {
-    position: absolute;   
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;    
-    transition: transform 0.5s ease;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+
+  ${Card}:hover & img {
+    transform: scale(1.04);
   }
 `;
 
-/* ===== Badge ===== */
 export const Badge = styled.span`
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-
-  background: var(--primary);
-  color: var(--white);
+  top: 12px;
+  left: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--secondary);
+  color: #fff;
 `;
 
-/* ===== Content ===== */
 export const Content = styled.div``;
 
 export const Rating = styled.div`
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  color: #f4a100;
+  margin-bottom: 8px;
 `;
 
 export const ProductTitle = styled.h3`
-  font-size: 1.5rem;
-  font-weight: 700;
+  min-height: 44px;
+  font-size: 16px;
+  font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: 0.25rem;
-
+  margin: 0 0 8px;
+  line-height: 1.35;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 `;
 
 export const Stock = styled.p`
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
+  font-size: 14px;
+  margin: 0 0 14px;
   color: var(--text-secondary);
 `;
 
 export const StockStatus = styled.span<{ status: "in" | "out" }>`
-  font-weight: 700;
-  color: ${({ status }) =>
-    status === "in" ? "var(--text-success)" : "var(--text-error)"};
+  font-weight: 800;
+  color: ${({ status }) => (status === "in" ? "#159947" : "#c62828")};
 `;
 
-/* ===== Footer ===== */
 export const Footer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -151,7 +146,7 @@ export const Footer = styled.div`
 `;
 
 export const Price = styled.span`
-  font-size: 1.75rem;
+  font-size: 20px;
   font-weight: 900;
   color: var(--secondary);
 `;
@@ -159,28 +154,16 @@ export const Price = styled.span`
 export const CartButton = styled.button<{ disabled?: boolean }>`
   width: 40px;
   height: 40px;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   border: none;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  cursor: pointer;
-
-  background: ${({ disabled }) =>
-    disabled ? "var(--bg-disabled)" : "var(--secondary)"};
-
-  color: var(--white);
-
-  transition: all 0.25s ease;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  background: ${({ disabled }) => (disabled ? "#d6dce2" : "var(--primary)")};
+  color: #fff;
 
   &:hover {
-    ${({ disabled }) =>
-      !disabled &&
-      `
-      background: var(--primary);
-      transform: scale(1.05);
-    `}
+    background: ${({ disabled }) => (disabled ? "#d6dce2" : "#073e70")};
   }
 `;

@@ -27,7 +27,7 @@ export const StyledFooter = styled(Footer)`
 `;
 
 export const FooterWrapper = styled.div`
-  max-width: 90%;
+  max-width: 1280px;
   margin: 0 auto;
   width: 100%;
   margin-top: 16px;
@@ -35,7 +35,7 @@ export const FooterWrapper = styled.div`
 
 export const FooterTitle = styled(Title)`
   && {
-    color: #da9412;
+    color: #ffb45f;
     margin-bottom: 12px;
   }
 `;
@@ -72,6 +72,8 @@ export const FooterList = styled.ul`
 
 export const FooterBottom = styled.div`
   text-align: center;
-  margin-top: 24px;
-  color: #999;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
 `;
