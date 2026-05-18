@@ -7,6 +7,7 @@ import NotFound404 from '@shared/components/404'
 import { publicRoute } from './apps/home/Route';
 import authRoute from './apps/auth/Route';
 import userRoute from './apps/user/Route';
+import adminRoute from './apps/admin/Route';
 
 export const rootRoute = createRootRoute({
   component: RootComponent,
@@ -39,6 +40,7 @@ export const routeTree = rootRoute.addChildren([
   publicRoute,
   authRoute,
   userRoute,
+  adminRoute,
 ]);
 
 // Set up a Router instance
