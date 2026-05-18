@@ -8,6 +8,7 @@ import { publicRoute } from './apps/home/Route';
 import authRoute from './apps/auth/Route';
 import userRoute from './apps/user/Route';
 import adminRoute from './apps/admin/Route';
+import sellerRoute from './apps/seller/Route';
 
 export const rootRoute = createRootRoute({
   component: RootComponent,
@@ -41,6 +42,7 @@ export const routeTree = rootRoute.addChildren([
   authRoute,
   userRoute,
   adminRoute,
+  sellerRoute,
 ]);
 
 // Set up a Router instance
