@@ -1,4 +1,4 @@
-import {
+﻿import {
   DownOutlined,
   IdcardOutlined,
   LogoutOutlined,
@@ -7,7 +7,9 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import logo from "@/assets/icons/logo.png";
+import { ADMIN_DASHBOARD_ROUTE } from "@/apps/admin/constants";
 import { LOGIN_ROUTE } from "@/apps/auth/constants";
+import { SELLER_DASHBOARD_ROUTE } from "@/apps/seller/constants";
 import { USER_PROFILE_ROUTE } from "@/apps/user/constants";
 import { LOCAL_STORAGE_KEYS } from "@/constants";
 import useNotification from "@/shared/hooks/useNotification";
@@ -42,7 +44,7 @@ const AppHeader = () => {
   const navigate = useNavigate();
   const { showSuccessNotify } = useNotification();
   const [currentUser, setCurrentUser] = useState(
-    lcStorage.get<{ fullName?: string }>(LOCAL_STORAGE_KEYS.user),
+    lcStorage.get<{ fullName?: string; role?: string }>(LOCAL_STORAGE_KEYS.user),
   );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -120,7 +122,15 @@ const AppHeader = () => {
                     },
                   ],
                   onClick: ({ key }) => {
-                    if (key === "profile") navigate({ to: USER_PROFILE_ROUTE });
+                    if (key === "profile") {
+                      if (currentUser?.role === "ADMIN") {
+                        navigate({ to: ADMIN_DASHBOARD_ROUTE });
+                      } else if (currentUser?.role === "SELLER") {
+                        navigate({ to: SELLER_DASHBOARD_ROUTE });
+                      } else {
+                        navigate({ to: USER_PROFILE_ROUTE });
+                      }
+                    }
                     if (key === "logout") handleLogout();
                   },
                 }}
@@ -175,3 +185,4 @@ const AppHeader = () => {
 };
 
 export default AppHeader;
+

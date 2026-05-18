@@ -1,11 +1,15 @@
 import MainLayout from "@/apps/home/components/MainLayout";
 import { HOME_ROUTE } from "@/apps/home/constants";
+import { useGioHangQuery } from "@/apps/home/services/query";
+import type { ICart } from "@/apps/home/services/types";
+import useNotification from "@/shared/hooks/useNotification";
 import { Flex, Form } from "antd";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { ConfirmDialog } from "../../component";
 import { USER_ORDER_SUCCESS_ROUTE } from "../../constants";
+import { useCreateMyOrderMutation } from "../../services";
 import {
   CustomerInfoSection,
   OrderNoteSection,
@@ -29,6 +33,15 @@ const PaymentPage = () => {
   const [form] = Form.useForm();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const navigate = useNavigate();
+  const { showErrorNotify, showSuccessNotify } = useNotification();
+  const createOrderMutation = useCreateMyOrderMutation();
+  const { data: cartRes } = useGioHangQuery();
+
+  const cart = useMemo<ICart | null>(() => {
+    const payload = cartRes?.data;
+    if (Array.isArray(payload)) return payload[0] ?? null;
+    return payload ?? null;
+  }, [cartRes]);
 
   const handleOpenConfirm = async () => {
     try {
@@ -39,20 +52,60 @@ const PaymentPage = () => {
     }
   };
 
+  const handleConfirm = async () => {
+    setIsConfirmOpen(false);
+    const values = form.getFieldsValue();
+    const city = values.city ? String(values.city) : "";
+    const ward = values.ward ? String(values.ward) : "";
+    const address = values.address ? String(values.address) : "";
+
+    const items = (cart?.items || []).map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+    }));
+
+    if (!items.length) {
+      showErrorNotify("Gi? hàng dang tr?ng");
+      return;
+    }
+
+    try {
+      const res = await createOrderMutation.mutateAsync({
+        fullName: values.fullName,
+        phone: values.phone,
+        email: values.email,
+        address: [address, ward, city].filter(Boolean).join(", "),
+        shippingMethod: values.shippingMethod,
+        paymentMethod: values.paymentMethod,
+        note: values.note,
+        items,
+      });
+
+      const orderId = res.data?.id;
+      if (orderId) {
+        localStorage.setItem("latest_user_order_id", orderId);
+      }
+
+      showSuccessNotify("Ð?t hàng thành công");
+      navigate({ to: USER_ORDER_SUCCESS_ROUTE });
+    } catch {
+      showErrorNotify("Không th? t?o don hàng");
+    }
+  };
+
   return (
     <MainLayout
       breadcrumb={[
-        { label: "Trang chá»§", href: HOME_ROUTE },
-        { label: "Thanh toÃ¡n" },
+        { label: "Trang ch?", href: HOME_ROUTE },
+        { label: "Thanh toán" },
       ]}
     >
       <PaymentViewport>
         <PaymentContent>
           <PaymentHeader>
-            <PaymentTitle>Thanh toÃ¡n</PaymentTitle>
+            <PaymentTitle>Thanh toán</PaymentTitle>
             <PaymentDescription>
-              Vui lÃ²ng kiá»ƒm tra láº¡i thÃ´ng tin Ä‘Æ¡n hÃ ng vÃ  Ä‘á»‹a chá»‰ nháº­n hÃ ng cá»§a
-              báº¡n.
+              Vui lòng ki?m tra l?i thông tin don hàng và d?a ch? nh?n hàng c?a b?n.
             </PaymentDescription>
           </PaymentHeader>
 
@@ -87,14 +140,11 @@ const PaymentPage = () => {
 
       <ConfirmDialog
         open={isConfirmOpen}
-        title="XÃ¡c nháº­n Ä‘áº·t hÃ ng"
-        description="Báº¡n xÃ¡c nháº­n Ä‘áº·t Ä‘Æ¡n hÃ ng nÃ y chá»©?"
-        confirmText="XÃ¡c nháº­n"
+        title="Xác nh?n d?t hàng"
+        description="B?n xác nh?n d?t don hàng này ch??"
+        confirmText="Xác nh?n"
         onCancel={() => setIsConfirmOpen(false)}
-        onConfirm={() => {
-          setIsConfirmOpen(false);
-          navigate({ to: USER_ORDER_SUCCESS_ROUTE });
-        }}
+        onConfirm={handleConfirm}
       />
     </MainLayout>
   );

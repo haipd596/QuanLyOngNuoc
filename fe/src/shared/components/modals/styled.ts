@@ -79,6 +79,21 @@ export const ModalBody = styled.div`
       padding-bottom: 0;
     }
   }
+
+  .ant-form-item {
+    width: 100%;
+  }
+
+  .ant-form-item-control,
+  .ant-form-item-control-input,
+  .ant-form-item-control-input-content,
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-input-number,
+  .ant-select,
+  .ant-picker {
+    width: 100%;
+  }
 `;
 
 export const FormButtonGroupWrapper = styled.div`

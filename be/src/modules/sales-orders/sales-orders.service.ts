@@ -2,12 +2,15 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   CheckoutType,
   OrderStatus,
+  PaymentMethod,
   PaymentStatus,
   Prisma,
+  ShippingMethod,
   StockMovementType,
 } from '@prisma/client';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
@@ -19,6 +22,7 @@ import { PrismaService } from '../../config/prisma.service';
 import { MailService } from '../mail/mail.service';
 import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
 import { GuestCheckoutDto } from './dto/guest-checkout.dto';
+import { MyCheckoutDto } from './dto/my-checkout.dto';
 import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
 
 @Injectable()
@@ -240,11 +244,105 @@ export class SalesOrdersService {
   }
 
   async updateStatus(id: string, dto: UpdateSalesOrderStatusDto) {
-    await this.findOne(id);
+    const order = await this.findOne(id);
+    this.ensureOrderStatusTransition(order.orderStatus, dto.orderStatus);
     return this.prisma.salesOrder.update({
       where: { id },
       data: { orderStatus: dto.orderStatus },
     });
+  }
+
+  async createMyOrder(userId: string, dto: MyCheckoutDto) {
+    if (!userId) {
+      throw new UnauthorizedException('Khong tim thay nguoi dung');
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('Khong tim thay nguoi dung');
+    }
+
+    const customer = await this.findOrCreateCustomerForUser(dto, user.fullName, user.email ?? null);
+    const { normalizedItems, totalAmount } = await this.buildNormalizedItems(dto.items);
+    const discountAmount = dto.discountAmount ?? 0;
+    const shippingFee = dto.shippingFee ?? 0;
+    const finalAmount = Math.max(totalAmount - discountAmount + shippingFee, 0);
+    const orderCode = this.generateOrderCode();
+
+    return this.prisma.$transaction(async (tx) => {
+      const created = await tx.salesOrder.create({
+        data: {
+          orderCode,
+          checkoutType: CheckoutType.USER,
+          customerId: customer.id,
+          totalAmount,
+          discountAmount,
+          shippingFee,
+          finalAmount,
+          shippingMethod: this.mapShippingMethod(dto.shippingMethod),
+          paymentMethod: this.mapPaymentMethod(dto.paymentMethod),
+          paymentStatus: PaymentStatus.UNPAID,
+          orderStatus: OrderStatus.PENDING,
+          note: dto.note,
+          items: { create: normalizedItems },
+        },
+        include: { items: true, customer: true },
+      });
+
+      for (const item of normalizedItems) {
+        await this.decrementStockOrThrow(tx, item.productId, item.quantity);
+        await tx.stockMovement.create({
+          data: {
+            productId: item.productId,
+            type: StockMovementType.EXPORT,
+            quantity: item.quantity,
+            salesOrderId: created.id,
+            note: `Export for ${created.orderCode} (user checkout)`,
+          },
+        });
+      }
+
+      return created;
+    });
+  }
+
+  async findMyOrders(userId: string, query: PaginationQueryDto) {
+    const customer = await this.getCustomerByUser(userId);
+    const { page, limit, skip } = normalizePagination(query);
+    const where = { customerId: customer.id };
+
+    const [items, total] = await Promise.all([
+      this.prisma.salesOrder.findMany({
+        where,
+        include: { items: { include: { product: true } }, customer: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.salesOrder.count({ where }),
+    ]);
+
+    return buildPaginatedResult(items, total, page, limit);
+  }
+
+  async findMyOrderById(userId: string, id: string) {
+    const customer = await this.getCustomerByUser(userId);
+    const order = await this.prisma.salesOrder.findFirst({
+      where: { id, customerId: customer.id },
+      include: { items: { include: { product: true } }, customer: true },
+    });
+    if (!order) {
+      throw new NotFoundException('Khong tim thay don hang');
+    }
+    return order;
+  }
+
+  async cancelMyOrder(userId: string, id: string) {
+    const order = await this.findMyOrderById(userId, id);
+    if (!(order.orderStatus === OrderStatus.PENDING || order.orderStatus === OrderStatus.CONFIRMED)) {
+      throw new BadRequestException('Khong the huy don hang o trang thai hien tai');
+    }
+    return this.cancel(order.id);
   }
 
   async cancel(id: string) {
@@ -384,6 +482,86 @@ export class SalesOrdersService {
         }),
       ),
     );
+  }
+
+  private ensureOrderStatusTransition(current: OrderStatus, next: OrderStatus) {
+    if (current === next) {
+      return;
+    }
+    const map: Record<OrderStatus, OrderStatus[]> = {
+      PENDING: [OrderStatus.CONFIRMED, OrderStatus.CANCELED],
+      CONFIRMED: [OrderStatus.PACKING, OrderStatus.CANCELED],
+      PACKING: [OrderStatus.SHIPPED],
+      SHIPPED: [OrderStatus.COMPLETED],
+      COMPLETED: [],
+      CANCELED: [],
+    };
+    if (!map[current].includes(next)) {
+      throw new BadRequestException(`Khong the chuyen trang thai tu ${current} sang ${next}`);
+    }
+  }
+
+  private async getCustomerByUser(userId: string) {
+    if (!userId) {
+      throw new UnauthorizedException('Khong tim thay nguoi dung');
+    }
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('Khong tim thay nguoi dung');
+    }
+    const customer = await this.prisma.customer.findFirst({
+      where: {
+        OR: [
+          ...(user.phone ? [{ phone: user.phone }] : []),
+          ...(user.email ? [{ email: user.email }] : []),
+        ],
+      },
+    });
+    if (!customer) {
+      throw new NotFoundException('Khong tim thay ho so khach hang');
+    }
+    return customer;
+  }
+
+  private async findOrCreateCustomerForUser(dto: MyCheckoutDto, fallbackName: string, fallbackEmail: string | null) {
+    const phone = dto.phone.trim();
+    const email = dto.email?.trim() || fallbackEmail || null;
+    const fullName = dto.fullName.trim() || fallbackName;
+    const address = dto.address.trim();
+    const note = dto.note?.trim() || null;
+
+    const existing = await this.prisma.customer.findFirst({
+      where: {
+        OR: [
+          { phone },
+          ...(email ? [{ email }] : []),
+        ],
+      },
+    });
+
+    if (existing) {
+      return this.prisma.customer.update({
+        where: { id: existing.id },
+        data: { fullName, phone, email, address, note },
+      });
+    }
+
+    return this.prisma.customer.create({
+      data: { fullName, phone, email, address, note },
+    });
+  }
+
+  private mapShippingMethod(input?: string): ShippingMethod {
+    if (!input) return ShippingMethod.STANDARD;
+    return input.toUpperCase() === ShippingMethod.EXPRESS ? ShippingMethod.EXPRESS : ShippingMethod.STANDARD;
+  }
+
+  private mapPaymentMethod(input?: string): PaymentMethod {
+    const normalized = (input || '').toUpperCase();
+    if (normalized === 'BANK' || normalized === 'BANK_TRANSFER') return PaymentMethod.BANK_TRANSFER;
+    if (normalized === 'WALLET' || normalized === 'MOMO') return PaymentMethod.MOMO;
+    if (normalized === 'ZALOPAY') return PaymentMethod.ZALOPAY;
+    return PaymentMethod.COD;
   }
 
   private async buildNormalizedItems(

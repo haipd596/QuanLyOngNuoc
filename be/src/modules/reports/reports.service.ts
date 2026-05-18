@@ -175,4 +175,55 @@ export class ReportsService {
       })),
     };
   }
+
+  async revenueTrend(days = 7) {
+    const safeDays = Math.max(1, Math.min(days, 60));
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    const start = new Date(end);
+    start.setDate(end.getDate() - safeDays + 1);
+    start.setHours(0, 0, 0, 0);
+
+    const rows = await this.prisma.$queryRaw<Array<{ day: Date; revenue: bigint }>>`
+      SELECT DATE(createdAt) as day, COALESCE(SUM(finalAmount), 0) as revenue
+      FROM SalesOrder
+      WHERE createdAt >= ${start}
+        AND createdAt <= ${end}
+        AND orderStatus <> ${OrderStatus.CANCELED}
+      GROUP BY DATE(createdAt)
+      ORDER BY DATE(createdAt) ASC
+    `;
+
+    const map = new Map(rows.map((r) => [new Date(r.day).toISOString().slice(0, 10), Number(r.revenue || 0)]));
+    const points: Array<{ date: string; revenue: number }> = [];
+    for (let i = 0; i < safeDays; i += 1) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      const key = d.toISOString().slice(0, 10);
+      points.push({ date: key, revenue: map.get(key) ?? 0 });
+    }
+    return points;
+  }
+
+  async orderStatusSummary(days = 30) {
+    const safeDays = Math.max(1, Math.min(days, 365));
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    const start = new Date(end);
+    start.setDate(end.getDate() - safeDays + 1);
+    start.setHours(0, 0, 0, 0);
+
+    const rows = await this.prisma.salesOrder.groupBy({
+      by: ['orderStatus'],
+      _count: { id: true },
+      where: {
+        createdAt: { gte: start, lte: end },
+      },
+    });
+
+    return rows.map((item) => ({
+      orderStatus: item.orderStatus,
+      count: item._count.id,
+    }));
+  }
 }

@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -16,6 +17,7 @@ import {
 } from '../../common/utils/list-query.util';
 import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
 import { GuestCheckoutDto } from './dto/guest-checkout.dto';
+import { MyCheckoutDto } from './dto/my-checkout.dto';
 import { TrackOrderDto } from './dto/track-order.dto';
 import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
 import { SalesOrdersService } from './sales-orders.service';
@@ -30,6 +32,48 @@ export class SalesOrdersController {
   @ApiStandardResponse('Dat don guest thanh cong', 201)
   guestCheckout(@Body() dto: GuestCheckoutDto) {
     return this.salesOrdersService.createGuest(dto);
+  }
+
+  @Post('my-checkout')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('BearerAuth')
+  @ResponseMessage('Dat don thanh cong')
+  @ApiStandardResponse('Dat don thanh cong', 201)
+  myCheckout(@Req() req: Request & { user?: { sub: string } }, @Body() dto: MyCheckoutDto) {
+    return this.salesOrdersService.createMyOrder(req.user?.sub ?? '', dto);
+  }
+
+  @Get('my-orders')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('BearerAuth')
+  @ResponseMessage('Lay danh sach don hang cua toi thanh cong')
+  @ApiPaginationQuery()
+  @ApiStandardPaginationResponse('Lay danh sach don hang cua toi thanh cong')
+  findMyOrders(
+    @Req() req: Request & { user?: { sub: string } },
+    @Query('Page') page: string | undefined,
+    @Query('PageSize') pageSize: string | undefined,
+  ) {
+    const paging = buildPaginationInput(page, pageSize);
+    return this.salesOrdersService.findMyOrders(req.user?.sub ?? '', paging);
+  }
+
+  @Get('my-orders/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('BearerAuth')
+  @ResponseMessage('Lay chi tiet don hang cua toi thanh cong')
+  @ApiStandardResponse('Lay chi tiet don hang cua toi thanh cong')
+  findMyOrderById(@Req() req: Request & { user?: { sub: string } }, @Param('id') id: string) {
+    return this.salesOrdersService.findMyOrderById(req.user?.sub ?? '', id);
+  }
+
+  @Post('my-orders/:id/cancel')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('BearerAuth')
+  @ResponseMessage('Huy don hang thanh cong')
+  @ApiStandardResponse('Huy don hang thanh cong', 201)
+  cancelMyOrder(@Req() req: Request & { user?: { sub: string } }, @Param('id') id: string) {
+    return this.salesOrdersService.cancelMyOrder(req.user?.sub ?? '', id);
   }
 
   @Get('track')

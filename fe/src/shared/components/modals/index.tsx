@@ -1,4 +1,4 @@
-import { CloseOutlined } from "@ant-design/icons";
+﻿import { CloseOutlined } from "@ant-design/icons";
 import type { ModalProps } from "antd";
 import { Modal } from "antd";
 import classNames from "classnames";
@@ -49,10 +49,42 @@ const BaseModal = ({
           maxHeight: "var(--modal-max-height)",
           overflowY: "auto",
         },
-        footer: { borderRadius: 4 },
+        footer: {
+          borderRadius: 4,
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 12,
+        },
       }}
-      okButtonProps={{ size: "large", style: { minWidth: 100 } }}
-      cancelButtonProps={{ size: "large", style: { minWidth: 100 } }}
+      rootClassName="base-modal"
+      okButtonProps={{
+        size: "large",
+        style: {
+          width: "100%",
+          marginInlineStart: 0,
+          height: 40,
+          borderRadius: 6,
+          fontWeight: 600,
+          boxShadow: "none",
+          color: "#fff",
+          backgroundColor: "var(--primary)",
+          borderColor: "var(--primary)",
+        },
+      }}
+      cancelButtonProps={{
+        size: "large",
+        style: {
+          width: "100%",
+          marginInlineStart: 0,
+          height: 40,
+          borderRadius: 6,
+          fontWeight: 600,
+          boxShadow: "none",
+          backgroundColor: "#fff",
+          color: "var(--primary)",
+          borderColor: "var(--primary)",
+        },
+      }}
       confirmLoading={loading}
       cancelText="Hủy"
       {...props}

@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { Flex } from "antd";
 import { useNavigate } from "@tanstack/react-router";
+
 import MainLayout from "@/apps/home/components/MainLayout";
 import { LOGIN_ROUTE } from "@/apps/auth/constants";
 import { LOCAL_STORAGE_KEYS } from "@/constants";
@@ -7,10 +9,8 @@ import useNotification from "@/shared/hooks/useNotification";
 import { lcStorage } from "@/shared/utils";
 import tokenManager from "@/shared/utils/tokenManager";
 import { ConfirmDialog, UserSidebar } from "../../component";
-import {
-  USER_MENU_KEYS,
-  USER_PROFILE_ROUTE,
-} from "../../constants";
+import { USER_MENU_KEYS, USER_PROFILE_ROUTE } from "../../constants";
+import { useCancelMyOrderMutation, useMyOrderByIdQuery, useMyOrdersQuery } from "../../services";
 import {
   HistoryContainer,
   HistoryContent,
@@ -21,26 +21,42 @@ import {
   RightColumn,
 } from "./styled";
 import {
-  OrderHeader,
+  BenefitSection,
   DeliveryStatus,
-  ProductsList,
   JourneyHistory,
+  OrderHeader,
   OrderInfo,
   PaymentSummary,
-  BenefitSection,
+  ProductsList,
 } from "./components";
-import { Flex } from "antd";
+
+const formatCurrency = (v: string | number) =>
+  new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(Number(v || 0));
 
 const OrderPendingPage = () => {
   const navigate = useNavigate();
-  const { showSuccessNotify } = useNotification();
+  const { showSuccessNotify, showErrorNotify } = useNotification();
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+
+  const latestOrderId = localStorage.getItem("latest_user_order_id") || undefined;
+  const { data: ordersRes } = useMyOrdersQuery({ Page: 1, PageSize: 10 });
+  const fallbackOrderId = ordersRes?.data?.[0]?.id;
+  const activeOrderId = latestOrderId || fallbackOrderId;
+
+  const { data: orderRes, refetch } = useMyOrderByIdQuery(activeOrderId);
+  const cancelMutation = useCancelMyOrderMutation();
+
+  const order = orderRes?.data;
 
   const handleLogout = () => {
     tokenManager.removeAccessToken();
     tokenManager.removeRefreshToken();
     lcStorage.delete(LOCAL_STORAGE_KEYS.user);
-    showSuccessNotify("Đăng xuất thành công");
+    showSuccessNotify("�ang xu?t th�nh c�ng");
     navigate({ to: LOGIN_ROUTE });
   };
 
@@ -49,28 +65,42 @@ const OrderPendingPage = () => {
       setIsLogoutDialogOpen(true);
       return;
     }
-
     if (key === USER_MENU_KEYS.PROFILE) {
       navigate({ to: USER_PROFILE_ROUTE });
     }
   };
 
+  const products = useMemo(() => {
+    if (!order?.items) return [];
+    return order.items.map((item) => ({
+      id: item.id,
+      image:
+        item.product?.images?.find((i) => i.isMain)?.imageUrl ||
+        item.product?.images?.[0]?.imageUrl ||
+        "https://via.placeholder.com/80",
+      name: item.product?.name || "S?n ph?m",
+      code: item.product?.sku || "N/A",
+      quantity: `${item.quantity}`,
+      price: formatCurrency(item.subtotal),
+      warranty: "",
+    }));
+  }, [order]);
+
+  const canCancel = ["PENDING", "CONFIRMED"].includes(order?.orderStatus || "");
+
   return (
     <MainLayout>
       <HistoryViewport>
         <HistoryLayout>
-          <UserSidebar
-            selectedKey={USER_MENU_KEYS.ORDER_PENDING}
-            onNavigate={handleSidebarNavigate}
-          />
+          <UserSidebar selectedKey={USER_MENU_KEYS.ORDER_PENDING} onNavigate={handleSidebarNavigate} />
 
           <HistoryLayout>
             <HistoryContent>
               <HistoryContainer>
                 <OrderHeader
-                  orderNumber="ONV-2024-8892"
-                  orderDate="24 tháng 05, 2024"
-                  orderTime="14:30"
+                  orderNumber={order?.orderCode || "N/A"}
+                  orderDate={order ? new Date(order.createdAt).toLocaleDateString("vi-VN") : "--"}
+                  orderTime={order ? new Date(order.createdAt).toLocaleTimeString("vi-VN") : "--"}
                 />
 
                 <DeliveryStatus />
@@ -78,61 +108,14 @@ const OrderPendingPage = () => {
                 <HistoryGrid>
                   <LeftColumn>
                     <Flex vertical gap={24}>
-                      <ProductsList
-                        products={[
-                          {
-                            id: "1",
-                            image:
-                              "https://images.unsplash.com/photo-1516937941344-00b4e0337589?auto=format&fit=crop&w=200&q=80",
-                            name: "Ống nhựa PVC Tiền Phong Class 3 - Φ114x3.2mm",
-                            code: "TP-PVC-114-C3",
-                            quantity: "05 ống",
-                            price: "1.250.000đ",
-                            warranty: "Bảo hành 12 tháng",
-                          },
-                          {
-                            id: "2",
-                            image:
-                              "https://images.unsplash.com/photo-1581092919535-7146ff1a5906?auto=format&fit=crop&w=200&q=80",
-                            name: "CB Tự Động Panasonic 2P 40A 6kA",
-                            code: "PAN-CB-40A",
-                            quantity: "02 cái",
-                            price: "345.000đ",
-                            warranty: "Tem chống giả",
-                          },
-                          {
-                            id: "3",
-                            image:
-                              "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=200&q=80",
-                            name: "Van bi đồng tay gạt MIHA - DN25",
-                            code: "MIHA-VAN-25",
-                            quantity: "01 cái",
-                            price: "480.000đ",
-                            warranty: "Tiêu chuẩn BS",
-                          },
-                        ]}
-                        totalCount={3}
-                      />
+                      <ProductsList products={products} totalCount={products.length} />
 
                       <JourneyHistory
                         items={[
                           {
-                            time: "Hôm nay 09:00",
-                            title: "Đang vận chuyển",
-                            description:
-                              "Kiện hàng đã rời kho phân phối tại Quận 12, TP.HCM",
-                          },
-                          {
-                            time: "24/05 16:15",
-                            title: "Xác nhận đơn hàng",
-                            description:
-                              "Nhân viên kho đã kiểm tra và đóng gói sản phẩm",
-                          },
-                          {
-                            time: "24/05 14:30",
-                            title: "Đã đặt hàng",
-                            description:
-                              "Hệ thống ghi nhận đơn hàng thành công qua ví MoMo",
+                            time: order ? new Date(order.createdAt).toLocaleString("vi-VN") : "",
+                            title: `Tr?ng th�i: ${order?.orderStatus || "PENDING"}`,
+                            description: "�on h�ng dang du?c x? l�.",
                           },
                         ]}
                       />
@@ -142,20 +125,38 @@ const OrderPendingPage = () => {
                   <RightColumn>
                     <Flex vertical gap={24}>
                       <OrderInfo
-                        recipientName="Nguyễn Văn Kiến Trúc"
-                        phone="090 * * * * 888"
-                        address="456 Đường Lê Lợi, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh"
-                        note="Giao trong giờ hành chính, gọi trước 30 phút. Công trình đang thi công tầng 3."
+                        recipientName={order?.customer?.fullName || order?.guestName || "Kh�ch h�ng"}
+                        phone={order?.customer?.phone || order?.guestPhone || ""}
+                        address={order?.customer?.address || order?.guestAddress || ""}
+                        note={order?.note || "Kh�ng c� ghi ch�"}
                       />
 
                       <PaymentSummary
-                        subtotal="2.075.000đ"
-                        shippingFee="150.000đ"
-                        discount="-103.750đ"
-                        total="2.121.250đ"
+                        subtotal={formatCurrency(order?.totalAmount || 0)}
+                        shippingFee={formatCurrency(order?.shippingFee || 0)}
+                        discount={`-${formatCurrency(order?.discountAmount || 0)}`}
+                        total={formatCurrency(order?.finalAmount || 0)}
                       />
 
-                      <BenefitSection points={2121} />
+                      {canCancel && (
+                        <button
+                          style={{ padding: 10, borderRadius: 8, border: "1px solid var(--primary)", color: "var(--primary)", background: "#fff", cursor: "pointer" }}
+                          onClick={async () => {
+                            if (!order?.id) return;
+                            try {
+                              await cancelMutation.mutateAsync(order.id);
+                              showSuccessNotify("�� h?y don h�ng");
+                              await refetch();
+                            } catch {
+                              showErrorNotify("Kh�ng th? h?y don h�ng");
+                            }
+                          }}
+                        >
+                          H?y don h�ng
+                        </button>
+                      )}
+
+                      <BenefitSection points={Math.floor(Number(order?.finalAmount || 0) / 1000)} />
                     </Flex>
                   </RightColumn>
                 </HistoryGrid>

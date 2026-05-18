@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const AdminLayout = styled.div`
-  min-height: 100vh;
+  min-height: 115vh;
   background: #f4f7fb;
   color: #152033;
   display: grid;
@@ -57,7 +57,14 @@ export const MenuButton = styled.button<{ $active?: boolean }>`
   font-size: 14px;
   font-weight: 600;
   text-align: left;
-  cursor: default;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background: ${({ $active }) =>
+      $active ? "#ffffff" : "rgba(255, 255, 255, 0.14)"};
+    color: ${({ $active }) => ($active ? "#0f2744" : "#ffffff")};
+  }
 
   .anticon {
     font-size: 18px;
@@ -158,6 +165,23 @@ export const Content = styled.section`
 
   @media (max-width: 700px) {
     padding: 18px;
+  }
+
+  .admin-action-primary-btn.ant-btn-primary {
+    min-width: 168px;
+    height: 42px;
+    border-radius: 6px;
+    box-shadow: none;
+    border-color: var(--primary);
+    background: var(--primary);
+    font-weight: 600;
+  }
+
+  .admin-action-primary-btn.ant-btn-primary:hover,
+  .admin-action-primary-btn.ant-btn-primary:focus {
+    border-color: var(--primary);
+    background: var(--primary);
+    box-shadow: none;
   }
 `;
 

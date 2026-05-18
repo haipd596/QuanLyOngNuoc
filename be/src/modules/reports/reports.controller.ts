@@ -70,4 +70,32 @@ export class ReportsController {
   salesOverview(@Query('from') from?: string, @Query('to') to?: string) {
     return this.reportsService.salesOverview(from, to);
   }
+
+  @Get('revenue-trend')
+  @ResponseMessage('Lấy xu hướng doanh thu thành công')
+  @ApiQuery({
+    name: 'days',
+    required: false,
+    description: 'Số ngày gần nhất',
+    example: 7,
+  })
+  @ApiStandardResponse('Lấy xu hướng doanh thu thành công')
+  revenueTrend(@Query('days') days?: string) {
+    const parsedDays = Number(days || 7);
+    return this.reportsService.revenueTrend(Number.isNaN(parsedDays) ? 7 : parsedDays);
+  }
+
+  @Get('order-status-summary')
+  @ResponseMessage('Lấy tổng hợp trạng thái đơn hàng thành công')
+  @ApiQuery({
+    name: 'days',
+    required: false,
+    description: 'Số ngày gần nhất',
+    example: 30,
+  })
+  @ApiStandardResponse('Lấy tổng hợp trạng thái đơn hàng thành công')
+  orderStatusSummary(@Query('days') days?: string) {
+    const parsedDays = Number(days || 30);
+    return this.reportsService.orderStatusSummary(Number.isNaN(parsedDays) ? 30 : parsedDays);
+  }
 }
