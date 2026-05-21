@@ -7,10 +7,18 @@ export interface IUserMe {
   fullName: string;
   email: string;
   phone: string;
+  dateOfBirth?: string | null;
   roleId: string;
   role: IUserRole;
   status: string;
   createdAt: string;
+}
+
+export interface IUpdateMyProfilePayload {
+  fullName: string;
+  email: string;
+  phone: string;
+  dateOfBirth?: string | null;
 }
 
 export interface IMyOrderItem {
@@ -39,6 +47,7 @@ export interface IMyOrder {
   shippingFee: string;
   finalAmount: string;
   note?: string | null;
+  cancelReason?: string | null;
   guestName?: string | null;
   guestPhone?: string | null;
   guestAddress?: string | null;
@@ -49,6 +58,11 @@ export interface IMyOrder {
     address?: string | null;
   } | null;
   items: IMyOrderItem[];
+}
+
+export interface ICancelMyOrderPayload {
+  id: string;
+  reason: string;
 }
 
 export interface IMyCheckoutPayload {

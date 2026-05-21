@@ -194,7 +194,14 @@ export const ProductPrice = styled.div`
   font-size: 18px;
   font-weight: 900;
   color: var(--secondary);
-  margin: auto 0 12px;
+  margin: auto 0 8px;
+`;
+
+export const ProductStock = styled.div<{ inStock: boolean }>`
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: ${({ inStock }) => (inStock ? "#159947" : "#c62828")};
 `;
 
 export const ProductFooter = styled.div`

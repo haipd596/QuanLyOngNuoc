@@ -269,7 +269,7 @@ export class SalesOrdersService {
     const finalAmount = Math.max(totalAmount - discountAmount + shippingFee, 0);
     const orderCode = this.generateOrderCode();
 
-    return this.prisma.$transaction(async (tx) => {
+    const order = await this.prisma.$transaction(async (tx) => {
       const created = await tx.salesOrder.create({
         data: {
           orderCode,
@@ -302,8 +302,27 @@ export class SalesOrdersService {
         });
       }
 
+      const cart = await tx.cart.findUnique({
+        where: { userId },
+        select: { id: true },
+      });
+
+      if (cart) {
+        await tx.cartItem.deleteMany({
+          where: { cartId: cart.id },
+        });
+      }
+
       return created;
     });
+
+    try {
+      await this.sendOrderMailHooks(order.id);
+    } catch {
+      // mail hook best-effort
+    }
+
+    return order;
   }
 
   async findMyOrders(userId: string, query: PaginationQueryDto) {
@@ -314,7 +333,18 @@ export class SalesOrdersService {
     const [items, total] = await Promise.all([
       this.prisma.salesOrder.findMany({
         where,
-        include: { items: { include: { product: true } }, customer: true },
+        include: {
+          items: {
+            include: {
+              product: {
+                include: {
+                  images: true,
+                },
+              },
+            },
+          },
+          customer: true,
+        },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
@@ -329,7 +359,18 @@ export class SalesOrdersService {
     const customer = await this.getCustomerByUser(userId);
     const order = await this.prisma.salesOrder.findFirst({
       where: { id, customerId: customer.id },
-      include: { items: { include: { product: true } }, customer: true },
+      include: {
+        items: {
+          include: {
+            product: {
+              include: {
+                images: true,
+              },
+            },
+          },
+        },
+        customer: true,
+      },
     });
     if (!order) {
       throw new NotFoundException('Khong tim thay don hang');
@@ -337,15 +378,15 @@ export class SalesOrdersService {
     return order;
   }
 
-  async cancelMyOrder(userId: string, id: string) {
+  async cancelMyOrder(userId: string, id: string, reason: string) {
     const order = await this.findMyOrderById(userId, id);
     if (!(order.orderStatus === OrderStatus.PENDING || order.orderStatus === OrderStatus.CONFIRMED)) {
       throw new BadRequestException('Khong the huy don hang o trang thai hien tai');
     }
-    return this.cancel(order.id);
+    return this.cancel(order.id, reason);
   }
 
-  async cancel(id: string) {
+  async cancel(id: string, reason: string) {
     const order = await this.findOne(id);
     if (order.orderStatus === OrderStatus.CANCELED) {
       throw new BadRequestException('Don hang da bi huy');
@@ -374,9 +415,11 @@ export class SalesOrdersService {
         });
       }
 
+      const normalizedReason = reason.trim();
+      const reasonNote = `[CANCEL_REASON] ${normalizedReason}`;
       return tx.salesOrder.update({
         where: { id: order.id },
-        data: { orderStatus: OrderStatus.CANCELED },
+        data: { orderStatus: OrderStatus.CANCELED, note: reasonNote },
       });
     });
   }
@@ -401,7 +444,15 @@ export class SalesOrdersService {
       },
       include: {
         customer: true,
-        items: { include: { product: true } },
+        items: {
+          include: {
+            product: {
+              include: {
+                images: true,
+              },
+            },
+          },
+        },
       },
     });
 

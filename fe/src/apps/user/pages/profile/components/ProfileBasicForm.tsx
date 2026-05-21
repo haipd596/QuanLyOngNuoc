@@ -1,4 +1,4 @@
-import {
+﻿import {
   CalendarOutlined,
   EditOutlined,
   MailOutlined,
@@ -20,9 +20,11 @@ import {
 
 interface ProfileBasicFormProps {
   form: FormInstance;
+  onSubmit: (values: any) => void;
+  saving?: boolean;
 }
 
-const ProfileBasicForm = ({ form }: ProfileBasicFormProps) => {
+const ProfileBasicForm = ({ form, onSubmit, saving }: ProfileBasicFormProps) => {
   return (
     <ProfileCard bordered={false}>
       <CardHeader>
@@ -40,7 +42,7 @@ const ProfileBasicForm = ({ form }: ProfileBasicFormProps) => {
       </CardHeader>
 
       <StyledFormWrap>
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="vertical" onFinish={onSubmit}>
           <Row gutter={[24, 8]}>
             <Col xs={24} md={12}>
               <Form.Item
@@ -100,7 +102,7 @@ const ProfileBasicForm = ({ form }: ProfileBasicFormProps) => {
             </Col>
           </Row>
 
-          <SaveButton type="primary" htmlType="submit">
+          <SaveButton type="primary" htmlType="submit" loading={saving}>
             Lưu thay đổi
           </SaveButton>
         </Form>

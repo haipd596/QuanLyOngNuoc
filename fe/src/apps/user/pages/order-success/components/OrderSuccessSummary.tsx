@@ -1,4 +1,5 @@
-import { SafetyCertificateOutlined } from "@ant-design/icons";
+﻿import { SafetyCertificateOutlined } from "@ant-design/icons";
+import type { IMyOrder } from "@/apps/user/services";
 import { Flex } from "antd";
 import { HOME_ROUTE } from "@/apps/home/constants";
 import { USER_ORDER_PENDING_ROUTE } from "../../../constants";
@@ -14,25 +15,37 @@ import {
   WarrantyNote,
 } from "../styled";
 
-const OrderSuccessSummary = () => {
+type Props = {
+  order?: IMyOrder;
+};
+
+const formatMoney = (value?: string | number) =>
+  `${Number(value || 0).toLocaleString("vi-VN")}đ`;
+
+const OrderSuccessSummary = ({ order }: Props) => {
+  const subtotal = Number(order?.totalAmount || 0);
+  const shippingFee = Number(order?.shippingFee || 0);
+  const discount = Number(order?.discountAmount || 0);
+  const total = Number(order?.finalAmount || 0);
+
   return (
     <SummaryPanel bordered={false}>
       <SummaryTitle>Tổng kết chi phí</SummaryTitle>
       <SummaryRow>
         <span>Tạm tính</span>
-        <span>3.575.000đ</span>
+        <span>{formatMoney(subtotal)}</span>
       </SummaryRow>
       <SummaryRow>
         <span>Phí vận chuyển</span>
-        <span>45.000đ</span>
+        <span>{formatMoney(shippingFee)}</span>
       </SummaryRow>
       <SummaryRow>
-        <span>Thuế (VAT 8%)</span>
-        <span>286.000đ</span>
+        <span>Giảm giá</span>
+        <span>-{formatMoney(discount)}</span>
       </SummaryRow>
       <SummaryTotal>
         <span>Tổng cộng</span>
-        <SummaryTotalPrice>3.906.000đ</SummaryTotalPrice>
+        <SummaryTotalPrice>{formatMoney(total)}</SummaryTotalPrice>
       </SummaryTotal>
 
       <PrimaryAction block href={USER_ORDER_PENDING_ROUTE}>

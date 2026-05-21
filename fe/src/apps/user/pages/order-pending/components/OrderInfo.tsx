@@ -1,4 +1,4 @@
-import { Space } from "antd";
+﻿import { Space } from "antd";
 import { InfoCard, InfoLabel, InfoText, InfoTitle, NoteText } from "../styled";
 
 interface OrderInfoProps {

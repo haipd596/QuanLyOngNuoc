@@ -12,6 +12,7 @@ import AdminLayoutPage from "./pages/layout/AdminLayoutPage";
 import AdminOverviewPage from "./pages/overview/AdminOverviewPage";
 import AdminOrdersPage from "./pages/orders/AdminOrdersPage";
 import AdminProductsPage from "./pages/products/AdminProductsPage";
+import AdminCategoriesPage from "./pages/categories/AdminCategoriesPage";
 import AdminCustomersPage from "./pages/customers/AdminCustomersPage";
 import AdminReportsPage from "./pages/reports/AdminReportsPage";
 
@@ -60,6 +61,12 @@ export const adminProductsRoute = createRoute({
   component: AdminProductsPage,
 });
 
+export const adminCategoriesRoute = createRoute({
+  getParentRoute: () => adminRoute,
+  path: "categories",
+  component: AdminCategoriesPage,
+});
+
 export const adminCustomersRoute = createRoute({
   getParentRoute: () => adminRoute,
   path: "customers",
@@ -76,6 +83,7 @@ adminRoute.addChildren([
   adminDashboardRoute,
   adminOrdersRoute,
   adminProductsRoute,
+  adminCategoriesRoute,
   adminCustomersRoute,
   adminReportsRoute,
 ]);

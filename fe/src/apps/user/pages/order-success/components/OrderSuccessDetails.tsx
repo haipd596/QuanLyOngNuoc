@@ -1,5 +1,6 @@
 import { CreditCardOutlined, EnvironmentOutlined } from "@ant-design/icons";
-import { Flex } from "antd";
+import type { IMyOrder } from "@/apps/user/services";
+import { Flex, Skeleton } from "antd";
 import {
   DeliveryText,
   MetaLabel,
@@ -19,38 +20,79 @@ import {
   SuccessTag,
 } from "../styled";
 
-const OrderSuccessDetails = () => {
+type Props = {
+  order?: IMyOrder;
+  loading?: boolean;
+};
+
+const formatMoney = (value?: string | number) =>
+  `${Number(value || 0).toLocaleString("vi-VN")}đ`;
+
+const resolveImageUrl = (imageUrl?: string) => {
+  if (!imageUrl) return "https://via.placeholder.com/200x200?text=Khong+co+anh";
+  if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
+
+  const apiBase = import.meta.env.VITE_API_URL as string | undefined;
+  if (!apiBase) return imageUrl;
+
+  try {
+    const origin = new URL(apiBase).origin;
+    return `${origin}${imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`}`;
+  } catch {
+    return imageUrl;
+  }
+};
+
+const formatPaymentMethod = (method?: string) => {
+  const normalized = String(method || "COD").toUpperCase();
+  if (normalized === "BANK_TRANSFER") return "Chuyển khoản ngân hàng";
+  if (normalized === "MOMO") return "Ví MoMo";
+  if (normalized === "ZALOPAY") return "ZaloPay";
+  return "Thanh toán khi nhận hàng";
+};
+
+const OrderSuccessDetails = ({ order, loading }: Props) => {
+  if (loading) {
+    return <Skeleton active paragraph={{ rows: 10 }} />;
+  }
+
+  if (!order) {
+    return <OrderCard bordered={false}>Không tìm thấy thông tin đơn hàng.</OrderCard>;
+  }
+
+  const deliveryDate = new Date(order.createdAt);
+
   return (
     <div>
       <OrderCard bordered={false}>
         <OrderMeta>
           <div>
             <MetaLabel>Mã đơn hàng</MetaLabel>
-            <MetaValue>#ONV-2024-98562</MetaValue>
+            <MetaValue>#{order.orderCode}</MetaValue>
           </div>
           <div style={{ textAlign: "right" }}>
-            <MetaLabel>Dự kiến giao hàng</MetaLabel>
-            <DeliveryText>Thứ 4, 15 Tháng 5, 2024</DeliveryText>
+            <MetaLabel>Ngày đặt</MetaLabel>
+            <DeliveryText>{deliveryDate.toLocaleString("vi-VN")}</DeliveryText>
           </div>
         </OrderMeta>
 
-        <ProductItem>
-          <ProductImage src="https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=200&q=80" />
-          <div>
-            <ProductName>Ống Nhựa HDPE Tiền Phong D25 PN10</ProductName>
-            <ProductMeta>Số lượng: 50 Mét</ProductMeta>
-          </div>
-          <ProductPrice>2.750.000đ</ProductPrice>
-        </ProductItem>
+        {(order.items || []).map((item) => {
+          const img = resolveImageUrl(
+            item.product?.images?.find((i) => i.isMain)?.imageUrl ||
+              item.product?.images?.[0]?.imageUrl,
+          );
 
-        <ProductItem>
-          <ProductImage src="https://images.unsplash.com/photo-1567789884554-0b844b597180?auto=format&fit=crop&w=200&q=80" />
-          <div>
-            <ProductName>Van Bi Đồng Minh Hòa Miha DN20</ProductName>
-            <ProductMeta>Số lượng: 05 Cái</ProductMeta>
-          </div>
-          <ProductPrice>825.000đ</ProductPrice>
-        </ProductItem>
+          return (
+            <ProductItem key={item.id}>
+              <ProductImage src={img} />
+              <div>
+                <ProductName>{item.product?.name || "Sản phẩm"}</ProductName>
+                <ProductMeta>Số lượng: {item.quantity}</ProductMeta>
+              </div>
+              <ProductPrice>{formatMoney(item.subtotal)}</ProductPrice>
+            </ProductItem>
+          );
+        })}
       </OrderCard>
 
       <MiniInfoGrid>
@@ -61,11 +103,9 @@ const OrderSuccessDetails = () => {
               style={{ color: "#0b2e59", fontSize: 18, marginTop: 4 }}
             />
             <div>
-              <MiniInfoPrimary>Nguyễn Văn An</MiniInfoPrimary>
-              <MiniInfoText>
-                123 Đường Công Nghệ, Phường 4, Quận Tân Bình, TP. Hồ Chí Minh
-              </MiniInfoText>
-              <MiniInfoText>SĐT: 090 * * * 1234</MiniInfoText>
+              <MiniInfoPrimary>{order.customer?.fullName || "Khách hàng"}</MiniInfoPrimary>
+              <MiniInfoText>{order.customer?.address || order.guestAddress || "Không có địa chỉ"}</MiniInfoText>
+              <MiniInfoText>SĐT: {order.customer?.phone || order.guestPhone || ""}</MiniInfoText>
             </div>
           </Flex>
         </MiniInfoCard>
@@ -77,9 +117,9 @@ const OrderSuccessDetails = () => {
               style={{ color: "#0b2e59", fontSize: 18, marginTop: 4 }}
             />
             <div>
-              <MiniInfoPrimary>Chuyển khoản ngân hàng</MiniInfoPrimary>
-              <MiniInfoText>Techcombank - 1903...241</MiniInfoText>
-              <SuccessTag>Đã xác nhận</SuccessTag>
+              <MiniInfoPrimary>{formatPaymentMethod(order.paymentMethod)}</MiniInfoPrimary>
+              <MiniInfoText>Trạng thái: {order.paymentStatus}</MiniInfoText>
+              <SuccessTag>{order.orderStatus}</SuccessTag>
             </div>
           </Flex>
         </MiniInfoCard>

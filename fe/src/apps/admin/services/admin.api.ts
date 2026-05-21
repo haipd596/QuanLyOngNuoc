@@ -11,11 +11,20 @@ export type AdminProductInput = {
   sku: string;
   name: string;
   slug: string;
+  categoryId: string;
+  hotYN?: boolean;
   unit: string;
   importPrice: number;
   salePrice: number;
   stockQuantity?: number;
   minStockLevel?: number;
+  description?: string;
+  imageUrls?: string[];
+};
+
+export type AdminCategoryInput = {
+  name: string;
+  slug: string;
   description?: string;
 };
 
@@ -49,6 +58,30 @@ export const updateProduct = (id: string, payload: Partial<AdminProductInput>) =
   axiosClient.patch<IResponse<any>>(`/products/${id}`, payload);
 export const deleteProduct = (id: string) =>
   axiosClient.delete<IResponse<any>>(`/products/${id}`);
+
+export const uploadProductImage = (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return axiosClient.post<IResponse<{ url: string; filename: string; path: string }>>(
+    "/products/upload",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+};
+
+export const getCategories = (params: QueryParams = {}) =>
+  axiosClient.get<IResponsePagination<any>>("/categories", { params });
+
+export const createCategory = (payload: AdminCategoryInput) =>
+  axiosClient.post<IResponse<any>>("/categories", payload);
+export const updateCategory = (id: string, payload: Partial<AdminCategoryInput>) =>
+  axiosClient.patch<IResponse<any>>(`/categories/${id}`, payload);
+export const deleteCategory = (id: string) =>
+  axiosClient.delete<IResponse<any>>(`/categories/${id}`);
 
 export const getCustomers = (params: QueryParams = {}) =>
   axiosClient.get<IResponsePagination<any>>("/customers", { params });

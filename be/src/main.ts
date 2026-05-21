@@ -1,11 +1,23 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { static as expressStatic } from 'express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api/v1');
+  const uploadsRoot = join(process.cwd(), 'uploads');
+  const uploadsProductsRoot = join(uploadsRoot, 'products');
+  if (!existsSync(uploadsRoot)) {
+    mkdirSync(uploadsRoot, { recursive: true });
+  }
+  if (!existsSync(uploadsProductsRoot)) {
+    mkdirSync(uploadsProductsRoot, { recursive: true });
+  }
+  app.use('/uploads', expressStatic(uploadsRoot));
 
   app.enableCors({
     origin: true,

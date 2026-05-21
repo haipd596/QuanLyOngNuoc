@@ -1,4 +1,5 @@
-import {
+﻿import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,9 +8,15 @@ import {
   Patch,
   Post,
   Query,
+  Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { join } from 'path';
+import type { Request } from 'express';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { Public } from '../../common/decorators/public.decorator';
@@ -20,10 +27,7 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
-import {
-  PRODUCT_VIEWER_ROLES,
-  ROLE_ADMIN,
-} from '../../common/constants/roles.constant';
+import { ROLE_ADMIN } from '../../common/constants/roles.constant';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
@@ -33,43 +37,96 @@ import {
 } from '../../common/utils/list-query.util';
 
 @Controller('products')
-@ApiTags('Sản phẩm')
+@ApiTags('San pham')
 @ApiBearerAuth('BearerAuth')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Post('upload')
+  @Roles(ROLE_ADMIN)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: join(process.cwd(), 'uploads', 'products'),
+      limits: { fileSize: 5 * 1024 * 1024 },
+      fileFilter: (
+        _req: unknown,
+        file: { mimetype: string },
+        cb: (error: Error | null, acceptFile: boolean) => void,
+      ) => {
+        if (!file.mimetype.startsWith('image/')) {
+          cb(new BadRequestException('Chi ho tro file anh'), false);
+          return;
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+      required: ['file'],
+    },
+  })
+  @ResponseMessage('Upload anh thanh cong')
+  @ApiStandardResponse('Upload anh thanh cong', 201)
+  uploadProductImage(
+    @UploadedFile() file: { filename: string } | undefined,
+    @Req() req: Request,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Vui long chon file anh');
+    }
+
+    const host = req.get('host');
+    const baseUrl = `${req.protocol}://${host}`;
+    const url = `${baseUrl}/uploads/products/${file.filename}`;
+    return {
+      filename: file.filename,
+      url,
+      path: `/uploads/products/${file.filename}`,
+    };
+  }
+
   @Post()
   @Roles(ROLE_ADMIN)
-  @ResponseMessage('Tạo sản phẩm thành công')
-  @ApiStandardResponse('Tạo sản phẩm thành công', 201)
+  @ResponseMessage('Tao san pham thanh cong')
+  @ApiStandardResponse('Tao san pham thanh cong', 201)
   create(@Body() dto: CreateProductDto) {
     return this.productsService.create(dto);
   }
 
   @Get()
   @Public()
-  @ResponseMessage('Lấy danh sách sản phẩm thành công')
+  @ResponseMessage('Lay danh sach san pham thanh cong')
   @ApiPaginationQuery()
   @ApiQuery({
     name: 'Keyword',
     required: false,
-    description: 'Tìm theo tên sản phẩm, SKU hoặc slug',
+    description: 'Tim theo ten san pham, SKU hoac slug',
     example: 'PVC',
   })
   @ApiQuery({ name: 'Query.Id', required: false, example: 'cmai42t3b0000prd001' })
   @ApiQuery({ name: 'Query.Sku', required: false, example: 'ONV-PVC-001' })
-  @ApiQuery({ name: 'Query.Name', required: false, example: 'Ống PVC Bình Minh phi 21' })
+  @ApiQuery({ name: 'Query.Name', required: false, example: 'Ong PVC Binh Minh phi 21' })
   @ApiQuery({ name: 'Query.Slug', required: false, example: 'ong-pvc-binh-minh-phi-21' })
-  @ApiQuery({ name: 'Query.Unit', required: false, example: 'Cây' })
+  @ApiQuery({ name: 'Query.Unit', required: false, example: 'Cay' })
   @ApiQuery({ name: 'Query.Status', required: false, example: 'ACTIVE' })
+  @ApiQuery({ name: 'Query.HotYN', required: false, example: 'true' })
   @ApiQuery({ name: 'Query.CategoryId', required: false, example: 'cmai42t3b0000cat001' })
   @ApiQuery({ name: 'Query.SupplierId', required: false, example: 'cmai42t3b0000sup001' })
-  @ApiStandardPaginationResponse('Lấy danh sách sản phẩm thành công', 200, {
+  @ApiStandardPaginationResponse('Lay danh sach san pham thanh cong', 200, {
     id: 'cmai42t3b0000prd001',
     sku: 'ONV-PVC-001',
-    name: 'Ống PVC Bình Minh phi 21',
-    unit: 'Cây',
+    name: 'Ong PVC Binh Minh phi 21',
+    unit: 'Cay',
     salePrice: '55000',
     stockQuantity: 120,
   })
@@ -86,6 +143,7 @@ export class ProductsController {
       'Slug',
       'Unit',
       'Status',
+      'HotYN',
       'CategoryId',
       'SupplierId',
     ]);
@@ -95,23 +153,23 @@ export class ProductsController {
 
   @Get('low-stock')
   @Roles(ROLE_ADMIN)
-  @ResponseMessage('Lấy danh sách sản phẩm tồn thấp thành công')
+  @ResponseMessage('Lay danh sach san pham ton thap thanh cong')
   @ApiPaginationQuery()
   @ApiQuery({
     name: 'Keyword',
     required: false,
-    description: 'Tìm theo tên sản phẩm, SKU hoặc slug trong nhóm tồn thấp',
-    example: 'dây điện',
+    description: 'Tim theo ten san pham, SKU hoac slug trong nhom ton thap',
+    example: 'day dien',
   })
   @ApiQuery({ name: 'Query.Id', required: false, example: 'cmai42t3b0000prd005' })
   @ApiQuery({ name: 'Query.Sku', required: false, example: 'ONV-WIRE-001' })
-  @ApiQuery({ name: 'Query.Name', required: false, example: 'Dây điện CADIVI 2.5mm' })
+  @ApiQuery({ name: 'Query.Name', required: false, example: 'Day dien CADIVI 2.5mm' })
   @ApiQuery({ name: 'Query.Slug', required: false, example: 'day-dien-cadivi-2-5mm' })
   @ApiQuery({ name: 'Query.Status', required: false, example: 'ACTIVE' })
-  @ApiStandardPaginationResponse('Lấy danh sách sản phẩm tồn thấp thành công', 200, {
+  @ApiStandardPaginationResponse('Lay danh sach san pham ton thap thanh cong', 200, {
     id: 'cmai42t3b0000prd005',
     sku: 'ONV-WIRE-001',
-    name: 'Dây điện CADIVI 2.5mm',
+    name: 'Day dien CADIVI 2.5mm',
     stockQuantity: 18,
     minStockLevel: 20,
   })
@@ -128,24 +186,24 @@ export class ProductsController {
 
   @Get(':id')
   @Public()
-  @ResponseMessage('Lấy chi tiết sản phẩm thành công')
-  @ApiStandardResponse('Lấy chi tiết sản phẩm thành công')
+  @ResponseMessage('Lay chi tiet san pham thanh cong')
+  @ApiStandardResponse('Lay chi tiet san pham thanh cong')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(ROLE_ADMIN)
-  @ResponseMessage('Cập nhật sản phẩm thành công')
-  @ApiStandardResponse('Cập nhật sản phẩm thành công')
+  @ResponseMessage('Cap nhat san pham thanh cong')
+  @ApiStandardResponse('Cap nhat san pham thanh cong')
   update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
     return this.productsService.update(id, dto);
   }
 
   @Delete(':id')
   @Roles(ROLE_ADMIN)
-  @ResponseMessage('Xóa sản phẩm thành công')
-  @ApiStandardResponse('Xóa sản phẩm thành công')
+  @ResponseMessage('Xoa san pham thanh cong')
+  @ApiStandardResponse('Xoa san pham thanh cong')
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }

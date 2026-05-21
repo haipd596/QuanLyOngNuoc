@@ -39,7 +39,7 @@ export class MailService implements OnModuleInit {
 
     if (provider === 'resend') {
       if (providers.includes('smtp')) {
-        this.logger.log('Mail provider: Resend API (fallback SMTP khi Resend loi)');
+        this.logger.log('Mail provider: Resend API (fallback SMTP khi Resend lỗi)');
       } else {
         this.logger.log('Mail provider: Resend API');
       }
@@ -47,14 +47,14 @@ export class MailService implements OnModuleInit {
     }
 
     if (provider === 'log') {
-      this.logger.warn('Mail provider: log (khong gui mail that)');
+      this.logger.warn('Mail provider: log (không gửi mail thật)');
       return;
     }
 
     const smtp = this.getSmtpConfig();
     if (!smtp) {
       this.logger.warn(
-        'Thieu cau hinh gui mail: RESEND_API_KEY hoac SMTP (MAIL_HOST/MAIL_USER|MAIL_USERNAME/MAIL_PASS|MAIL_PASSWORD/MAIL_FROM).',
+        'Thiếu cấu hình gửi mail: RESEND_API_KEY hoặc SMTP (MAIL_HOST/MAIL_USER|MAIL_USERNAME/MAIL_PASS|MAIL_PASSWORD/MAIL_FROM).',
       );
       return;
     }
@@ -95,7 +95,7 @@ export class MailService implements OnModuleInit {
           if (provider === 'resend') {
             const resend = this.getResendConfig();
             if (!resend) {
-              throw new InternalServerErrorException('Thieu cau hinh RESEND_API_KEY hoac MAIL_FROM');
+              throw new InternalServerErrorException('Thiếu cấu hình RESEND_API_KEY hoặc MAIL_FROM');
             }
             messageId = await this.sendViaResend(input, resend.apiKey, resend.from);
           } else if (provider === 'log') {
@@ -153,7 +153,7 @@ export class MailService implements OnModuleInit {
       `sendMail final failure after ${totalAttempts} attempts to=${input.to} subject="${input.subject}"`,
     );
 
-    throw new InternalServerErrorException('Gui email that bai');
+    throw new InternalServerErrorException('Gửi email thất bại');
   }
 
   private getProviderSequence(): MailProvider[] {
@@ -231,7 +231,7 @@ export class MailService implements OnModuleInit {
     const smtp = this.getSmtpConfig();
     if (!smtp) {
       throw new InternalServerErrorException(
-        'Thieu cau hinh SMTP: MAIL_HOST, MAIL_PORT, MAIL_USER|MAIL_USERNAME, MAIL_PASS|MAIL_PASSWORD, MAIL_FROM',
+        'Thiếu cấu hình SMTP: MAIL_HOST, MAIL_PORT, MAIL_USER|MAIL_USERNAME, MAIL_PASS|MAIL_PASSWORD, MAIL_FROM',
       );
     }
 

@@ -29,25 +29,9 @@ export const LogoWrapper = styled.div`
 `;
 
 export const Logo = styled.img`
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-`;
-
-export const Brand = styled.span`
-  display: flex;
-  flex-direction: column;
-  color: var(--primary);
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: 0;
-
-  strong {
-    color: var(--secondary);
-    font-size: 22px;
-    letter-spacing: 0;
-  }
+width: 130px;
+    height: 78px;
+    object-fit: contain;
 `;
 
 export const NavWrap = styled.nav`
@@ -189,8 +173,8 @@ export const StyledRow = styled(Row)`
     padding: 0 14px;
 
     ${Logo} {
-      width: 44px;
-      height: 44px;
+      width: 54px;
+      height: 54px;
     }
   }
 `;

@@ -12,6 +12,8 @@ export interface IAuthPayload {
 export interface IRegister {
   fullName: string;
   email: string;
+  phone: string;
+  dateOfBirth?: string;
   password: string;
   confirmPassword: string;
 }

@@ -1,4 +1,4 @@
-import MainLayout from "@/apps/home/components/MainLayout";
+﻿import MainLayout from "@/apps/home/components/MainLayout";
 import { HOME_ROUTE } from "@/apps/home/constants";
 import { useGioHangQuery } from "@/apps/home/services/query";
 import type { ICart } from "@/apps/home/services/types";
@@ -18,6 +18,7 @@ import {
   ShippingAddressSection,
   ShippingMethodSection,
 } from "./components";
+import { SHIPPING_METHOD_FEES } from "./shipping";
 import {
   LeftColumn,
   PaymentContent,
@@ -28,6 +29,18 @@ import {
   PaymentViewport,
   RightColumn,
 } from "./styled";
+
+type LabelValue = {
+  value?: string | number;
+  label?: string;
+};
+
+const toLabel = (input: unknown): string => {
+  if (input && typeof input === "object" && "label" in (input as LabelValue)) {
+    return String((input as LabelValue).label || "");
+  }
+  return String(input || "");
+};
 
 const PaymentPage = () => {
   const [form] = Form.useForm();
@@ -55,17 +68,24 @@ const PaymentPage = () => {
   const handleConfirm = async () => {
     setIsConfirmOpen(false);
     const values = form.getFieldsValue();
-    const city = values.city ? String(values.city) : "";
-    const ward = values.ward ? String(values.ward) : "";
+    const city = toLabel(values.city);
+    const ward = toLabel(values.ward);
     const address = values.address ? String(values.address) : "";
 
     const items = (cart?.items || []).map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
     }));
+    const selectedShippingMethod = String(values.shippingMethod || "standard");
+    const shippingFee =
+      items.length > 0
+        ? SHIPPING_METHOD_FEES[
+            selectedShippingMethod as keyof typeof SHIPPING_METHOD_FEES
+          ] ?? SHIPPING_METHOD_FEES.standard
+        : 0;
 
     if (!items.length) {
-      showErrorNotify("Gi? h�ng dang tr?ng");
+      showErrorNotify("Giỏ hàng đang trống");
       return;
     }
 
@@ -76,6 +96,7 @@ const PaymentPage = () => {
         email: values.email,
         address: [address, ward, city].filter(Boolean).join(", "),
         shippingMethod: values.shippingMethod,
+        shippingFee,
         paymentMethod: values.paymentMethod,
         note: values.note,
         items,
@@ -86,26 +107,26 @@ const PaymentPage = () => {
         localStorage.setItem("latest_user_order_id", orderId);
       }
 
-      showSuccessNotify("�?t h�ng th�nh c�ng");
+      showSuccessNotify("Đặt hàng thành công");
       navigate({ to: USER_ORDER_SUCCESS_ROUTE });
     } catch {
-      showErrorNotify("Kh�ng th? t?o don h�ng");
+      showErrorNotify("Không thể tạo đơn hàng");
     }
   };
 
   return (
     <MainLayout
       breadcrumb={[
-        { label: "Trang ch?", href: HOME_ROUTE },
-        { label: "Thanh to�n" },
+        { label: "Trang chủ", href: HOME_ROUTE },
+        { label: "Thanh toán" },
       ]}
     >
       <PaymentViewport>
         <PaymentContent>
           <PaymentHeader>
-            <PaymentTitle>Thanh to�n</PaymentTitle>
+            <PaymentTitle>Thanh toán</PaymentTitle>
             <PaymentDescription>
-              Vui l�ng ki?m tra l?i th�ng tin don h�ng v� d?a ch? nh?n h�ng c?a b?n.
+              Vui lòng kiểm tra lại thông tin đơn hàng và địa chỉ nhận hàng của bạn.
             </PaymentDescription>
           </PaymentHeader>
 
@@ -140,9 +161,9 @@ const PaymentPage = () => {
 
       <ConfirmDialog
         open={isConfirmOpen}
-        title="X�c nh?n d?t h�ng"
-        description="B?n x�c nh?n d?t don h�ng n�y ch??"
-        confirmText="X�c nh?n"
+        title="Xác nhận đặt hàng"
+        description="Bạn xác nhận đặt đơn hàng này chứ?"
+        confirmText="Xác nhận"
         onCancel={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirm}
       />

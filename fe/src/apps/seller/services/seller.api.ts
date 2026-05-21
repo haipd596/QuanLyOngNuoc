@@ -5,6 +5,15 @@ type QueryParams = {
   Page?: number;
   PageSize?: number;
   Keyword?: string;
+} & Record<string, unknown>;
+
+export type SellerContactMessageInput = {
+  fullName: string;
+  email: string;
+  phone: string;
+  message: string;
+  status?: "NEW" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
+  note?: string;
 };
 
 export const getSellerDashboard = () => axiosClient.get<IResponse<any>>("/reports/dashboard");
@@ -23,3 +32,12 @@ export const getInventorySummary = (params: QueryParams = {}) =>
 
 export const getSalesOverview = (from?: string, to?: string) =>
   axiosClient.get<IResponse<any>>("/reports/sales-overview", { params: { from, to } });
+
+export const getSellerContactMessages = (params: QueryParams = {}) =>
+  axiosClient.get<IResponsePagination<any>>("/contact-messages", { params });
+export const createSellerContactMessage = (payload: SellerContactMessageInput) =>
+  axiosClient.post<IResponse<any>>("/contact-messages", payload);
+export const updateSellerContactMessage = (id: string, payload: Partial<SellerContactMessageInput>) =>
+  axiosClient.patch<IResponse<any>>(`/contact-messages/${id}`, payload);
+export const deleteSellerContactMessage = (id: string) =>
+  axiosClient.delete<IResponse<any>>(`/contact-messages/${id}`);

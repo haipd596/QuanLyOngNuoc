@@ -1,22 +1,16 @@
-import { Form } from "antd";
-import { useState } from "react";
+﻿import { Form } from "antd";
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import MainLayout from "@/apps/home/components/MainLayout";
 import { LOGIN_ROUTE } from "@/apps/auth/constants";
 import { ConfirmDialog, UserSidebar } from "../../component";
-import {
-  USER_MENU_KEYS,
-  USER_ORDER_PENDING_ROUTE,
-} from "../../constants";
+import { USER_MENU_KEYS, USER_ORDER_PENDING_ROUTE } from "../../constants";
 import { LOCAL_STORAGE_KEYS } from "@/constants";
 import useNotification from "@/shared/hooks/useNotification";
 import { lcStorage } from "@/shared/utils";
 import tokenManager from "@/shared/utils/tokenManager";
 import { useNavigate } from "@tanstack/react-router";
-import {
-  ProfileBasicForm,
-  ProfileInsights,
-  RecentOrders,
-} from "./components";
+import { ProfileBasicForm, ProfileInsights, RecentOrders } from "./components";
 import {
   HeadingBlock,
   PageDescription,
@@ -26,6 +20,8 @@ import {
   UserPageContent,
   UserPageLayout,
 } from "./styled";
+import { useMyProfileQuery } from "../../services";
+import { useUpdateMyProfileMutation } from "../../services/mutation";
 
 type UserSectionKey =
   | typeof USER_MENU_KEYS.PROFILE
@@ -36,9 +32,45 @@ type UserSectionKey =
 const ProfilePage = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
-  const { showSuccessNotify } = useNotification();
+  const { showSuccessNotify, showErrorNotify } = useNotification();
   const [selectedKey, setSelectedKey] = useState<UserSectionKey>(USER_MENU_KEYS.PROFILE);
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+  const { data: profileRes } = useMyProfileQuery();
+  const updateMyProfileMutation = useUpdateMyProfileMutation();
+
+  useEffect(() => {
+    const profile = profileRes?.data;
+    if (!profile) return;
+    form.setFieldsValue({
+      fullName: profile.fullName || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
+      dateOfBirth: profile.dateOfBirth ? dayjs(profile.dateOfBirth) : null,
+    });
+  }, [form, profileRes?.data]);
+
+  const handleProfileSubmit = (values: any) => {
+    updateMyProfileMutation.mutate(
+      {
+        fullName: values.fullName,
+        email: values.email,
+        phone: values.phone,
+        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format("YYYY-MM-DD") : null,
+      },
+      {
+        onSuccess: (res) => {
+          if (res.success) {
+            showSuccessNotify(res.message || "Cập nhật thông tin cá nhân thành công");
+            return;
+          }
+          showErrorNotify(res.message || "Cập nhật thông tin cá nhân thất bại");
+        },
+        onError: (error: any) => {
+          showErrorNotify(error?.data?.message || error?.message || "Có lỗi xảy ra");
+        },
+      }
+    );
+  };
 
   const handleLogout = () => {
     tokenManager.removeAccessToken();
@@ -56,7 +88,7 @@ const ProfilePage = () => {
 
     if (key === USER_MENU_KEYS.ORDER_PENDING) {
       setSelectedKey(key as UserSectionKey);
-      navigate({ to: USER_ORDER_PENDING_ROUTE }); 
+      navigate({ to: USER_ORDER_PENDING_ROUTE });
       return;
     }
 
@@ -80,10 +112,7 @@ const ProfilePage = () => {
     <MainLayout>
       <PageViewport>
         <UserPageLayout>
-          <UserSidebar
-            selectedKey={selectedKey}
-            onNavigate={handleSidebarNavigate}
-          />
+          <UserSidebar selectedKey={selectedKey} onNavigate={handleSidebarNavigate} />
 
           <UserPageLayout>
             <UserPageContent>
@@ -91,13 +120,17 @@ const ProfilePage = () => {
                 <HeadingBlock>
                   <PageTitle>Thông tin cá nhân</PageTitle>
                   <PageDescription>
-                    Cập nhật thông tin chi tiết của bạn để có trải nghiệm mua sắm và
-                    hỗ trợ kỹ thuật tốt nhất từ Ống Nước Việt.
+                    Cập nhật thông tin chi tiết của bạn để có trải nghiệm mua sắm và hỗ
+                    trợ kỹ thuật tốt nhất từ Ống Nước Việt.
                   </PageDescription>
                 </HeadingBlock>
 
                 <div id={`user-section-${USER_MENU_KEYS.PROFILE}`} style={{ scrollMarginTop: 120 }}>
-                  <ProfileBasicForm form={form} />
+                  <ProfileBasicForm
+                    form={form}
+                    onSubmit={handleProfileSubmit}
+                    saving={updateMyProfileMutation.isLoading}
+                  />
                 </div>
 
                 <div

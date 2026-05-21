@@ -1,6 +1,6 @@
 ﻿import { HOME_ROUTE } from "@/apps/home/constants";
-import { LeftOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Col, Form, Row, Typography } from "antd";
+import { CalendarOutlined, LeftOutlined, LockOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
+import { Col, DatePicker, Form, Row, Typography } from "antd";
 import useAction from "../../hooks/useAction";
 import useAuthTransition from "../../hooks/useAuthTransition";
 import {
@@ -26,10 +26,17 @@ const RegisterPage = () => {
   const { isExiting, navigateWithTransition } = useAuthTransition();
 
   const onFinish = (values: any) => {
-    const { fullName, email, password, confirmPassword } = values;
+    const { fullName, email, phone, dateOfBirth, password, confirmPassword } = values;
 
     handleRegister(
-      { fullName, email, password, confirmPassword },
+      {
+        fullName,
+        email,
+        phone,
+        dateOfBirth: dateOfBirth ? dateOfBirth.format("YYYY-MM-DD") : undefined,
+        password,
+        confirmPassword,
+      },
       () => navigateWithTransition(loginRoute.id)
     );
   };
@@ -77,6 +84,35 @@ const RegisterPage = () => {
             <StyledInput
               prefix={<UserOutlined style={{ color: "#bbb", fontSize: 15 }} />}
               placeholder="Nhập email của bạn"
+            />
+          </Form.Item>
+
+          <Form.Item
+            style={{ width: "100%" }}
+            name="phone"
+            label={<span style={{ fontWeight: 500, fontSize: 13 }}>Số điện thoại</span>}
+            rules={[
+              { required: true, message: "Vui lòng nhập số điện thoại" },
+              { pattern: /^(0|\+84)[0-9]{9,10}$/, message: "Số điện thoại không hợp lệ" },
+            ]}
+          >
+            <StyledInput
+              prefix={<PhoneOutlined style={{ color: "#bbb", fontSize: 15 }} />}
+              placeholder="Nhập số điện thoại của bạn"
+            />
+          </Form.Item>
+
+          <Form.Item
+            style={{ width: "100%" }}
+            name="dateOfBirth"
+            label={<span style={{ fontWeight: 500, fontSize: 13 }}>Ngày sinh</span>}
+          >
+            <DatePicker
+              size="large"
+              style={{ width: "100%" }}
+              placeholder="Chọn ngày sinh"
+              format="DD/MM/YYYY"
+              suffixIcon={<CalendarOutlined />}
             />
           </Form.Item>
 

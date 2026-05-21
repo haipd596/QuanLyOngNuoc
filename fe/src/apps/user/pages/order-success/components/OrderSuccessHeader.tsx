@@ -1,4 +1,4 @@
-import { CheckOutlined } from "@ant-design/icons";
+﻿import { CheckOutlined } from "@ant-design/icons";
 import {
   SuccessDescription,
   SuccessHeader,
@@ -14,8 +14,8 @@ const OrderSuccessHeader = () => {
       </SuccessIcon>
       <SuccessTitle>Đặt hàng thành công!</SuccessTitle>
       <SuccessDescription>
-        Cảm ơn bạn đã tin tưởng Ống Nước Việt. Chúng tôi đang xử lý đơn hàng của
-        bạn để chuẩn bị vận chuyển nhanh nhất.
+        Cảm ơn bạn đã tin tưởng Ống Nước Việt. Chúng tôi đang xử lý đơn hàng của bạn để
+        chuẩn bị vận chuyển nhanh nhất.
       </SuccessDescription>
     </SuccessHeader>
   );

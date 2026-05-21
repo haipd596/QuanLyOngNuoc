@@ -130,6 +130,8 @@ export class OauthGoogleService {
       role: user.role?.name ?? ROLE_CUSTOMER,
     });
 
+    await this.ensureCustomerProfile(user.fullName, user.email);
+
     return {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
@@ -202,5 +204,20 @@ export class OauthGoogleService {
     });
 
     return { accessToken, refreshToken };
+  }
+
+  private async ensureCustomerProfile(fullName: string, email: string) {
+    const existedCustomer = await this.prisma.customer.findFirst({
+      where: { email },
+      select: { id: true },
+    });
+    if (existedCustomer) return;
+
+    await this.prisma.customer.create({
+      data: {
+        fullName,
+        email,
+      },
+    });
   }
 }

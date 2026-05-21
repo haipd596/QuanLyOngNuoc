@@ -29,13 +29,27 @@ export class ReportsService {
     const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-    const todayRevenue = await this.prisma.salesOrder.aggregate({
+    const [todayRevenue, newOrdersToday, pendingOrders, packingOrders, completedOrders] = await Promise.all([
+      this.prisma.salesOrder.aggregate({
       _sum: { finalAmount: true },
       where: {
         createdAt: { gte: start, lt: end },
         orderStatus: { not: OrderStatus.CANCELED },
       },
-    });
+    }),
+      this.prisma.salesOrder.count({
+        where: { createdAt: { gte: start, lt: end } },
+      }),
+      this.prisma.salesOrder.count({
+        where: { orderStatus: OrderStatus.PENDING },
+      }),
+      this.prisma.salesOrder.count({
+        where: { orderStatus: OrderStatus.PACKING },
+      }),
+      this.prisma.salesOrder.count({
+        where: { orderStatus: OrderStatus.COMPLETED },
+      }),
+    ]);
 
     return {
       totalProducts,
@@ -45,6 +59,10 @@ export class ReportsService {
       totalOrders,
       lowStockProducts: Number(lowStock[0]?.count ?? 0),
       todayRevenue: Number(todayRevenue._sum.finalAmount ?? 0),
+      newOrdersToday,
+      pendingOrders,
+      packingOrders,
+      completedOrders,
     };
   }
 
@@ -169,6 +187,8 @@ export class ReportsService {
       totalOrders: aggregate._count.id,
       totalRevenue: Number(aggregate._sum.finalAmount ?? 0),
       totalDiscount: Number(aggregate._sum.discountAmount ?? 0),
+      netRevenue:
+        Number(aggregate._sum.finalAmount ?? 0) - Number(aggregate._sum.discountAmount ?? 0),
       statusBreakdown: byStatus.map((s) => ({
         orderStatus: s.orderStatus,
         count: s._count.id,

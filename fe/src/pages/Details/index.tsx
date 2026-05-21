@@ -41,14 +41,14 @@ const Details = () => {
     });
   }, []);
 
-  if (isLoadingFormData || isLoadingJsonSchema) return <p>Loading...</p>;
+  if (isLoadingFormData || isLoadingJsonSchema) return <p>Đang tải...</p>;
 
   return (
     <div className="viewer-page" style={{ overflowY: 'auto', maxHeight: '100vh' }}>
       <div className="form-inner">
         {import.meta.env.DEV && (
           <div className="form-inner-heading">
-            <h2>Viewer</h2>
+            <h2>Trình xem</h2>
             <ViewSchema schema={activeSchema} onSave={handleSave} />
           </div>
         )}

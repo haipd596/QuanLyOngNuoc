@@ -43,6 +43,7 @@ export interface ISanPham {
   sku: string;
   name: string;
   slug: string;
+  hotYN: boolean;
 
   categoryId: string;
   supplierId: string;

@@ -20,3 +20,12 @@ export const updateCartItem = (
 export const removeCartItem = (productId: string): Promise<IResponse<null>> => {
   return axiosClient.delete(`/carts/remove/${productId}`);
 };
+
+export const createContactMessage = (payload: {
+  fullName: string;
+  email: string;
+  phone: string;
+  message: string;
+}) => {
+  return axiosClient.post<IResponse<any>>("/contact-messages", payload);
+};

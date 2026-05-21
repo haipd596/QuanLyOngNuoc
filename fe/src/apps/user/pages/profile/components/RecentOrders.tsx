@@ -1,9 +1,8 @@
-import {
-  GiftOutlined,
-  HistoryOutlined,
-  InboxOutlined,
-  ThunderboltOutlined,
-} from "@ant-design/icons";
+﻿import { GiftOutlined, InboxOutlined } from "@ant-design/icons";
+import { useNavigate } from "@tanstack/react-router";
+import { ORDER_STATUS_LABEL_MAP } from "@/apps/admin/constants/status";
+import { USER_ORDER_PENDING_ROUTE } from "@/apps/user/constants";
+import { useMyOrdersQuery } from "@/apps/user/services";
 import {
   CardHeading,
   IconBadge,
@@ -22,7 +21,24 @@ import {
   SectionTitle,
 } from "../styled";
 
+const formatCurrency = (v: string | number) =>
+  new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(Number(v || 0));
+
+const toStatusVariant = (status?: string): "processing" | "shipping" | "completed" => {
+  if (status === "COMPLETED") return "completed";
+  if (status === "SHIPPED") return "shipping";
+  return "processing";
+};
+
 const RecentOrders = () => {
+  const navigate = useNavigate();
+  const { data: ordersRes } = useMyOrdersQuery({ Page: 1, PageSize: 5 });
+  const orders = ordersRes?.data || [];
+
   return (
     <RecentOrdersSection>
       <RecentOrderHeader>
@@ -33,54 +49,53 @@ const RecentOrders = () => {
           <SectionTitle>Đơn hàng gần đây</SectionTitle>
         </CardHeading>
 
-        <RecentOrderAction href="#">Xem tất cả lịch sử</RecentOrderAction>
+        <RecentOrderAction
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate({ to: USER_ORDER_PENDING_ROUTE });
+          }}
+        >
+          Xem tất cả lịch sử
+        </RecentOrderAction>
       </RecentOrderHeader>
 
       <RecentOrderCard>
-        <RecentOrderItem>
-          <RecentOrderIcon>
-            <GiftOutlined />
-          </RecentOrderIcon>
-          <RecentOrderMeta>
-            <RecentOrderTitle>Đơn hàng #ONV-9821</RecentOrderTitle>
-            <RecentOrderSecondary>12 phụ kiện PPR &amp; ống 25mm</RecentOrderSecondary>
-          </RecentOrderMeta>
-          <div>
-            <RecentOrderAmount>2.450.000đ</RecentOrderAmount>
-            <RecentOrderDate>14/10/2023</RecentOrderDate>
-          </div>
-          <RecentOrderStatus $variant="processing">Chờ xử lý</RecentOrderStatus>
-        </RecentOrderItem>
+        {orders.length === 0 ? (
+          <RecentOrderItem>
+            <RecentOrderMeta>
+              <RecentOrderTitle>Chưa có đơn hàng</RecentOrderTitle>
+              <RecentOrderSecondary>Bạn chưa phát sinh đơn hàng nào.</RecentOrderSecondary>
+            </RecentOrderMeta>
+          </RecentOrderItem>
+        ) : (
+          orders.map((order) => {
+            const firstItem = order.items?.[0];
+            const moreCount = Math.max((order.items?.length || 1) - 1, 0);
 
-        <RecentOrderItem>
-          <RecentOrderIcon>
-            <ThunderboltOutlined />
-          </RecentOrderIcon>
-          <RecentOrderMeta>
-            <RecentOrderTitle>Đơn hàng #ONV-9744</RecentOrderTitle>
-            <RecentOrderSecondary>Dây cáp điện CADIVI 4.0mm</RecentOrderSecondary>
-          </RecentOrderMeta>
-          <div>
-            <RecentOrderAmount>5.120.000đ</RecentOrderAmount>
-            <RecentOrderDate>08/10/2023</RecentOrderDate>
-          </div>
-          <RecentOrderStatus $variant="shipping">Đang giao</RecentOrderStatus>
-        </RecentOrderItem>
-
-        <RecentOrderItem>
-          <RecentOrderIcon>
-            <HistoryOutlined />
-          </RecentOrderIcon>
-          <RecentOrderMeta>
-            <RecentOrderTitle>Đơn hàng #ONV-9610</RecentOrderTitle>
-            <RecentOrderSecondary>Hệ thống lọc nước đầu nguồn</RecentOrderSecondary>
-          </RecentOrderMeta>
-          <div>
-            <RecentOrderAmount>12.800.000đ</RecentOrderAmount>
-            <RecentOrderDate>22/09/2023</RecentOrderDate>
-          </div>
-          <RecentOrderStatus $variant="completed">Đã hoàn thành</RecentOrderStatus>
-        </RecentOrderItem>
+            return (
+              <RecentOrderItem key={order.id}>
+                <RecentOrderIcon>
+                  <GiftOutlined />
+                </RecentOrderIcon>
+                <RecentOrderMeta>
+                  <RecentOrderTitle>Đơn hàng #{order.orderCode}</RecentOrderTitle>
+                  <RecentOrderSecondary>
+                    {firstItem?.product?.name || "Sản phẩm"}
+                    {moreCount > 0 ? ` +${moreCount} sản phẩm khác` : ""}
+                  </RecentOrderSecondary>
+                </RecentOrderMeta>
+                <div>
+                  <RecentOrderAmount>{formatCurrency(order.finalAmount || 0)}</RecentOrderAmount>
+                  <RecentOrderDate>{new Date(order.createdAt).toLocaleString("vi-VN")}</RecentOrderDate>
+                </div>
+                <RecentOrderStatus $variant={toStatusVariant(order.orderStatus)}>
+                  {ORDER_STATUS_LABEL_MAP[order.orderStatus] || order.orderStatus}
+                </RecentOrderStatus>
+              </RecentOrderItem>
+            );
+          })
+        )}
       </RecentOrderCard>
     </RecentOrdersSection>
   );

@@ -1,12 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsBoolean,
+  IsArray,
   IsNumber,
   IsOptional,
   IsString,
+  Max,
   MaxLength,
   Min,
   MinLength,
 } from 'class-validator';
+
+const PRODUCT_PRICE_MAX = 9999999999.99;
 
 export class CreateProductDto {
   @ApiProperty({ example: 'ONV-PVC-001', description: 'Mã SKU sản phẩm' })
@@ -40,11 +45,13 @@ export class CreateProductDto {
   @ApiProperty({ example: 42000, description: 'Giá nhập' })
   @IsNumber()
   @Min(0)
+  @Max(PRODUCT_PRICE_MAX)
   importPrice!: number;
 
   @ApiProperty({ example: 55000, description: 'Giá bán' })
   @IsNumber()
   @Min(0)
+  @Max(PRODUCT_PRICE_MAX)
   salePrice!: number;
 
   @ApiPropertyOptional({ example: 120, description: 'Số lượng tồn kho hiện tại' })
@@ -76,6 +83,14 @@ export class CreateProductDto {
   supplierId?: string;
 
   @ApiPropertyOptional({
+    example: true,
+    description: 'Đánh dấu sản phẩm bán chạy',
+  })
+  @IsOptional()
+  @IsBoolean()
+  hotYN?: boolean;
+
+  @ApiPropertyOptional({
     example: 'Ống nhựa PVC dùng cho hệ thống cấp nước',
     description: 'Mô tả sản phẩm',
   })
@@ -83,4 +98,14 @@ export class CreateProductDto {
   @IsString()
   @MaxLength(255)
   description?: string;
+
+  @ApiPropertyOptional({
+    example: ['/uploads/products/1747700012345-abc123.png'],
+    description: 'Danh sách URL hình ảnh sản phẩm',
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  imageUrls?: string[];
 }

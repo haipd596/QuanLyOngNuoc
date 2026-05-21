@@ -1,4 +1,4 @@
-﻿import { Select, Table, Tag, message } from "antd";
+import { Select, Table, Tag, notification } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { ORDER_STATUS_LABEL_MAP } from "@/apps/admin/constants/status";
@@ -44,11 +44,7 @@ const SellerDeliveryPage = () => {
           style={{ width: 180 }}
           value={r.orderStatus}
           options={DELIVERY_OPTIONS}
-          onChange={async (value) => {
-            await updateSellerOrderStatus(r.id, value);
-            message.success("Đã cập nhật tiến độ giao hàng");
-            void fetchOrders();
-          }}
+          onChange={async (value) => { try { await updateSellerOrderStatus(r.id, value); notification.success({ message: "Thành công", description: "Đã cập nhật tiến độ giao hàng" }); void fetchOrders(); } catch { notification.error({ message: "Thất bại", description: "Cập nhật tiến độ giao hàng thất bại" }); } }}
         />
       ),
     },

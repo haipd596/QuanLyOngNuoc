@@ -1,4 +1,11 @@
-import { JourneyCard, JourneyTimeline, SectionHeading, TimelineText, TimelineTime, TimelineTitle } from "../styled";
+﻿import {
+  JourneyCard,
+  JourneyTimeline,
+  SectionHeading,
+  TimelineText,
+  TimelineTime,
+  TimelineTitle,
+} from "../styled";
 
 interface JourneyItem {
   time: string;

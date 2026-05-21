@@ -34,13 +34,13 @@ export const ViewerPage = () => {
     }
   }, [params.schemaKey]);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <p>Đang tải...</p>;
 
   return (
     <div className="viewer-page" style={{ overflowY: 'auto', maxHeight: '100vh' }}>
       <div className="form-inner">
         <div className="form-inner-heading">
-          <h2>Viewer</h2>
+          <h2>Trình xem</h2>
           <ViewSchema schema={schema} onSave={handleSave} />
         </div>
         <div style={{ border: '1px solid teal', padding: 8 }}>
@@ -56,7 +56,7 @@ export const ViewerPage = () => {
           backgroundColor: 'rgb(1 22 78 / 80%)', color: 'white', padding: 8, fontSize: 16,
         }}
         >
-          Output
+          Kết quả
           <JsonPreview data={data} />
         </div>
       )}

@@ -5,7 +5,7 @@ import {
 
 const Nav = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
-  
+
   return (
     <div className="p-2 flex gap-2 text-lg border-b">
       <Link
@@ -16,7 +16,7 @@ const Nav = () => {
         activeOptions={{ exact: true }}
         style={{marginRight: 10}}
       >
-        Home
+        Trang chủ
       </Link>{' '}
       <Link
         to="/nguoi-dung"
@@ -25,7 +25,7 @@ const Nav = () => {
         }}
         style={{marginRight: 10}}
       >
-        Users
+        Người dùng
       </Link>{' '}
       <Link
         to="/dang-nhap"
@@ -34,7 +34,7 @@ const Nav = () => {
         }}
         style={{marginRight: 10}}
       >
-        Login
+        Đăng nhập
       </Link>{' '}
       <div className="relative group">
         <button
@@ -42,7 +42,7 @@ const Nav = () => {
           className="flex items-center gap-1 px-3 py-1 rounded hover:bg-gray-100"
           style={{marginRight: 10}}
         >
-          Thủ Tục Hành Chính
+          Thủ tục hành chính
           <span className="text-sm">▼</span>
         </button>
         {openDropdown === 'procedures' && (
@@ -55,7 +55,7 @@ const Nav = () => {
               className="block px-4 py-2 hover:bg-gray-100 text-gray-800"
               onClick={() => setOpenDropdown(null)}
             >
-              Tự Công Bố
+              Tự công bố
             </Link>
             <Link
               to="/thu-tuc/thu-tuc-hanh-chinh"
@@ -65,7 +65,7 @@ const Nav = () => {
               className="block px-4 py-2 hover:bg-gray-100 text-gray-800 border-t border-gray-200"
               onClick={() => setOpenDropdown(null)}
             >
-              Danh Sách
+              Danh sách
             </Link>
           </div>
         )}
@@ -77,7 +77,7 @@ const Nav = () => {
         }}
         style={{marginRight: 10}}
       >
-        Not Exist
+        Không tồn tại
       </Link>
     </div>
   )

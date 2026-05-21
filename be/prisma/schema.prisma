@@ -59,6 +59,13 @@ enum NotificationType {
   MAIL
 }
 
+enum ContactMessageStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
 enum AuditAction {
   CREATE
   UPDATE
@@ -83,6 +90,7 @@ model User {
   email          String      @unique
   passwordHash   String?
   phone          String?
+  dateOfBirth    DateTime?
   avatarUrl      String?
   googleId       String?     @unique
   status         UserStatus  @default(ACTIVE)
@@ -168,6 +176,7 @@ model Product {
   sku             String              @unique
   name            String
   slug            String              @unique
+  hotYN           Boolean             @default(false)
   categoryId      String?
   supplierId      String?
   unit            String
@@ -377,4 +386,16 @@ model AuditLog {
   createdAt   DateTime    @default(now())
 
   @@index([userId])
+}
+
+model ContactMessage {
+  id        String               @id @default(cuid())
+  fullName  String
+  email     String
+  phone     String
+  message   String               @db.Text
+  status    ContactMessageStatus @default(NEW)
+  note      String?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
 }

@@ -16,6 +16,7 @@ import {
   extractQueryFilters,
 } from '../../common/utils/list-query.util';
 import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
+import { CancelSalesOrderDto } from './dto/cancel-sales-order.dto';
 import { GuestCheckoutDto } from './dto/guest-checkout.dto';
 import { MyCheckoutDto } from './dto/my-checkout.dto';
 import { TrackOrderDto } from './dto/track-order.dto';
@@ -72,8 +73,12 @@ export class SalesOrdersController {
   @ApiBearerAuth('BearerAuth')
   @ResponseMessage('Huy don hang thanh cong')
   @ApiStandardResponse('Huy don hang thanh cong', 201)
-  cancelMyOrder(@Req() req: Request & { user?: { sub: string } }, @Param('id') id: string) {
-    return this.salesOrdersService.cancelMyOrder(req.user?.sub ?? '', id);
+  cancelMyOrder(
+    @Req() req: Request & { user?: { sub: string } },
+    @Param('id') id: string,
+    @Body() dto: CancelSalesOrderDto,
+  ) {
+    return this.salesOrdersService.cancelMyOrder(req.user?.sub ?? '', id, dto.reason);
   }
 
   @Get('track')
@@ -171,7 +176,7 @@ export class SalesOrdersController {
   @Roles(...INTERNAL_ROLES)
   @ResponseMessage('Huy don hang thanh cong')
   @ApiStandardResponse('Huy don hang thanh cong', 201)
-  cancel(@Param('id') id: string) {
-    return this.salesOrdersService.cancel(id);
+  cancel(@Param('id') id: string, @Body() dto: CancelSalesOrderDto) {
+    return this.salesOrdersService.cancel(id, dto.reason);
   }
 }

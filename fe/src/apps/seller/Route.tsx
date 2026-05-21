@@ -4,16 +4,12 @@ import { HOME_ROUTE } from "@/apps/home/constants";
 import { LOCAL_STORAGE_KEYS } from "@/constants";
 import { lcStorage } from "@/shared/utils";
 import { createRoute, redirect } from "@tanstack/react-router";
-import {
-  SELLER_DASHBOARD_ROUTE,
-  SELLER_ROUTE,
-} from "./constants";
+import { SELLER_CONTACT_MESSAGES_ROUTE, SELLER_DASHBOARD_ROUTE, SELLER_ROUTE } from "./constants";
 import SellerLayoutPage from "./pages/layout/SellerLayoutPage";
 import SellerDashboardPage from "./pages/dashboard/SellerDashboardPage";
 import SellerOrdersPage from "./pages/orders/SellerOrdersPage";
-import SellerProductsPage from "./pages/products/SellerProductsPage";
-import SellerDeliveryPage from "./pages/delivery/SellerDeliveryPage";
-import SellerReportsPage from "./pages/reports/SellerReportsPage";
+import SellerCancelReasonsPage from "./pages/cancel-reasons/SellerCancelReasonsPage";
+import SellerContactMessagesPage from "./pages/contact-messages/SellerContactMessagesPage";
 
 export const sellerRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -54,30 +50,23 @@ export const sellerOrdersRoute = createRoute({
   component: SellerOrdersPage,
 });
 
-export const sellerProductsRoute = createRoute({
+export const sellerCancelReasonsRoute = createRoute({
   getParentRoute: () => sellerRoute,
-  path: "products",
-  component: SellerProductsPage,
+  path: "cancel-reasons",
+  component: SellerCancelReasonsPage,
 });
 
-export const sellerDeliveryRoute = createRoute({
+export const sellerContactMessagesRoute = createRoute({
   getParentRoute: () => sellerRoute,
-  path: "delivery",
-  component: SellerDeliveryPage,
-});
-
-export const sellerReportsRoute = createRoute({
-  getParentRoute: () => sellerRoute,
-  path: "reports",
-  component: SellerReportsPage,
+  path: SELLER_CONTACT_MESSAGES_ROUTE.replace(`${SELLER_ROUTE}/`, ""),
+  component: SellerContactMessagesPage,
 });
 
 sellerRoute.addChildren([
   sellerDashboardRoute,
   sellerOrdersRoute,
-  sellerProductsRoute,
-  sellerDeliveryRoute,
-  sellerReportsRoute,
+  sellerCancelReasonsRoute,
+  sellerContactMessagesRoute,
 ]);
 
 export default sellerRoute;

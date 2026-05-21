@@ -21,6 +21,7 @@ import { UsersModule } from './modules/users/users.module';
 import { MailModule } from './modules/mail/mail.module';
 import { AiModule } from './modules/ai/ai.module';
 import { CartsModule } from './modules/carts/carts.module';
+import { ContactMessagesModule } from './modules/contact-messages/contact-messages.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { CartsModule } from './modules/carts/carts.module';
     MailModule,
     AiModule,
     CartsModule,
+    ContactMessagesModule,
   ],
   providers: [
     JwtAuthGuard,

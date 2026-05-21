@@ -9,6 +9,7 @@ import {
   ProductImage,
   ProductName,
   ProductPrice,
+  ProductStock,
 } from "../styled";
 
 type Props = {
@@ -21,10 +22,22 @@ const formatPrice = (value: string) =>
   `${Number(value).toLocaleString("vi-VN")}đ`;
 
 const ProductCard = ({ product, onAddToCart, isLoading }: Props) => {
-  const mainImage =
-    product.images?.find((i) => i.isMain)?.imageUrl ||
-    product.images?.[0]?.imageUrl ||
-    "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=700&q=80";
+  const resolveImageUrl = (imageUrl?: string) => {
+    if (!imageUrl) {
+      return "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=700&q=80";
+    }
+    if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
+    const baseUrl = import.meta.env.VITE_API_URL as string | undefined;
+    if (!baseUrl) return imageUrl;
+    try {
+      const origin = new URL(baseUrl).origin;
+      return `${origin}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
+    } catch {
+      return imageUrl;
+    }
+  };
+  const inStock = Number(product.stockQuantity || 0) > 0;
+  const mainImage = resolveImageUrl(product.images?.[0]?.imageUrl);
 
   return (
     <ProductCardWrapper
@@ -38,13 +51,14 @@ const ProductCard = ({ product, onAddToCart, isLoading }: Props) => {
       </ProductDescription>
 
       <ProductPrice>{formatPrice(product.salePrice)}</ProductPrice>
+      <ProductStock inStock={inStock}>{inStock ? "Còn hàng" : "Hết hàng"}</ProductStock>
 
       <ProductFooter>
         <AddToCartButton
           type="primary"
           icon={<ShoppingCartOutlined />}
           loading={isLoading}
-          disabled={isLoading}
+          disabled={isLoading || !inStock}
           onClick={() => onAddToCart(product)}
         >
           Thêm vào giỏ

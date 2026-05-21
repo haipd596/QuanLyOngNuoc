@@ -1,12 +1,11 @@
 ﻿import {
   AppstoreOutlined,
-  BarChartOutlined,
+  FileTextOutlined,
   BellOutlined,
   HomeOutlined,
   LogoutOutlined,
   ShopOutlined,
   ShoppingCartOutlined,
-  TruckOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
@@ -16,10 +15,9 @@ import { LOGIN_ROUTE } from "@/apps/auth/constants";
 import { HOME_ROUTE } from "@/apps/home/constants";
 import {
   SELLER_DASHBOARD_ROUTE,
-  SELLER_DELIVERY_ROUTE,
   SELLER_ORDERS_ROUTE,
-  SELLER_PRODUCTS_ROUTE,
-  SELLER_REPORTS_ROUTE,
+  SELLER_CANCEL_REASONS_ROUTE,
+  SELLER_CONTACT_MESSAGES_ROUTE,
 } from "@/apps/seller/constants";
 import { getMyProfile } from "@/apps/user/services/api";
 import { LOCAL_STORAGE_KEYS } from "@/constants";
@@ -44,16 +42,14 @@ import {
 const menuItems = [
   { key: "overview", label: "Tổng quan", icon: <AppstoreOutlined />, to: SELLER_DASHBOARD_ROUTE },
   { key: "orders", label: "Đơn bán", icon: <ShoppingCartOutlined />, to: SELLER_ORDERS_ROUTE },
-  { key: "products", label: "Sản phẩm", icon: <ShopOutlined />, to: SELLER_PRODUCTS_ROUTE },
-  { key: "delivery", label: "Giao hàng", icon: <TruckOutlined />, to: SELLER_DELIVERY_ROUTE },
-  { key: "reports", label: "Báo cáo", icon: <BarChartOutlined />, to: SELLER_REPORTS_ROUTE },
+  { key: "contacts", label: "Liên hệ", icon: <BellOutlined />, to: SELLER_CONTACT_MESSAGES_ROUTE },
+  { key: "cancel-reasons", label: "Lý do hủy", icon: <FileTextOutlined />, to: SELLER_CANCEL_REASONS_ROUTE },
 ];
 
 const getActiveMenu = (pathname: string) => {
   if (pathname.startsWith(SELLER_ORDERS_ROUTE)) return "orders";
-  if (pathname.startsWith(SELLER_PRODUCTS_ROUTE)) return "products";
-  if (pathname.startsWith(SELLER_DELIVERY_ROUTE)) return "delivery";
-  if (pathname.startsWith(SELLER_REPORTS_ROUTE)) return "reports";
+  if (pathname.startsWith(SELLER_CONTACT_MESSAGES_ROUTE)) return "contacts";
+  if (pathname.startsWith(SELLER_CANCEL_REASONS_ROUTE)) return "cancel-reasons";
   return "overview";
 };
 
@@ -126,7 +122,7 @@ const SellerLayoutPage = () => {
 
       <Main>
         <Header>
-          <HeaderText><PageTitle>Trang bán hàng</PageTitle><p>Theo dõi đơn bán, xử lý đóng gói và cập nhật trạng thái giao hàng.</p></HeaderText>
+          <HeaderText><PageTitle>Trang bán hàng</PageTitle><p>Theo dõi đơn bán và cập nhật trạng thái xử lý.</p></HeaderText>
           <HeaderActions>
             <Button type="text" aria-label="Về trang chủ" icon={<HomeOutlined />} onClick={() => navigate({ to: HOME_ROUTE })} />
             <Button type="text" aria-label="Thông báo" icon={<BellOutlined />} />

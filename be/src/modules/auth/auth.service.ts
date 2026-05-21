@@ -13,6 +13,7 @@ import { PrismaService } from '../../config/prisma.service';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateMyProfileDto } from './dto/update-my-profile.dto';
 
 type JwtPayload = {
   sub: string;
@@ -49,6 +50,8 @@ export class AuthService {
       data: {
         fullName: dto.fullName,
         email: dto.email,
+        phone: dto.phone,
+        dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : null,
         passwordHash,
         roleId: defaultRoleId,
       },
@@ -58,6 +61,24 @@ export class AuthService {
         },
       },
     });
+
+    // Đồng bộ bảng khách hàng để màn quản trị khách hàng luôn có dữ liệu theo tài khoản CUSTOMER mới đăng ký
+    const existedCustomer = await this.prisma.customer.findFirst({
+      where: { email: dto.email },
+      select: { id: true },
+    });
+
+    if (!existedCustomer) {
+      await this.prisma.customer.create({
+        data: {
+          fullName: dto.fullName,
+          email: dto.email,
+          phone: dto.phone,
+          address: null,
+          note: null,
+        },
+      });
+    }
 
     const tokens = await this.issueTokens({
       sub: user.id,
@@ -131,6 +152,74 @@ export class AuthService {
 
   async me(userId: string) {
     return this.usersService.findOne(userId);
+  }
+
+  async updateMe(userId: string, dto: UpdateMyProfileDto) {
+    const currentUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true },
+    });
+    if (!currentUser) {
+      throw new UnauthorizedException('Khong tim thay tai khoan');
+    }
+
+    if (dto.email && dto.email !== currentUser.email) {
+      const existedEmail = await this.prisma.user.findUnique({
+        where: { email: dto.email },
+        select: { id: true },
+      });
+      if (existedEmail) {
+        throw new BadRequestException('Email da ton tai');
+      }
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        fullName: dto.fullName,
+        email: dto.email,
+        phone: dto.phone,
+        dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : undefined,
+      },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        dateOfBirth: true,
+        roleId: true,
+        role: { select: { name: true } },
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    const customerByOldEmail = await this.prisma.customer.findFirst({
+      where: { email: currentUser.email },
+      select: { id: true },
+    });
+
+    if (customerByOldEmail) {
+      await this.prisma.customer.update({
+        where: { id: customerByOldEmail.id },
+        data: {
+          fullName: updated.fullName,
+          email: updated.email,
+          phone: updated.phone ?? null,
+        },
+      });
+    } else {
+      await this.prisma.customer.create({
+        data: {
+          fullName: updated.fullName,
+          email: updated.email,
+          phone: updated.phone ?? null,
+        },
+      });
+    }
+
+    return updated;
   }
 
   private async issueTokens(payload: JwtPayload) {

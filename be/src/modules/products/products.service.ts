@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import {
   buildPaginatedResult,
@@ -12,14 +13,36 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private parseBooleanFilter(value?: string): boolean | undefined {
+    if (!value) return undefined;
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'true') return true;
+    if (normalized === 'false') return false;
+    return undefined;
+  }
+
   create(dto: CreateProductDto) {
-    return this.prisma.product.create({
-      data: {
-        ...dto,
-        stockQuantity: dto.stockQuantity ?? 0,
-        minStockLevel: dto.minStockLevel ?? 5,
-      },
-    });
+    const { imageUrls, ...productData } = dto;
+    const normalizedImageUrls = imageUrls?.map((url) => this.normalizeImagePath(url)) ?? [];
+    return this.prisma.product
+      .create({
+        data: {
+          ...productData,
+          stockQuantity: productData.stockQuantity ?? 0,
+          minStockLevel: productData.minStockLevel ?? 5,
+          images: normalizedImageUrls.length
+            ? {
+                create: normalizedImageUrls.map((imageUrl, index) => ({
+                  imageUrl,
+                  isMain: index === 0,
+                })),
+              }
+            : undefined,
+        },
+      })
+      .catch((error: unknown) => {
+        this.handlePrismaProductError(error);
+      });
   }
 
   async findAll(
@@ -47,6 +70,8 @@ export class ProductsService {
     if (filters?.Unit) andConditions.push({ unit: { contains: filters.Unit } });
     if (filters?.Status)
       andConditions.push({ status: { equals: filters.Status } });
+    const hotYN = this.parseBooleanFilter(filters?.HotYN);
+    if (hotYN !== undefined) andConditions.push({ hotYN: { equals: hotYN } });
     if (filters?.CategoryId)
       andConditions.push({ categoryId: { equals: filters.CategoryId } });
     if (filters?.SupplierId)
@@ -158,15 +183,77 @@ export class ProductsService {
 
   async update(id: string, dto: UpdateProductDto) {
     await this.findOne(id);
-    return this.prisma.product.update({
-      where: { id },
-      data: dto,
-    });
+    const { imageUrls, ...productData } = dto;
+    const normalizedImageUrls = imageUrls?.map((url) => this.normalizeImagePath(url));
+    return this.prisma.product
+      .update({
+        where: { id },
+        data: {
+          ...productData,
+          ...(normalizedImageUrls
+            ? {
+                images: {
+                  deleteMany: {},
+                  create: normalizedImageUrls.map((imageUrl, index) => ({
+                    imageUrl,
+                    isMain: index === 0,
+                  })),
+                },
+              }
+            : {}),
+        },
+      })
+      .catch((error: unknown) => {
+        this.handlePrismaProductError(error);
+      });
   }
 
   async remove(id: string) {
     await this.findOne(id);
     await this.prisma.product.delete({ where: { id } });
     return { message: 'Xóa thành công' };
+  }
+
+  private handlePrismaProductError(error: unknown): never {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        const target = Array.isArray(error.meta?.target)
+          ? error.meta?.target.join(', ')
+          : String(error.meta?.target || '');
+        if (target.includes('sku')) {
+          throw new BadRequestException('SKU da ton tai');
+        }
+        if (target.includes('slug')) {
+          throw new BadRequestException('Slug da ton tai');
+        }
+        throw new BadRequestException('Du lieu bi trung lap');
+      }
+      if (error.code === 'P2003') {
+        throw new BadRequestException('Danh muc hoac nha cung cap khong ton tai');
+      }
+      if (error.code === 'P2022') {
+        throw new BadRequestException(
+          'Cau truc du lieu chua dong bo (thieu cot trong database). Vui long chay migrate moi nhat',
+        );
+      }
+      if (error.code === 'P2025') {
+        throw new BadRequestException('Khong tim thay du lieu can cap nhat');
+      }
+    }
+    if (error instanceof Prisma.PrismaClientValidationError) {
+      throw new BadRequestException('Du lieu gui len khong hop le voi schema database');
+    }
+    throw error;
+  }
+
+  private normalizeImagePath(value: string): string {
+    if (!value) return value;
+    if (value.startsWith('/uploads/')) return value;
+    try {
+      const parsed = new URL(value);
+      return parsed.pathname || value;
+    } catch {
+      return value;
+    }
   }
 }

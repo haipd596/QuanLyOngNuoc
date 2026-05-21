@@ -1,4 +1,4 @@
-import { Col, Form, Input, Row, Select } from "antd";
+﻿import { Col, Form, Input, Row, Select } from "antd";
 import { useEffect, useMemo } from "react";
 
 import {
@@ -7,9 +7,15 @@ import {
 } from "../services";
 import { SectionCard, SectionTitle, StepBadge, StyledForm } from "../styled";
 
+type SelectOptionValue = {
+  value?: number;
+  label?: string;
+};
+
 const ShippingAddressSection = () => {
   const form = Form.useFormInstance();
-  const selectedProvinceId = Form.useWatch("city", form);
+  const selectedProvince = Form.useWatch("city", form) as SelectOptionValue | undefined;
+  const selectedProvinceId = selectedProvince?.value;
 
   const { data: provincesResponse, isLoading: isLoadingProvinces } =
     usePublicProvincesQuery();
@@ -63,6 +69,7 @@ const ShippingAddressSection = () => {
               >
                 <Select
                   showSearch
+                  labelInValue
                   loading={isLoadingProvinces}
                   placeholder="Chọn tỉnh / thành phố"
                   options={provinceOptions}
@@ -84,6 +91,7 @@ const ShippingAddressSection = () => {
               >
                 <Select
                   showSearch
+                  labelInValue
                   loading={isLoadingWards}
                   placeholder="Chọn phường / xã"
                   options={wardOptions}

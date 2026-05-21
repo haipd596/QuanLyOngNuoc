@@ -1,5 +1,5 @@
 ﻿import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, Popconfirm, Row, Space, Table, message } from "antd";
+import { Button, Col, Form, Input, Popconfirm, Row, Space, Table, notification } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import BaseModal from "@/shared/components/modals";
@@ -8,10 +8,12 @@ import { ADMIN_PAGE_SIZE } from "../dashboard/utils";
 import { Panel, PanelHeader, PanelTitle, StatusDot, TableWrap } from "../dashboard/styled";
 
 const AdminCustomersPage = () => {
+  const { Search } = Input;
   const [loading, setLoading] = useState(false);
   const [customers, setCustomers] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<any>(null);
   const [form] = Form.useForm();
@@ -19,7 +21,11 @@ const AdminCustomersPage = () => {
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const res: any = await getCustomers({ Page: page, PageSize: ADMIN_PAGE_SIZE });
+      const res: any = await getCustomers({
+        Page: page,
+        PageSize: ADMIN_PAGE_SIZE,
+        Keyword: keyword.trim() || undefined,
+      });
       setCustomers(res.data || []);
       setTotal(res.metaData?.total || 0);
     } finally {
@@ -53,7 +59,18 @@ const AdminCustomersPage = () => {
       render: (_, r) => (
         <Space>
           <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(r)} />
-          <Popconfirm title="Xóa khách hàng này?" onConfirm={async () => { await deleteCustomer(r.id); message.success("Đã xóa khách hàng"); void fetchCustomers(); }}>
+          <Popconfirm
+            title="Xóa khách hàng này?"
+            onConfirm={async () => {
+              try {
+                await deleteCustomer(r.id);
+                notification.success({ message: "Thành công", description: "Đã xóa khách hàng" });
+                void fetchCustomers();
+              } catch {
+                notification.error({ message: "Thất bại", description: "Xóa khách hàng thất bại" });
+              }
+            }}
+          >
             <Button size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
@@ -64,34 +81,111 @@ const AdminCustomersPage = () => {
   return (
     <>
       <Panel>
-        <PanelHeader><PanelTitle>Danh sách khách hàng</PanelTitle><Space><StatusDot><span />Dữ liệu thật</StatusDot><Button className="admin-action-primary-btn" type="primary" onClick={openCreate}>Tạo khách hàng</Button></Space></PanelHeader>
-        <TableWrap><Table rowKey="id" loading={loading} columns={columns} dataSource={customers} pagination={{ current: page, pageSize: ADMIN_PAGE_SIZE, total, onChange: setPage }} /></TableWrap>
+        <PanelHeader>
+          <PanelTitle>Danh sách khách hàng</PanelTitle>
+          <Space>
+            <StatusDot>
+              <span />Dữ liệu thật
+            </StatusDot>
+            <Button className="admin-action-primary-btn" type="primary" onClick={openCreate}>
+              Tạo khách hàng
+            </Button>
+          </Space>
+        </PanelHeader>
+
+        <div style={{ marginBottom: 12 }}>
+          <Space>
+            <Search
+              allowClear
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="Tìm theo tên, SĐT, email"
+              onSearch={() => {
+                setPage(1);
+                void fetchCustomers();
+              }}
+            />
+            <Button
+              onClick={() => {
+                setKeyword("");
+                setPage(1);
+                void fetchCustomers();
+              }}
+            >
+              Xóa lọc
+            </Button>
+          </Space>
+        </div>
+
+        <TableWrap>
+          <Table
+            rowKey="id"
+            loading={loading}
+            columns={columns}
+            dataSource={customers}
+            pagination={{ current: page, pageSize: ADMIN_PAGE_SIZE, total, onChange: setPage }}
+          />
+        </TableWrap>
       </Panel>
 
-      <BaseModal title={editingCustomer ? "Sửa khách hàng" : "Tạo khách hàng"} open={openModal} onCancel={() => setOpenModal(false)} onOk={() => form.submit()} destroyOnClose width={860}>
+      <BaseModal
+        title={editingCustomer ? "Sửa khách hàng" : "Tạo khách hàng"}
+        open={openModal}
+        onCancel={() => setOpenModal(false)}
+        onOk={() => form.submit()}
+        destroyOnClose
+        width={860}
+      >
         <Form
           form={form}
           layout="vertical"
           onFinish={async (values) => {
-            if (editingCustomer) {
-              await updateCustomer(editingCustomer.id, values);
-              message.success("Cập nhật khách hàng thành công");
-            } else {
-              await createCustomer(values);
-              message.success("Tạo khách hàng thành công");
+            try {
+              if (editingCustomer) {
+                await updateCustomer(editingCustomer.id, values);
+                notification.success({ message: "Thành công", description: "Cập nhật khách hàng thành công" });
+              } else {
+                await createCustomer(values);
+                notification.success({ message: "Thành công", description: "Tạo khách hàng thành công" });
+              }
+              setOpenModal(false);
+              form.resetFields();
+              setEditingCustomer(null);
+              void fetchCustomers();
+            } catch {
+              notification.error({
+                message: "Thất bại",
+                description: editingCustomer ? "Cập nhật khách hàng thất bại" : "Tạo khách hàng thất bại",
+              });
             }
-            setOpenModal(false);
-            form.resetFields();
-            setEditingCustomer(null);
-            void fetchCustomers();
           }}
         >
           <Row gutter={16}>
-            <Col xs={24} md={12}><Form.Item name="fullName" label="Họ tên" rules={[{ required: true }]}><Input placeholder="Nhập họ tên khách hàng" /></Form.Item></Col>
-            <Col xs={24} md={12}><Form.Item name="phone" label="Số điện thoại"><Input placeholder="Nhập số điện thoại" /></Form.Item></Col>
-            <Col xs={24} md={12}><Form.Item name="email" label="Email"><Input placeholder="Nhập email" /></Form.Item></Col>
-            <Col xs={24} md={12}><Form.Item name="address" label="Địa chỉ"><Input placeholder="Nhập địa chỉ" /></Form.Item></Col>
-            <Col xs={24}><Form.Item name="note" label="Ghi chú"><Input.TextArea rows={3} placeholder="Nhập ghi chú" /></Form.Item></Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="fullName" label="Họ tên" rules={[{ required: true }]}>
+                <Input placeholder="Nhập họ tên khách hàng" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="phone" label="Số điện thoại">
+                <Input placeholder="Nhập số điện thoại" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="email" label="Email">
+                <Input placeholder="Nhập email" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={12}>
+              <Form.Item name="address" label="Địa chỉ">
+                <Input placeholder="Nhập địa chỉ" />
+              </Form.Item>
+            </Col>
+            <Col xs={24}>
+              <Form.Item name="note" label="Ghi chú">
+                <Input.TextArea rows={3} placeholder="Nhập ghi chú" />
+              </Form.Item>
+            </Col>
           </Row>
         </Form>
       </BaseModal>

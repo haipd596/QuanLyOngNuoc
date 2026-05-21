@@ -31,6 +31,7 @@ const SellerProductsPage = () => {
   const columns: ColumnsType<any> = [
     { title: "SKU", dataIndex: "sku" },
     { title: "Tên", dataIndex: "name" },
+    { title: "Bán chạy", render: (_, r) => (r.hotYN ? "Có" : "Không") },
     { title: "Đơn vị", dataIndex: "unit" },
     { title: "Giá bán", align: "right", render: (_, r) => formatMoney(Number(r.salePrice)) },
     { title: "Tồn kho", dataIndex: "stockQuantity" },

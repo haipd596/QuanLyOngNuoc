@@ -1,34 +1,35 @@
+﻿import { ORDER_STATUS_LABEL_MAP } from "@/apps/admin/constants/status";
 import { DeliverySteps, MainCard, SectionHeading } from "../styled";
 
-const DeliveryStatus = () => {
+interface DeliveryStatusProps {
+  orderStatus?: string;
+}
+
+const STATUS_FLOW = ["PENDING", "CONFIRMED", "PACKING", "SHIPPED", "COMPLETED"];
+
+const DeliveryStatus = ({ orderStatus = "PENDING" }: DeliveryStatusProps) => {
+  const currentIndex = STATUS_FLOW.indexOf(orderStatus);
+  const current = currentIndex >= 0 ? currentIndex : 0;
+
+  const items = STATUS_FLOW.map((status) => ({
+    title: ORDER_STATUS_LABEL_MAP[status] || status,
+    description: status === orderStatus ? "Đang xử lý" : "",
+  }));
+
+  if (orderStatus === "CANCELED") {
+    items.push({ title: ORDER_STATUS_LABEL_MAP.CANCELED, description: "Đơn hàng đã hủy" });
+    return (
+      <MainCard bordered={false}>
+        <SectionHeading>Trạng thái vận chuyển</SectionHeading>
+        <DeliverySteps current={items.length - 1} status="error" items={items} />
+      </MainCard>
+    );
+  }
+
   return (
     <MainCard bordered={false}>
       <SectionHeading>Trạng thái vận chuyển</SectionHeading>
-      <DeliverySteps
-        current={3}
-        items={[
-          {
-            title: "Đã đặt hàng",
-            description: "24/05 - 14:30",
-          },
-          {
-            title: "Xác nhận",
-            description: "24/05 - 16:15",
-          },
-          {
-            title: "Đang giao",
-            description: "25/05 - 09:00",
-          },
-          {
-            title: "Đến trạm trung chuyển",
-            description: "Đang xử lý",
-          },
-          {
-            title: "Hoàn tất",
-            description: "Dự kiến 26/05",
-          },
-        ]}
-      />
+      <DeliverySteps current={current} items={items} />
     </MainCard>
   );
 };

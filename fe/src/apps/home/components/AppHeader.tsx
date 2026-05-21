@@ -26,7 +26,6 @@ import OrderModal from "./OrderModal";
 import {
   Account,
   AccountText,
-  Brand,
   Cart,
   HeaderOverlayStyle,
   Logo,
@@ -39,19 +38,22 @@ import {
   StyledRow,
   Wrapper,
 } from "./styles/HeaderStyled";
+import { HOME_ROUTE } from "../constants";
 
 const AppHeader = () => {
   const navigate = useNavigate();
   const { showSuccessNotify } = useNotification();
   const [currentUser, setCurrentUser] = useState(
-    lcStorage.get<{ fullName?: string; role?: string }>(LOCAL_STORAGE_KEYS.user),
+    lcStorage.get<{ id?: string; fullName?: string; email?: string; role?: string }>(LOCAL_STORAGE_KEYS.user),
   );
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const fullName = currentUser?.fullName?.trim();
+  const cartCountScopeKey = currentUser?.id || currentUser?.email || "guest";
 
   const { data: cartCountResponse } = useCartCountQuery({
     enabled: !!currentUser,
+    queryKey: ["gio-hang-count", cartCountScopeKey],
   });
 
   const cartCount = currentUser ? (cartCountResponse?.data?.count ?? 0) : 0;
@@ -86,12 +88,8 @@ const AppHeader = () => {
       <HeaderOverlayStyle />
       <StyledRow align="middle" justify="space-between" wrap={false}>
         <Col flex="260px">
-          <LogoWrapper onClick={() => goTo("/")}>
+          <LogoWrapper onClick={() => goTo(HOME_ROUTE)}>
             <Logo src={logo} alt="Điện nước ONV" />
-            <Brand>
-              <span>ĐIỆN NƯỚC</span>
-              <strong>ONV</strong>
-            </Brand>
           </LogoWrapper>
         </Col>
 
