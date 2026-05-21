@@ -64,6 +64,21 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
+const resolveImageUrl = (imageUrl?: string) => {
+  if (!imageUrl) return "https://via.placeholder.com/80?text=No+Image";
+  if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
+
+  const apiBase = import.meta.env.VITE_API_URL as string | undefined;
+  if (!apiBase) return imageUrl;
+
+  try {
+    const origin = new URL(apiBase).origin;
+    return `${origin}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
+  } catch {
+    return imageUrl;
+  }
+};
+
 const OrderModal = ({ open, onClose, onCheckout }: OrderModalProps) => {
   const navigate = useNavigate();
   const { showErrorNotify } = useNotification();
@@ -97,7 +112,7 @@ const OrderModal = ({ open, onClose, onCheckout }: OrderModalProps) => {
       const image =
         product.images?.find((i) => i.isMain)?.imageUrl ||
         product.images?.[0]?.imageUrl ||
-        "https://via.placeholder.com/80";
+        "https://via.placeholder.com/80?text=No+Image";
 
       return {
         id: item.id,
@@ -106,7 +121,7 @@ const OrderModal = ({ open, onClose, onCheckout }: OrderModalProps) => {
         price: Number(product.salePrice) || 0,
         quantity: item.quantity,
         unit: product.unit,
-        image,
+        image: resolveImageUrl(image),
       };
     });
   }, [cart]);

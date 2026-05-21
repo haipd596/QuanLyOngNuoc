@@ -2,6 +2,7 @@ import "antd/dist/reset.css";
 import "moment/locale/vi";
 // import { StrictMode } from "react";
 import App from "@/App";
+import logo from "@/assets/icons/logo.png";
 import { createRoot } from "react-dom/client";
 
 import { StyleProvider, px2remTransformer } from "@ant-design/cssinjs";
@@ -61,6 +62,19 @@ window.addEventListener("unhandledrejection", (event) => {
 });
 
 window.sessionStorage.removeItem(CHUNK_ERROR_STORAGE_KEY);
+
+document.title = "Điện nước ONV";
+
+const faviconLink = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+if (faviconLink) {
+  faviconLink.href = logo;
+} else {
+  const link = document.createElement("link");
+  link.rel = "icon";
+  link.type = "image/png";
+  link.href = logo;
+  document.head.appendChild(link);
+}
 
 createRoot(document.getElementById("root")!).render(
   <>

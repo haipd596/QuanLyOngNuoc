@@ -18,9 +18,13 @@ import {
 
 interface PaymentMethodSectionProps {
   onSubmit: () => void | Promise<void>;
+  loading?: boolean;
 }
 
-const PaymentMethodSection = ({ onSubmit }: PaymentMethodSectionProps) => {
+const PaymentMethodSection = ({
+  onSubmit,
+  loading = false,
+}: PaymentMethodSectionProps) => {
   return (
     <PaymentMethodCard bordered={false}>
       <SummaryTitle>Phương thức thanh toán</SummaryTitle>
@@ -55,7 +59,13 @@ const PaymentMethodSection = ({ onSubmit }: PaymentMethodSectionProps) => {
         </Form.Item>
       </StyledForm>
 
-      <SubmitButton type="primary" block onClick={() => void onSubmit()}>
+      <SubmitButton
+        type="primary"
+        block
+        loading={loading}
+        disabled={loading}
+        onClick={() => void onSubmit()}
+      >
         Xác nhận đặt hàng
       </SubmitButton>
       <SecurityNote>

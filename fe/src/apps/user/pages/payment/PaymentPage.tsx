@@ -66,6 +66,10 @@ const PaymentPage = () => {
   };
 
   const handleConfirm = async () => {
+    if (createOrderMutation.isLoading) {
+      return;
+    }
+
     setIsConfirmOpen(false);
     const values = form.getFieldsValue();
     const city = toLabel(values.city);
@@ -151,7 +155,10 @@ const PaymentPage = () => {
               <RightColumn>
                 <Flex vertical gap={24}>
                   <OrderSummaryCard />
-                  <PaymentMethodSection onSubmit={handleOpenConfirm} />
+                  <PaymentMethodSection
+                    onSubmit={handleOpenConfirm}
+                    loading={createOrderMutation.isLoading}
+                  />
                 </Flex>
               </RightColumn>
             </PaymentGrid>
@@ -164,6 +171,7 @@ const PaymentPage = () => {
         title="Xác nhận đặt hàng"
         description="Bạn xác nhận đặt đơn hàng này chứ?"
         confirmText="Xác nhận"
+        loading={createOrderMutation.isLoading}
         onCancel={() => setIsConfirmOpen(false)}
         onConfirm={handleConfirm}
       />

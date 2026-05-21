@@ -1,4 +1,4 @@
-import {
+﻿import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserStatus } from '@prisma/client';
+import { Prisma, UserStatus } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { ROLE_CUSTOMER } from '../../common/constants/roles.constant';
 import { PrismaService } from '../../config/prisma.service';
@@ -46,38 +46,54 @@ export class AuthService {
     }
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
-    const user = await this.prisma.user.create({
-      data: {
-        fullName: dto.fullName,
-        email: dto.email,
-        phone: dto.phone,
-        dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : null,
-        passwordHash,
-        roleId: defaultRoleId,
-      },
-      include: {
-        role: {
-          select: { name: true },
-        },
-      },
-    });
 
-    // Đồng bộ bảng khách hàng để màn quản trị khách hàng luôn có dữ liệu theo tài khoản CUSTOMER mới đăng ký
-    const existedCustomer = await this.prisma.customer.findFirst({
-      where: { email: dto.email },
-      select: { id: true },
-    });
+    let user: {
+      id: string;
+      fullName: string;
+      email: string;
+      roleId: string | null;
+      role: { name: string } | null;
+    };
+    try {
+      user = await this.prisma.$transaction(async (tx) => {
+        const createdUser = await tx.user.create({
+          data: {
+            fullName: dto.fullName,
+            email: dto.email,
+            phone: dto.phone,
+            dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : null,
+            passwordHash,
+            roleId: defaultRoleId,
+          },
+          include: {
+            role: {
+              select: { name: true },
+            },
+          },
+        });
 
-    if (!existedCustomer) {
-      await this.prisma.customer.create({
-        data: {
-          fullName: dto.fullName,
-          email: dto.email,
-          phone: dto.phone,
-          address: null,
-          note: null,
-        },
+        await tx.customer.upsert({
+          where: { email: dto.email },
+          update: {
+            fullName: dto.fullName,
+            phone: dto.phone,
+          },
+          create: {
+            fullName: dto.fullName,
+            email: dto.email,
+            phone: dto.phone,
+            address: null,
+            note: null,
+          },
+        });
+
+        return createdUser;
       });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new BadRequestException('Email hoặc số điện thoại đã tồn tại');
+      }
+      throw error;
     }
 
     const tokens = await this.issueTokens({
