@@ -41,6 +41,7 @@ export interface IMyOrder {
   orderStatus: string;
   paymentStatus: string;
   paymentMethod: string;
+  billImageUrl?: string | null;
   shippingMethod: string;
   totalAmount: string;
   discountAmount: string;
@@ -72,6 +73,7 @@ export interface IMyCheckoutPayload {
   address: string;
   shippingMethod?: string;
   paymentMethod?: string;
+  billImageUrl?: string;
   discountAmount?: number;
   shippingFee?: number;
   note?: string;

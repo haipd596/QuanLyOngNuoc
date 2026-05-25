@@ -67,6 +67,11 @@ export class MyCheckoutDto {
   @IsString()
   note?: string;
 
+  @ApiPropertyOptional({ example: '/uploads/bills/1748088888888-proof.png' })
+  @IsOptional()
+  @IsString()
+  billImageUrl?: string;
+
   @ApiProperty({ type: [MyCheckoutItemDto] })
   @IsArray()
   @ArrayMinSize(1)

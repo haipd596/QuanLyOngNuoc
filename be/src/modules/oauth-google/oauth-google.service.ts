@@ -1,4 +1,4 @@
-import {
+﻿import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
@@ -88,6 +88,13 @@ export class OauthGoogleService {
 
     let user = existingByGoogleId ?? existingByEmail;
     if (user) {
+      const currentRoleName = String(user.role?.name || '').toUpperCase();
+      if (currentRoleName && currentRoleName !== ROLE_CUSTOMER) {
+        throw new BadRequestException(
+          'Đăng nhập Google chỉ áp dụng cho tài khoản khách hàng',
+        );
+      }
+
       if (user.googleId && user.googleId !== googleId) {
         throw new BadRequestException('Tài khoản đã liên kết Google khác');
       }

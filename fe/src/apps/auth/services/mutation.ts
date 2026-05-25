@@ -1,7 +1,7 @@
 import type { IResponse } from "@/shared/types/response.type";
 import { useMutation } from "react-query";
-import type { ILogin, IAuthPayload, IRegister } from "./types";
-import { getGoogleCallback, postLogin, postRegister } from "./api";
+import type { ILogin, IAuthPayload, IRegister, IChangePassword } from "./types";
+import { getGoogleCallback, postChangePassword, postLogin, postRegister } from "./api";
 
 export const useCreateLogin = () => {
   return useMutation<
@@ -30,5 +30,15 @@ export const useCreateRegister = () => {
     { body: IRegister }
   >({
     mutationFn: ({ body }) => postRegister(body),
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation<
+    IResponse<null>,
+    Error,
+    { body: IChangePassword }
+  >({
+    mutationFn: ({ body }) => postChangePassword(body),
   });
 };

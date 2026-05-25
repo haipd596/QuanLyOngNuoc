@@ -4,6 +4,7 @@ import { loginRoute } from './pages/login/Route';
 import { registerRoute } from './pages/register/Route';
 import { forgotPasswordRoute } from './pages/forgot-password/Route';
 import { googleCallbackRoute } from './pages/oauth/Route';
+import { changePasswordRoute } from './pages/change-password/Route';
 import { AUTH_ROUTE } from './constants';
 
 export const authRoute = createRoute({
@@ -12,6 +13,12 @@ export const authRoute = createRoute({
   component: () => null,
 });
 
-authRoute.addChildren([loginRoute, registerRoute, forgotPasswordRoute, googleCallbackRoute]);
+authRoute.addChildren([
+  loginRoute,
+  registerRoute,
+  forgotPasswordRoute,
+  changePasswordRoute,
+  googleCallbackRoute,
+]);
 
 export default authRoute;

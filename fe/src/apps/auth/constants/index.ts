@@ -7,6 +7,7 @@ export const REFRESH_TOKEN_URL = `${AUTH_ROUTE}/refresh`;
 export const LOGIN_ROUTE = `${AUTH_ROUTE}/login`;
 export const REGISTER_ROUTE = `${AUTH_ROUTE}/register`;
 export const FORGOT_PASSWORD_ROUTE = `${AUTH_ROUTE}/forgot-password`;
+export const CHANGE_PASSWORD_ROUTE = `${AUTH_ROUTE}/change-password`;
 export const GOOGLE_CALLBACK_ROUTE = `${AUTH_ROUTE}/google/callback`;
 
 export const ROLE_ROUTE_MAP: Record<string, string> = {

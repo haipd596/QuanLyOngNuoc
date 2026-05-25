@@ -8,6 +8,7 @@ import {
   createProduct,
   deleteProduct,
   getCategories,
+  getProductById,
   getProducts,
   updateProduct,
   uploadProductImage,
@@ -59,6 +60,21 @@ const AdminProductsPage = () => {
     }
   };
 
+  const resolveImageUrl = (value: string) => {
+    if (!value) return "";
+    if (/^https?:\/\//i.test(value)) return value;
+
+    const apiBase = import.meta.env.VITE_API_URL as string | undefined;
+    if (!apiBase) return value;
+
+    try {
+      const origin = new URL(apiBase).origin;
+      return `${origin}${value.startsWith("/") ? "" : "/"}${value}`;
+    } catch {
+      return value;
+    }
+  };
+
   const fetchProducts = async () => {
     setLoading(true);
     try {
@@ -95,19 +111,32 @@ const AdminProductsPage = () => {
     setOpenModal(true);
   };
 
-  const openEdit = (record: any) => {
-    setEditingProduct(record);
-    setImageUrls((record.images || []).map((item: any) => item.imageUrl).filter(Boolean));
-    form.setFieldsValue({
-      ...record,
-      hotYN: !!record.hotYN,
-      categoryId: record.categoryId || record.category?.id,
-      importPrice: record.importPrice != null ? Number(record.importPrice) : undefined,
-      salePrice: record.salePrice != null ? Number(record.salePrice) : undefined,
-      stockQuantity: record.stockQuantity != null ? Number(record.stockQuantity) : undefined,
-      minStockLevel: record.minStockLevel != null ? Number(record.minStockLevel) : undefined,
-    });
-    setOpenModal(true);
+  const openEdit = async (record: any) => {
+    try {
+      const productId = record.id || record.productId;
+      if (!productId) {
+        message.error("Không tìm thấy ID sản phẩm");
+        return;
+      }
+
+      const res: any = await getProductById(productId);
+      const detail = res?.data || record;
+
+      setEditingProduct(detail);
+      setImageUrls((detail.images || []).map((item: any) => item.imageUrl).filter(Boolean));
+      form.setFieldsValue({
+        ...detail,
+        hotYN: !!detail.hotYN,
+        categoryId: detail.categoryId || detail.category?.id,
+        importPrice: detail.importPrice != null ? Number(detail.importPrice) : undefined,
+        salePrice: detail.salePrice != null ? Number(detail.salePrice) : undefined,
+        stockQuantity: detail.stockQuantity != null ? Number(detail.stockQuantity) : undefined,
+        minStockLevel: detail.minStockLevel != null ? Number(detail.minStockLevel) : undefined,
+      });
+      setOpenModal(true);
+    } catch {
+      message.error("Không thể tải chi tiết sản phẩm");
+    }
   };
 
   const columns: ColumnsType<any> = [
@@ -122,7 +151,7 @@ const AdminProductsPage = () => {
       title: "Thao tác",
       render: (_, r) => (
         <Space>
-          <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(r)} />
+          <Button size="small" icon={<EditOutlined />} onClick={() => void openEdit(r)} />
           <Popconfirm
             title="Xóa sản phẩm này?"
             onConfirm={async () => {
@@ -135,8 +164,10 @@ const AdminProductsPage = () => {
                 await deleteProduct(productId);
                 showSuccessNotify("Đã xóa sản phẩm");
                 void fetchProducts();
-              } catch {
-                showErrorNotify("Xóa sản phẩm thất bại");
+              } catch (error: any) {
+                showErrorNotify(
+                  error?.data?.message || error?.message || "Xóa sản phẩm thất bại"
+                );
               }
             }}
           >
@@ -209,6 +240,11 @@ const AdminProductsPage = () => {
           form={form}
           layout="vertical"
           onFinish={async (values) => {
+            if (imageUrls.length === 0) {
+              showErrorNotify("Vui lòng tải lên ít nhất 1 ảnh sản phẩm");
+              return;
+            }
+
             const payload = {
               ...values,
               slug: values.slug || toSlug(values.name),
@@ -300,7 +336,12 @@ const AdminProductsPage = () => {
               </Form.Item>
             </Col>
             <Col xs={24}>
-              <Form.Item label="Hình ảnh sản phẩm">
+              <Form.Item
+                label="Hình ảnh sản phẩm"
+                required
+                validateStatus={imageUrls.length === 0 ? "error" : ""}
+                help={imageUrls.length === 0 ? "Vui lòng tải lên ít nhất 1 ảnh sản phẩm" : ""}
+              >
                 <Upload.Dragger
                   accept="image/*"
                   multiple
@@ -328,7 +369,7 @@ const AdminProductsPage = () => {
                   {imageUrls.map((url) => (
                     <div key={url} style={{ position: "relative" }}>
                       <img
-                        src={url}
+                        src={resolveImageUrl(url)}
                         alt="product"
                         style={{ width: 88, height: 88, objectFit: "cover", borderRadius: 8, border: "1px solid #eaecf0" }}
                       />

@@ -10,10 +10,10 @@ import {
 } from "./constants";
 import AdminLayoutPage from "./pages/layout/AdminLayoutPage";
 import AdminOverviewPage from "./pages/overview/AdminOverviewPage";
-import AdminOrdersPage from "./pages/orders/AdminOrdersPage";
 import AdminProductsPage from "./pages/products/AdminProductsPage";
 import AdminCategoriesPage from "./pages/categories/AdminCategoriesPage";
 import AdminCustomersPage from "./pages/customers/AdminCustomersPage";
+import AdminStaffsPage from "./pages/staffs/AdminStaffsPage";
 import AdminReportsPage from "./pages/reports/AdminReportsPage";
 
 export const adminRoute = createRoute({
@@ -49,12 +49,6 @@ export const adminDashboardRoute = createRoute({
   component: AdminOverviewPage,
 });
 
-export const adminOrdersRoute = createRoute({
-  getParentRoute: () => adminRoute,
-  path: "orders",
-  component: AdminOrdersPage,
-});
-
 export const adminProductsRoute = createRoute({
   getParentRoute: () => adminRoute,
   path: "products",
@@ -73,6 +67,12 @@ export const adminCustomersRoute = createRoute({
   component: AdminCustomersPage,
 });
 
+export const adminStaffsRoute = createRoute({
+  getParentRoute: () => adminRoute,
+  path: "staffs",
+  component: AdminStaffsPage,
+});
+
 export const adminReportsRoute = createRoute({
   getParentRoute: () => adminRoute,
   path: "reports",
@@ -81,10 +81,10 @@ export const adminReportsRoute = createRoute({
 
 adminRoute.addChildren([
   adminDashboardRoute,
-  adminOrdersRoute,
   adminProductsRoute,
   adminCategoriesRoute,
   adminCustomersRoute,
+  adminStaffsRoute,
   adminReportsRoute,
 ]);
 

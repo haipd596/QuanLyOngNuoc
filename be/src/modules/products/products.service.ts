@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+﻿import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import {
@@ -176,7 +176,7 @@ export class ProductsService {
       },
     });
     if (!item) {
-      throw new NotFoundException('Không tìm thấy sản phẩm');
+      throw new NotFoundException('KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m');
     }
     return item;
   }
@@ -210,8 +210,36 @@ export class ProductsService {
 
   async remove(id: string) {
     await this.findOne(id);
-    await this.prisma.product.delete({ where: { id } });
-    return { message: 'Xóa thành công' };
+
+    const [salesOrderItems, purchaseOrderItems, cartItems, stockMovements] =
+      await Promise.all([
+        this.prisma.salesOrderItem.count({ where: { productId: id } }),
+        this.prisma.purchaseOrderItem.count({ where: { productId: id } }),
+        this.prisma.cartItem.count({ where: { productId: id } }),
+        this.prisma.stockMovement.count({ where: { productId: id } }),
+      ]);
+
+    const blockers: string[] = [];
+    if (salesOrderItems > 0) blockers.push(`${salesOrderItems} dòng đơn bán`);
+    if (purchaseOrderItems > 0) blockers.push(`${purchaseOrderItems} dòng đơn nhập`);
+    if (cartItems > 0) blockers.push(`${cartItems} dòng giỏ hàng`);
+    if (stockMovements > 0) blockers.push(`${stockMovements} lịch sử xuất/nhập kho`);
+
+    if (blockers.length > 0) {
+      throw new BadRequestException(
+        `Không thể xóa sản phẩm vì đang được sử dụng trong: ${blockers.join(', ')}`,
+      );
+    }
+
+    try {
+      await this.prisma.product.delete({ where: { id } });
+      return { message: 'Xóa thành công' };
+    } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
+        throw new BadRequestException('Không thể xóa sản phẩm vì còn dữ liệu liên quan');
+      }
+      throw error;
+    }
   }
 
   private handlePrismaProductError(error: unknown): never {
@@ -257,3 +285,4 @@ export class ProductsService {
     }
   }
 }
+

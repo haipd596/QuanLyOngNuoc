@@ -1,4 +1,4 @@
-import {
+﻿import {
   BadRequestException,
   Controller,
   Get,
@@ -38,4 +38,3 @@ export class OauthGoogleController {
     return this.oauthGoogleService.loginWithGoogleCode(code);
   }
 }
-

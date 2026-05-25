@@ -2,7 +2,7 @@ import { useMutation, useQueryClient, type UseMutationResult } from "react-query
 
 import type { IResponse } from "@/shared/types/response.type";
 
-import { cancelMyOrder, createMyOrder, updateMyProfile } from "./api";
+import { cancelMyOrder, createMyOrder, updateMyProfile, uploadMyOrderBill } from "./api";
 import type { ICancelMyOrderPayload, IMyCheckoutPayload, IMyOrder, IUpdateMyProfilePayload, IUserMe } from "./types";
 import { USER_ME_QUERY_KEY, USER_MY_ORDER_DETAIL_QUERY_KEY, USER_MY_ORDERS_QUERY_KEY } from "./query";
 import { CART_COUNT_QUERY_KEY, CART_QUERY_KEY } from "@/apps/home/services/query";
@@ -49,5 +49,15 @@ export const useUpdateMyProfileMutation = (): UseMutationResult<
     onSuccess: () => {
       queryClient.invalidateQueries(USER_ME_QUERY_KEY);
     },
+  });
+};
+
+export const useUploadMyOrderBillMutation = (): UseMutationResult<
+  IResponse<{ url: string; path: string; filename: string }>,
+  unknown,
+  File
+> => {
+  return useMutation({
+    mutationFn: uploadMyOrderBill,
   });
 };

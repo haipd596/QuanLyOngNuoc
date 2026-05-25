@@ -2,15 +2,21 @@
 import useNotification from "@/shared/hooks/useNotification";
 import { lcStorage } from "@/shared/utils";
 import tokenManager from "@/shared/utils/tokenManager";
-import { useCreateLogin, useCreateRegister, useGoogleCallback } from "../services/mutation";
+import {
+  useChangePassword,
+  useCreateLogin,
+  useCreateRegister,
+  useGoogleCallback,
+} from "../services/mutation";
 import { getGoogleLoginUrl } from "../services/api";
-import type { IAuthPayload, ILogin, IRegister } from "../services/types";
+import type { IAuthPayload, IChangePassword, ILogin, IRegister } from "../services/types";
 
 export const useAction = () => {
   const { showSuccessNotify, showErrorNotify } = useNotification();
   const loginMutation = useCreateLogin();
   const registerMutation = useCreateRegister();
   const googleCallbackMutation = useGoogleCallback();
+  const changePasswordMutation = useChangePassword();
 
   const persistAuthData = (data?: IAuthPayload) => {
     if (!data) return;
@@ -92,14 +98,35 @@ export const useAction = () => {
     );
   };
 
+  const handleChangePassword = (values: IChangePassword, onSuccess?: () => void) => {
+    changePasswordMutation.mutate(
+      { body: values },
+      {
+        onSuccess: (res) => {
+          if (res.success) {
+            showSuccessNotify(res.message || "Đổi mật khẩu thành công");
+            onSuccess?.();
+          } else {
+            showErrorNotify(res.message || "Đổi mật khẩu thất bại");
+          }
+        },
+        onError: (error: any) => {
+          showErrorNotify(error?.data?.message || error?.message || "Có lỗi xảy ra!");
+        },
+      }
+    );
+  };
+
   return {
     handleLogin,
     handleRegister,
     handleGoogleRedirect,
     handleGoogleCallback,
+    handleChangePassword,
     isLoading: loginMutation.isLoading,
     isRegisterLoading: registerMutation.isLoading,
     isGoogleLoading: googleCallbackMutation.isLoading,
+    isChangePasswordLoading: changePasswordMutation.isLoading,
   };
 };
 

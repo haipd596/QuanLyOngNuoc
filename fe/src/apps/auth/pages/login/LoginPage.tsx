@@ -5,6 +5,7 @@ import { LOCAL_STORAGE_KEYS } from "@/constants";
 import { lcStorage } from "@/shared/utils";
 import { forgotPasswordRoute } from "../forgot-password/Route";
 import { registerRoute } from "../register/Route";
+import { changePasswordRoute } from "../change-password/Route";
 import {
   AuthTopBar,
   BottomRow,
@@ -118,6 +119,13 @@ const LoginPage = () => {
             }
           >
             Quên mật khẩu?
+          </Link>
+          <Link
+            onClick={() =>
+              navigateWithTransition(changePasswordRoute.id)
+            }
+          >
+            Đổi mật khẩu
           </Link>
           <Link
             onClick={() =>

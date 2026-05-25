@@ -40,7 +40,7 @@ export const Page = styled.div<{ $mode?: AuthMode; $isExiting?: boolean }>`
   --auth-panel-width: min(42vw, 630px);
   display: flex;
   flex-direction: ${({ $mode = "left" }) => ($mode === "right" ? "row-reverse" : "row")};
-  min-height: 100vh;
+  min-height: calc(100vh / var(--zoom, 1));
   background:
     radial-gradient(circle at top, rgba(245, 197, 24, 0.18), transparent 34%),
     linear-gradient(135deg, #fff9eb 0%, #ffffff 48%, #f6f7fb 100%);
@@ -57,7 +57,7 @@ export const LeftPanel = styled.div<{ $mode?: AuthMode; $isExiting?: boolean }>`
   justify-content: center;
   padding: 60px 80px;
   width: var(--auth-panel-width);
-  min-height: 100vh;
+  min-height: calc(100vh / var(--zoom, 1));
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -77,7 +77,7 @@ export const LeftPanel = styled.div<{ $mode?: AuthMode; $isExiting?: boolean }>`
 
   @media (max-width: 768px) {
     width: 100%;
-    min-height: 100vh;
+    min-height: calc(100vh / var(--zoom, 1));
     padding: 40px 28px;
     box-shadow: none;
     backdrop-filter: none;
@@ -124,7 +124,7 @@ export const HomeButton = styled(Button)`
 
 export const RightPanel = styled.div<{ $mode?: AuthMode; $isExiting?: boolean }>`
   flex: 1;
-  min-height: 100vh;
+  min-height: calc(100vh / var(--zoom, 1));
   position: relative;
   overflow: hidden;
   background:

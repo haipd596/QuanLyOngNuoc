@@ -2,16 +2,22 @@ import { Select, Table, Tag, notification } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { ORDER_STATUS_LABEL_MAP } from "@/apps/admin/constants/status";
-import { Panel, PanelHeader, PanelTitle, StatusDot, TableWrap } from "@/apps/admin/pages/dashboard/styled";
+import {
+  Panel,
+  PanelHeader,
+  PanelTitle,
+  StatusDot,
+  TableWrap,
+} from "@/apps/admin/pages/dashboard/styled";
 import { formatMoney } from "@/apps/admin/pages/dashboard/utils";
 import { getSellerOrders, updateSellerOrderStatus } from "@/apps/seller/services/seller.api";
 
 const PAGE_SIZE = 10;
-const DELIVERY_OPTIONS = [
-  { value: "PACKING", label: "Đang đóng gói" },
-  { value: "SHIPPED", label: "Đang giao" },
-  { value: "COMPLETED", label: "Hoàn tất" },
-];
+const DELIVERY_FLOW = ["PENDING", "CONFIRMED", "PACKING", "SHIPPED", "COMPLETED"];
+const DELIVERY_OPTIONS = DELIVERY_FLOW.map((value) => ({
+  value,
+  label: ORDER_STATUS_LABEL_MAP[value] || value,
+}));
 
 const SellerDeliveryPage = () => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +27,7 @@ const SellerDeliveryPage = () => {
     setLoading(true);
     try {
       const res: any = await getSellerOrders({ Page: 1, PageSize: PAGE_SIZE });
-      const filtered = (res.data || []).filter((x: any) => ["CONFIRMED", "PACKING", "SHIPPED"].includes(x.orderStatus));
+      const filtered = (res.data || []).filter((x: any) => DELIVERY_FLOW.includes(x.orderStatus));
       setOrders(filtered);
     } finally {
       setLoading(false);
@@ -33,18 +39,29 @@ const SellerDeliveryPage = () => {
   }, []);
 
   const columns: ColumnsType<any> = [
-    { title: "Mã đơn", dataIndex: "orderCode" },
-    { title: "Khách hàng", render: (_, r) => r.customer?.fullName || r.guestName || "Khách lẻ" },
-    { title: "Trạng thái", render: (_, r) => <Tag color="blue">{ORDER_STATUS_LABEL_MAP[r.orderStatus] || r.orderStatus}</Tag> },
-    { title: "Tổng tiền", align: "right", render: (_, r) => formatMoney(Number(r.finalAmount)) },
+    { title: "M� don", dataIndex: "orderCode" },
+    { title: "Kh�ch h�ng", render: (_, r) => r.customer?.fullName || r.guestName || "Kh�ch l?" },
     {
-      title: "Xử lý giao hàng",
+      title: "Tr?ng th�i",
+      render: (_, r) => <Tag color="blue">{ORDER_STATUS_LABEL_MAP[r.orderStatus] || r.orderStatus}</Tag>,
+    },
+    { title: "T?ng ti?n", align: "right", render: (_, r) => formatMoney(Number(r.finalAmount)) },
+    {
+      title: "X? l� giao h�ng",
       render: (_, r) => (
         <Select
           style={{ width: 180 }}
           value={r.orderStatus}
           options={DELIVERY_OPTIONS}
-          onChange={async (value) => { try { await updateSellerOrderStatus(r.id, value); notification.success({ message: "Thành công", description: "Đã cập nhật tiến độ giao hàng" }); void fetchOrders(); } catch { notification.error({ message: "Thất bại", description: "Cập nhật tiến độ giao hàng thất bại" }); } }}
+          onChange={async (value) => {
+            try {
+              await updateSellerOrderStatus(r.id, value);
+              notification.success({ message: "Th�nh c�ng", description: "�� c?p nh?t ti?n d? giao h�ng" });
+              void fetchOrders();
+            } catch {
+              notification.error({ message: "Th?t b?i", description: "C?p nh?t ti?n d? giao h�ng th?t b?i" });
+            }
+          }}
         />
       ),
     },
@@ -52,8 +69,15 @@ const SellerDeliveryPage = () => {
 
   return (
     <Panel>
-      <PanelHeader><PanelTitle>Đơn cần giao</PanelTitle><StatusDot><span />Dữ liệu thật</StatusDot></PanelHeader>
-      <TableWrap><Table rowKey="id" loading={loading} columns={columns} dataSource={orders} pagination={false} /></TableWrap>
+      <PanelHeader>
+        <PanelTitle>�on c?n giao</PanelTitle>
+        <StatusDot>
+          <span />D? li?u th?t
+        </StatusDot>
+      </PanelHeader>
+      <TableWrap>
+        <Table rowKey="id" loading={loading} columns={columns} dataSource={orders} pagination={false} />
+      </TableWrap>
     </Panel>
   );
 };

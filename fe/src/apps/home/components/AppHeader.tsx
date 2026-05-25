@@ -99,7 +99,7 @@ const AppHeader = () => {
           </NavWrap>
         </Col>
 
-        <Col flex="260px">
+        <Col flex="300px">
           <Right>
             {fullName ? (
               <Dropdown

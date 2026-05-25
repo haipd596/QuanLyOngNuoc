@@ -252,6 +252,22 @@ export class SalesOrdersService {
     });
   }
 
+  async updatePaymentStatus(id: string, paymentStatus: PaymentStatus) {
+    const order = await this.findOne(id);
+    if (order.paymentStatus === paymentStatus) {
+      return order;
+    }
+
+    if (order.paymentStatus !== PaymentStatus.UNPAID || paymentStatus !== PaymentStatus.PAID) {
+      throw new BadRequestException('Chi ho tro chuyen tu UNPAID sang PAID');
+    }
+
+    return this.prisma.salesOrder.update({
+      where: { id },
+      data: { paymentStatus: PaymentStatus.PAID },
+    });
+  }
+
   async createMyOrder(userId: string, dto: MyCheckoutDto) {
     if (!userId) {
       throw new UnauthorizedException('Khong tim thay nguoi dung');
@@ -268,53 +284,66 @@ export class SalesOrdersService {
     const shippingFee = dto.shippingFee ?? 0;
     const finalAmount = Math.max(totalAmount - discountAmount + shippingFee, 0);
     const orderCode = this.generateOrderCode();
+    const createData: any = {
+      orderCode,
+      checkoutType: CheckoutType.USER,
+      customerId: customer.id,
+      totalAmount,
+      discountAmount,
+      shippingFee,
+      finalAmount,
+      shippingMethod: this.mapShippingMethod(dto.shippingMethod),
+      paymentMethod: this.mapPaymentMethod(dto.paymentMethod),
+      paymentStatus: PaymentStatus.UNPAID,
+      billImageUrl: dto.billImageUrl?.trim() || null,
+      orderStatus: OrderStatus.PENDING,
+      note: dto.note,
+      items: { create: normalizedItems },
+    };
 
-    const order = await this.prisma.$transaction(async (tx) => {
-      const created = await tx.salesOrder.create({
-        data: {
-          orderCode,
-          checkoutType: CheckoutType.USER,
-          customerId: customer.id,
-          totalAmount,
-          discountAmount,
-          shippingFee,
-          finalAmount,
-          shippingMethod: this.mapShippingMethod(dto.shippingMethod),
-          paymentMethod: this.mapPaymentMethod(dto.paymentMethod),
-          paymentStatus: PaymentStatus.UNPAID,
-          orderStatus: OrderStatus.PENDING,
-          note: dto.note,
-          items: { create: normalizedItems },
-        },
-        include: { items: true, customer: true },
-      });
-
-      for (const item of normalizedItems) {
-        await this.decrementStockOrThrow(tx, item.productId, item.quantity);
-        await tx.stockMovement.create({
-          data: {
-            productId: item.productId,
-            type: StockMovementType.EXPORT,
-            quantity: item.quantity,
-            salesOrderId: created.id,
-            note: `Export for ${created.orderCode} (user checkout)`,
-          },
+    let order;
+    try {
+      order = await this.prisma.$transaction(async (tx) => {
+        const created = await tx.salesOrder.create({
+          data: createData,
+          include: { items: true, customer: true },
         });
-      }
 
-      const cart = await tx.cart.findUnique({
-        where: { userId },
-        select: { id: true },
-      });
+        for (const item of normalizedItems) {
+          await this.decrementStockOrThrow(tx, item.productId, item.quantity);
+          await tx.stockMovement.create({
+            data: {
+              productId: item.productId,
+              type: StockMovementType.EXPORT,
+              quantity: item.quantity,
+              salesOrderId: created.id,
+              note: `Export for ${created.orderCode} (user checkout)`,
+            },
+          });
+        }
 
-      if (cart) {
-        await tx.cartItem.deleteMany({
-          where: { cartId: cart.id },
+        const cart = await tx.cart.findUnique({
+          where: { userId },
+          select: { id: true },
         });
-      }
 
-      return created;
-    });
+        if (cart) {
+          await tx.cartItem.deleteMany({
+            where: { cartId: cart.id },
+          });
+        }
+
+        return created;
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        (error.code === 'P2002' || error.code === 'P2003')
+      ) {
+        throw new BadRequestException('Thong tin don hang khong hop le hoac bi trung lap');
+      }
+      throw error;
+    }
 
     try {
       await this.sendOrderMailHooks(order.id);
@@ -581,19 +610,33 @@ export class SalesOrdersService {
     const address = dto.address.trim();
     const note = dto.note?.trim() || null;
 
-    const existing = await this.prisma.customer.findFirst({
-      where: {
-        OR: [
-          { phone },
-          ...(email ? [{ email }] : []),
-        ],
-      },
-    });
+    const [byPhone, byEmail] = await Promise.all([
+      this.prisma.customer.findUnique({
+        where: { phone },
+      }),
+      email
+        ? this.prisma.customer.findUnique({
+            where: { email },
+          })
+        : Promise.resolve(null),
+    ]);
 
+    // phone va email dang tro den 2 khach hang khac nhau -> yeu cau lam ro thong tin
+    if (byPhone && byEmail && byPhone.id !== byEmail.id) {
+      throw new BadRequestException('So dien thoai va email dang thuoc 2 ho so khach hang khac nhau');
+    }
+
+    const existing = byPhone ?? byEmail;
     if (existing) {
       return this.prisma.customer.update({
         where: { id: existing.id },
-        data: { fullName, phone, email, address, note },
+        data: {
+          fullName,
+          phone,
+          email,
+          address,
+          note,
+        },
       });
     }
 

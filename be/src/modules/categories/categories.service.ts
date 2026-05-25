@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import {
   buildPaginatedResult,
@@ -11,6 +11,29 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 @Injectable()
 export class CategoriesService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async getProductCounts() {
+    const items = await this.prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        _count: {
+          select: {
+            products: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      slug: item.slug,
+      productCount: item._count.products,
+    }));
+  }
 
   create(dto: CreateCategoryDto) {
     return this.prisma.category.create({ data: dto });
@@ -68,9 +91,34 @@ export class CategoriesService {
     return this.prisma.category.update({ where: { id }, data: dto });
   }
 
-  async remove(id: string) {
+  async remove(id: string, force = false) {
     await this.findOne(id);
-    await this.prisma.category.delete({ where: { id } });
-    return { message: 'Xóa thành công' };
+
+    const usedByProducts = await this.prisma.product.count({
+      where: { categoryId: id },
+    });
+
+    if (usedByProducts > 0 && !force) {
+      throw new BadRequestException(
+        `Danh mục đang được dùng bởi ${usedByProducts} sản phẩm`,
+      );
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      if (usedByProducts > 0 && force) {
+        await tx.product.deleteMany({
+          where: { categoryId: id },
+        });
+      }
+
+      await tx.category.delete({ where: { id } });
+    });
+
+    return {
+      message:
+        usedByProducts > 0 && force
+          ? `Đã xóa danh mục và ${usedByProducts} sản phẩm liên quan`
+          : 'Xóa thành công',
+    };
   }
 }

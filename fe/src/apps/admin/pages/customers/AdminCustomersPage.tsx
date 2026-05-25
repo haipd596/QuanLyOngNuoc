@@ -1,14 +1,16 @@
 ﻿import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, Popconfirm, Row, Space, Table, notification } from "antd";
+import { Button, Col, Form, Input, Popconfirm, Row, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import BaseModal from "@/shared/components/modals";
-import { createCustomer, deleteCustomer, getCustomers, updateCustomer } from "@/apps/admin/services/admin.api";
+import useNotification from "@/shared/hooks/useNotification";
+import { deleteCustomer, getCustomerById, getCustomers, updateCustomer } from "@/apps/admin/services/admin.api";
 import { ADMIN_PAGE_SIZE } from "../dashboard/utils";
 import { Panel, PanelHeader, PanelTitle, StatusDot, TableWrap } from "../dashboard/styled";
 
 const AdminCustomersPage = () => {
   const { Search } = Input;
+  const { showSuccessNotify, showErrorNotify } = useNotification();
   const [loading, setLoading] = useState(false);
   const [customers, setCustomers] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
@@ -37,16 +39,16 @@ const AdminCustomersPage = () => {
     void fetchCustomers();
   }, [page]);
 
-  const openCreate = () => {
-    setEditingCustomer(null);
-    form.resetFields();
-    setOpenModal(true);
-  };
-
-  const openEdit = (record: any) => {
-    setEditingCustomer(record);
-    form.setFieldsValue(record);
-    setOpenModal(true);
+  const openEdit = async (record: any) => {
+    try {
+      const res: any = await getCustomerById(record.id);
+      const detail = res?.data || record;
+      setEditingCustomer(detail);
+      form.setFieldsValue(detail);
+      setOpenModal(true);
+    } catch {
+      showErrorNotify("Không thể tải chi tiết khách hàng");
+    }
   };
 
   const columns: ColumnsType<any> = [
@@ -58,16 +60,16 @@ const AdminCustomersPage = () => {
       title: "Thao tác",
       render: (_, r) => (
         <Space>
-          <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(r)} />
+          <Button size="small" icon={<EditOutlined />} onClick={() => void openEdit(r)} />
           <Popconfirm
             title="Xóa khách hàng này?"
             onConfirm={async () => {
               try {
                 await deleteCustomer(r.id);
-                notification.success({ message: "Thành công", description: "Đã xóa khách hàng" });
+                showSuccessNotify("Đã xóa khách hàng");
                 void fetchCustomers();
               } catch {
-                notification.error({ message: "Thất bại", description: "Xóa khách hàng thất bại" });
+                showErrorNotify("Xóa khách hàng thất bại");
               }
             }}
           >
@@ -87,9 +89,6 @@ const AdminCustomersPage = () => {
             <StatusDot>
               <span />Dữ liệu thật
             </StatusDot>
-            <Button className="admin-action-primary-btn" type="primary" onClick={openCreate}>
-              Tạo khách hàng
-            </Button>
           </Space>
         </PanelHeader>
 
@@ -129,7 +128,7 @@ const AdminCustomersPage = () => {
       </Panel>
 
       <BaseModal
-        title={editingCustomer ? "Sửa khách hàng" : "Tạo khách hàng"}
+        title="Sửa khách hàng"
         open={openModal}
         onCancel={() => setOpenModal(false)}
         onOk={() => form.submit()}
@@ -140,23 +139,20 @@ const AdminCustomersPage = () => {
           form={form}
           layout="vertical"
           onFinish={async (values) => {
+            if (!editingCustomer?.id) {
+              showErrorNotify("Không tìm thấy khách hàng để cập nhật");
+              return;
+            }
+
             try {
-              if (editingCustomer) {
-                await updateCustomer(editingCustomer.id, values);
-                notification.success({ message: "Thành công", description: "Cập nhật khách hàng thành công" });
-              } else {
-                await createCustomer(values);
-                notification.success({ message: "Thành công", description: "Tạo khách hàng thành công" });
-              }
+              await updateCustomer(editingCustomer.id, values);
+              showSuccessNotify("Cập nhật khách hàng thành công");
               setOpenModal(false);
               form.resetFields();
               setEditingCustomer(null);
               void fetchCustomers();
             } catch {
-              notification.error({
-                message: "Thất bại",
-                description: editingCustomer ? "Cập nhật khách hàng thất bại" : "Tạo khách hàng thất bại",
-              });
+              showErrorNotify("Cập nhật khách hàng thất bại");
             }
           }}
         >

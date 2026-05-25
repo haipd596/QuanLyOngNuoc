@@ -3,7 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
+import { UserStatus } from '@prisma/client';
 import { ROLE_SELLER } from '../../common/constants/roles.constant';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import {
@@ -11,12 +13,16 @@ import {
   normalizePagination,
 } from '../../common/utils/pagination.util';
 import { PrismaService } from '../../config/prisma.service';
+import { MailService } from '../mail/mail.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   async create(dto: CreateUserDto) {
     const existed = await this.prisma.user.findUnique({
@@ -26,12 +32,11 @@ export class UsersService {
       throw new BadRequestException('Email đã tồn tại');
     }
 
-    const passwordHash = dto.password
-      ? await bcrypt.hash(dto.password, 10)
-      : null;
+    const generatedPassword = this.generateTempPassword();
+    const passwordHash = await bcrypt.hash(generatedPassword, 10);
     const defaultRoleId = dto.roleId ?? (await this.findRoleIdByName(ROLE_SELLER));
 
-    return this.prisma.user.create({
+    const created = await this.prisma.user.create({
       data: {
         fullName: dto.fullName,
         email: dto.email,
@@ -51,6 +56,14 @@ export class UsersService {
         createdAt: true,
       },
     });
+
+    await this.mailService.sendBusinessMailSafe({
+      to: dto.email,
+      subject: 'Tai khoan nhan vien moi',
+      content: `Xin chao ${dto.fullName},\nTai khoan nhan vien da duoc tao.\nEmail dang nhap: ${dto.email}\nMat khau tam thoi: ${generatedPassword}\nVui long doi mat khau sau khi dang nhap.`,
+    });
+
+    return created;
   }
 
   async findAll(
@@ -142,12 +155,14 @@ export class UsersService {
       phone?: string;
       roleId?: string;
       passwordHash?: string;
+      status?: UserStatus;
     } = {};
 
     if (dto.fullName) data.fullName = dto.fullName;
     if (dto.phone) data.phone = dto.phone;
     if (dto.roleId) data.roleId = dto.roleId;
     if (dto.password) data.passwordHash = await bcrypt.hash(dto.password, 10);
+    if (dto.status) data.status = dto.status;
 
     return this.prisma.user.update({
       where: { id },
@@ -177,5 +192,16 @@ export class UsersService {
     });
 
     return role?.id;
+  }
+
+  private generateTempPassword(length = 12) {
+    const chars =
+      'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
+    const bytes = randomBytes(length);
+    let result = '';
+    for (let i = 0; i < length; i += 1) {
+      result += chars[bytes[i] % chars.length];
+    }
+    return result;
   }
 }

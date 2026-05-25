@@ -1,14 +1,22 @@
 ﻿import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Col, Form, Input, Popconfirm, Row, Space, Table, notification } from "antd";
+import { Button, Col, Form, Input, Modal, Popconfirm, Row, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import BaseModal from "@/shared/components/modals";
-import { createCategory, deleteCategory, getCategories, updateCategory } from "@/apps/admin/services/admin.api";
+import useNotification from "@/shared/hooks/useNotification";
+import {
+  createCategory,
+  deleteCategory,
+  getCategories,
+  getCategoryById,
+  updateCategory,
+} from "@/apps/admin/services/admin.api";
 import { ADMIN_PAGE_SIZE, toSlug } from "../dashboard/utils";
 import { Panel, PanelHeader, PanelTitle, StatusDot, TableWrap } from "../dashboard/styled";
 
 const AdminCategoriesPage = () => {
   const { Search } = Input;
+  const { showSuccessNotify, showErrorNotify } = useNotification();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
@@ -43,10 +51,16 @@ const AdminCategoriesPage = () => {
     setOpenModal(true);
   };
 
-  const openEdit = (record: any) => {
-    setEditingCategory(record);
-    form.setFieldsValue(record);
-    setOpenModal(true);
+  const openEdit = async (record: any) => {
+    try {
+      const res: any = await getCategoryById(record.id);
+      const detail = res?.data || record;
+      setEditingCategory(detail);
+      form.setFieldsValue(detail);
+      setOpenModal(true);
+    } catch {
+      showErrorNotify("Không thể tải chi tiết danh mục");
+    }
   };
 
   const columns: ColumnsType<any> = [
@@ -57,16 +71,38 @@ const AdminCategoriesPage = () => {
       title: "Thao tác",
       render: (_, r) => (
         <Space>
-          <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(r)} />
+          <Button size="small" icon={<EditOutlined />} onClick={() => void openEdit(r)} />
           <Popconfirm
             title="Xóa danh mục này?"
             onConfirm={async () => {
               try {
                 await deleteCategory(r.id);
-                notification.success({ message: "Thành công", description: "Đã xóa danh mục" });
+                showSuccessNotify("Đã xóa danh mục");
                 void fetchCategories();
-              } catch {
-                notification.error({ message: "Thất bại", description: "Xóa danh mục thất bại" });
+              } catch (error: any) {
+                const message = String(error?.data?.message || error?.message || "");
+
+                if (!message.includes("Danh mục đang được dùng bởi")) {
+                  showErrorNotify("Xóa danh mục thất bại");
+                  return;
+                }
+
+                Modal.confirm({
+                  title: "Danh mục đang có sản phẩm sử dụng",
+                  content: `${message}. Bạn có muốn xóa luôn các sản phẩm thuộc danh mục này không?`,
+                  okText: "Xóa tất cả",
+                  okButtonProps: { danger: true },
+                  cancelText: "Hủy",
+                  onOk: async () => {
+                    try {
+                      await deleteCategory(r.id, true);
+                      showSuccessNotify("Đã xóa danh mục và các sản phẩm liên quan");
+                      void fetchCategories();
+                    } catch {
+                      showErrorNotify("Không thể xóa danh mục cùng sản phẩm liên quan");
+                    }
+                  },
+                });
               }
             }}
           >
@@ -143,20 +179,17 @@ const AdminCategoriesPage = () => {
               const payload = { ...values, slug: values.slug || toSlug(values.name) };
               if (editingCategory) {
                 await updateCategory(editingCategory.id, payload);
-                notification.success({ message: "Thành công", description: "Cập nhật danh mục thành công" });
+                showSuccessNotify("Cập nhật danh mục thành công");
               } else {
                 await createCategory(payload);
-                notification.success({ message: "Thành công", description: "Tạo danh mục thành công" });
+                showSuccessNotify("Tạo danh mục thành công");
               }
               setOpenModal(false);
               form.resetFields();
               setEditingCategory(null);
               void fetchCategories();
             } catch {
-              notification.error({
-                message: "Thất bại",
-                description: editingCategory ? "Cập nhật danh mục thất bại" : "Tạo danh mục thất bại",
-              });
+              showErrorNotify(editingCategory ? "Cập nhật danh mục thất bại" : "Tạo danh mục thất bại");
             }
           }}
         >
@@ -184,3 +217,4 @@ const AdminCategoriesPage = () => {
 };
 
 export default AdminCategoriesPage;
+

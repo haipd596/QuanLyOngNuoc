@@ -2,8 +2,11 @@
 import { Button, Spin, Typography } from "antd";
 import { useNavigate } from "@tanstack/react-router";
 import { HOME_ROUTE } from "@/apps/home/constants";
+import { LOCAL_STORAGE_KEYS } from "@/constants";
+import { lcStorage } from "@/shared/utils";
 import { loginRoute } from "../login/Route";
 import useAction from "../../hooks/useAction";
+import { ROLE_ROUTE_MAP } from "../../constants";
 import { AuthTopBar, HomeButton, LeftPanel, Page, RightPanel } from "../../styled";
 
 const { Title, Text } = Typography;
@@ -21,7 +24,9 @@ const GoogleCallbackPage = () => {
 
     hasRequestedRef.current = true;
     handleGoogleCallback(code, () => {
-      navigate({ to: HOME_ROUTE });
+      const user = lcStorage.get(LOCAL_STORAGE_KEYS.user);
+      const redirectRoute = ROLE_ROUTE_MAP[user?.role] || HOME_ROUTE;
+      navigate({ to: redirectRoute });
     });
   }, [code, handleGoogleCallback, navigate]);
 

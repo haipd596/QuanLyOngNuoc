@@ -7,6 +7,7 @@
 
 html {
   zoom: var(--zoom);
+  height: 100%;
 }
 
 body {
@@ -17,9 +18,14 @@ body {
   color: var(--text-primary) !important;
   background-color: var(--bg-primary);
   min-width: 320px;
-  height: var(--device-height);
+  min-height: 100vh;
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+#root {
+  height: 100%;
 }
 
 // Ẩn overlay khi export pdf bị lỗi

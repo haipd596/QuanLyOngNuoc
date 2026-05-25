@@ -11,6 +11,7 @@ import * as bcrypt from 'bcrypt';
 import { ROLE_CUSTOMER } from '../../common/constants/roles.constant';
 import { PrismaService } from '../../config/prisma.service';
 import { UsersService } from '../users/users.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateMyProfileDto } from './dto/update-my-profile.dto';
@@ -145,6 +146,36 @@ export class AuthService {
       },
       ...tokens,
     };
+  }
+
+  async changePassword(dto: ChangePasswordDto) {
+    if (dto.newPassword !== dto.confirmNewPassword) {
+      throw new BadRequestException('Mật khẩu xác nhận không khớp');
+    }
+
+    const user = await this.usersService.findByEmail(dto.email);
+    if (!user || !user.passwordHash) {
+      throw new BadRequestException('Email hoặc mật khẩu cũ không đúng');
+    }
+
+    const oldPasswordValid = await bcrypt.compare(dto.oldPassword, user.passwordHash);
+    if (!oldPasswordValid) {
+      throw new BadRequestException('Email hoặc mật khẩu cũ không đúng');
+    }
+
+    const isSamePassword = await bcrypt.compare(dto.newPassword, user.passwordHash);
+    if (isSamePassword) {
+      throw new BadRequestException('Mật khẩu mới phải khác mật khẩu cũ');
+    }
+
+    const newPasswordHash = await bcrypt.hash(dto.newPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash: newPasswordHash },
+    });
+
+    return null;
   }
 
   async refresh(refreshToken: string) {

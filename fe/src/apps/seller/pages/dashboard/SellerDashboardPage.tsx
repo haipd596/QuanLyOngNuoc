@@ -1,6 +1,7 @@
 ﻿import { CheckCircleOutlined, ClockCircleOutlined, ShoppingCartOutlined, TeamOutlined, TruckOutlined } from "@ant-design/icons";
 import { Col, Row } from "antd";
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from "chart.js";
+import type { ChartOptions } from "chart.js";
 import { useEffect, useMemo, useState } from "react";
 import { Bar, Doughnut } from "react-chartjs-2";
 import {
@@ -87,6 +88,20 @@ const SellerDashboardPage = () => {
     ],
   };
 
+  const statusChartOptions: ChartOptions<"doughnut"> = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  };
+
+  const statusLegend = [
+    { label: "Chờ xử lý", color: "#f59e0b" },
+    { label: "Đang đóng gói", color: "#3b82f6" },
+    { label: "Hoàn tất", color: "#10b981" },
+  ];
+
   const hasStatusData =
     Number(dashboard?.pendingOrders || 0) +
       Number(dashboard?.packingOrders || 0) +
@@ -107,9 +122,9 @@ const SellerDashboardPage = () => {
         ))}
       </MetricGrid>
 
-      <Row gutter={16} style={{ marginTop: 18 }}>
+      <Row gutter={16} style={{ marginTop: 18 }} align="stretch">
         <Col xs={24} lg={16}>
-          <Panel>
+          <Panel style={{ height: "100%" }}>
             <PanelHeader>
               <PanelTitle>Tổng quan số liệu</PanelTitle>
             </PanelHeader>
@@ -118,15 +133,52 @@ const SellerDashboardPage = () => {
             </div>
           </Panel>
         </Col>
+
         <Col xs={24} lg={8}>
-          <Panel>
+          <Panel style={{ height: "100%" }}>
             <PanelHeader>
               <PanelTitle>Cơ cấu trạng thái đơn</PanelTitle>
             </PanelHeader>
             <div style={{ padding: 16 }}>
               {hasStatusData ? (
                 <div style={{ maxWidth: 320, margin: "0 auto" }}>
-                  <Doughnut data={statusChartData} />
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: 12,
+                      marginBottom: 8,
+                      whiteSpace: "nowrap",
+                      overflowX: "auto",
+                    }}
+                  >
+                    {statusLegend.map((item) => (
+                      <div
+                        key={item.label}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          fontWeight: 500,
+                          color: "#475467",
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 2,
+                            backgroundColor: item.color,
+                            display: "inline-block",
+                          }}
+                        />
+                        {item.label}
+                      </div>
+                    ))}
+                  </div>
+
+                  <Doughnut data={statusChartData} options={statusChartOptions} />
                 </div>
               ) : (
                 <div
@@ -144,6 +196,7 @@ const SellerDashboardPage = () => {
                   Chưa có dữ liệu trạng thái đơn
                 </div>
               )}
+
               <div style={{ marginTop: 12, fontWeight: 700, color: "#0b2e59" }}>
                 Doanh thu hôm nay: {formatMoney(Number(dashboard?.todayRevenue || 0))}
               </div>

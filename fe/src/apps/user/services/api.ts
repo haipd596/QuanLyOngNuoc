@@ -26,6 +26,16 @@ export const createMyOrder = (
   return axiosClient.post("/sales-orders/my-checkout", payload);
 };
 
+export const uploadMyOrderBill = (
+  file: File
+): Promise<IResponse<{ url: string; path: string; filename: string }>> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return axiosClient.post("/sales-orders/upload-bill", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
 export const getMyOrders = (
   params?: { Page?: number; PageSize?: number }
 ): Promise<IResponsePagination<IMyOrder>> => {

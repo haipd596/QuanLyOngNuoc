@@ -1,5 +1,11 @@
 import axiosClient from '@configs/axios';
-import { IAddGioHang, ISanPham, type IDanhMuc, type TFilter } from './types';
+import {
+  IAddGioHang,
+  ISanPham,
+  type ICategoryProductCount,
+  type IDanhMuc,
+  type TFilter,
+} from './types';
 import { stringtifyQuery } from '@/shared/utils';
 import type { IResponsePagination } from '@/shared/types/response.type';
 
@@ -12,6 +18,10 @@ export const getSanPham = (params: TFilter): Promise<IResponsePagination<ISanPha
   const query = stringtifyQuery(params);
   return axiosClient.get(`/products?${query}`)  
 }
+
+export const getCategoryProductCounts = (): Promise<ICategoryProductCount[]> => {
+  return axiosClient.get('/categories/product-counts');
+};
 
 export const addToCart = (payload: IAddGioHang) => {
   return axiosClient.post('/carts/add', payload);

@@ -1,8 +1,9 @@
 import styled from "styled-components";
 
 export const AdminLayout = styled.div`
-  min-height: 115vh;
-  background: #f4f7fb;
+  height: calc(100vh / var(--zoom, 1));
+  min-height: calc(100vh / var(--zoom, 1));
+  background: #ffffff;
   color: #152033;
   display: grid;
   grid-template-columns: 264px minmax(0, 1fr);
@@ -13,6 +14,8 @@ export const AdminLayout = styled.div`
 `;
 
 export const Sidebar = styled.aside`
+  height: calc(100vh / var(--zoom, 1));
+  min-height: calc(100vh / var(--zoom, 1));
   background: #0f2744;
   color: #ffffff;
   padding: 24px 18px;
@@ -117,6 +120,9 @@ export const UserMeta = styled.div`
 
 export const Main = styled.main`
   min-width: 0;
+  min-height: calc(100vh / var(--zoom, 1));
+  background: #ffffff;
+  overflow: auto;
 `;
 
 export const Header = styled.header`
@@ -161,10 +167,11 @@ export const HeaderActions = styled.div`
 `;
 
 export const Content = styled.section`
-  padding: 28px 32px 36px;
+  padding: 16px 20px 20px;
+  background: #ffffff;
 
   @media (max-width: 700px) {
-    padding: 18px;
+    padding: 14px;
   }
 
   .admin-action-primary-btn.ant-btn-primary {
@@ -251,10 +258,11 @@ export const MetricValue = styled.strong`
 
 export const Panel = styled.div`
   margin-top: 18px;
-  border: 1px solid #e4eaf1;
+  border: none;
   border-radius: 8px;
   background: #ffffff;
   overflow: hidden;
+  box-shadow: none;
 `;
 
 export const PanelHeader = styled.div`
@@ -293,5 +301,20 @@ export const TableWrap = styled.div`
 
   .ant-table {
     min-width: 680px;
+  }
+
+  .ant-table-wrapper .ant-table-container {
+    border-inline-start: none !important;
+    border-top: none !important;
+  }
+
+  .ant-table-wrapper .ant-table-container table > thead > tr:first-child > *:first-child,
+  .ant-table-wrapper .ant-table-container table > tbody > tr > *:first-child {
+    border-inline-start: none !important;
+  }
+
+  .ant-table-wrapper .ant-table-container table > thead > tr:first-child > *:last-child,
+  .ant-table-wrapper .ant-table-container table > tbody > tr > *:last-child {
+    border-inline-end: none !important;
   }
 `;

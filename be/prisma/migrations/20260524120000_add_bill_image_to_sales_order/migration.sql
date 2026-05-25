@@ -1,0 +1,2 @@
+ALTER TABLE `SalesOrder`
+ADD COLUMN `billImageUrl` VARCHAR(191) NULL;

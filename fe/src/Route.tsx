@@ -1,10 +1,13 @@
 import {
   Outlet,
+  redirect,
+  createRoute,
   createRootRoute,
   createRouter,
 } from '@tanstack/react-router'
 import NotFound404 from '@shared/components/404'
 import { publicRoute } from './apps/home/Route';
+import { HOME_ROUTE } from './apps/home/constants';
 import authRoute from './apps/auth/Route';
 import userRoute from './apps/user/Route';
 import adminRoute from './apps/admin/Route';
@@ -37,7 +40,16 @@ function RootComponent() {
   )
 }
 
+const indexRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/',
+  beforeLoad: () => {
+    throw redirect({ to: HOME_ROUTE });
+  },
+});
+
 export const routeTree = rootRoute.addChildren([
+  indexRedirectRoute,
   publicRoute,
   authRoute,
   userRoute,

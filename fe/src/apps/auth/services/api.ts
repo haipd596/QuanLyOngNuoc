@@ -1,6 +1,6 @@
 import axiosClient from "@/configs/axios";
 import type { IResponse } from "@/shared/types/response.type";
-import type { ILogin, IAuthPayload, IRegister } from "./types";
+import type { ILogin, IAuthPayload, IRegister, IChangePassword } from "./types";
 
 export const postLogin = (
   body: ILogin
@@ -25,4 +25,10 @@ export const postRegister = (
   body: IRegister
 ): Promise<IResponse<IAuthPayload>> => {
   return axiosClient.post(`/auth/register`, body);
+};
+
+export const postChangePassword = (
+  body: IChangePassword
+): Promise<IResponse<null>> => {
+  return axiosClient.post(`/auth/change-password`, body);
 };

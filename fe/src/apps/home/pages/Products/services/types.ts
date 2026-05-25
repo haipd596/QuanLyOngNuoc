@@ -9,6 +9,13 @@ export interface IDanhMuc {
   updatedAt: string;  
 }
 
+export interface ICategoryProductCount {
+  id: string;
+  name: string;
+  slug: string;
+  productCount: number;
+}
+
 export interface ICategory {
   id: string;
   name: string;

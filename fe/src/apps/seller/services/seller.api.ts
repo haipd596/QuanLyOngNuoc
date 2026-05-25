@@ -23,6 +23,8 @@ export const getSellerOrders = (params: QueryParams = {}) =>
   axiosClient.get<IResponsePagination<any>>("/sales-orders", { params });
 export const updateSellerOrderStatus = (id: string, orderStatus: string) =>
   axiosClient.patch<IResponse<any>>(`/sales-orders/${id}/status`, { orderStatus });
+export const updateSellerOrderPaymentStatus = (id: string, paymentStatus: string) =>
+  axiosClient.patch<IResponse<any>>(`/sales-orders/${id}/payment-status`, { paymentStatus });
 
 export const getSellerProducts = (params: QueryParams = {}) =>
   axiosClient.get<IResponsePagination<any>>("/products", { params });

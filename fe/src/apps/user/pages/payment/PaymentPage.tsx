@@ -9,7 +9,7 @@ import { useMemo, useState } from "react";
 
 import { ConfirmDialog } from "../../component";
 import { USER_ORDER_SUCCESS_ROUTE } from "../../constants";
-import { useCreateMyOrderMutation } from "../../services";
+import { useCreateMyOrderMutation, useUploadMyOrderBillMutation } from "../../services";
 import {
   CustomerInfoSection,
   OrderNoteSection,
@@ -18,7 +18,7 @@ import {
   ShippingAddressSection,
   ShippingMethodSection,
 } from "./components";
-import { SHIPPING_METHOD_FEES } from "./shipping";
+import { getShippingFee } from "./shipping";
 import {
   LeftColumn,
   PaymentContent,
@@ -42,12 +42,21 @@ const toLabel = (input: unknown): string => {
   return String(input || "");
 };
 
+const toApiPaymentMethod = (method: string): string => {
+  const normalized = String(method || "").toLowerCase();
+  if (normalized === "bank") return "BANK_TRANSFER";
+  if (normalized === "wallet") return "MOMO";
+  if (normalized === "cod") return "COD";
+  return method;
+};
+
 const PaymentPage = () => {
   const [form] = Form.useForm();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const navigate = useNavigate();
   const { showErrorNotify, showSuccessNotify } = useNotification();
   const createOrderMutation = useCreateMyOrderMutation();
+  const uploadBillMutation = useUploadMyOrderBillMutation();
   const { data: cartRes } = useGioHangQuery();
 
   const cart = useMemo<ICart | null>(() => {
@@ -81,15 +90,23 @@ const PaymentPage = () => {
       quantity: item.quantity,
     }));
     const selectedShippingMethod = String(values.shippingMethod || "standard");
-    const shippingFee =
+    const selectedPaymentMethod = String(values.paymentMethod || "cod");
+    const apiPaymentMethod = toApiPaymentMethod(selectedPaymentMethod);
+    const billImageUrl =
+      selectedPaymentMethod === "bank" ? String(values.billImageUrl || "").trim() : undefined;
+    const shippingFee = getShippingFee(
+      selectedShippingMethod,
+      selectedPaymentMethod,
       items.length > 0
-        ? SHIPPING_METHOD_FEES[
-            selectedShippingMethod as keyof typeof SHIPPING_METHOD_FEES
-          ] ?? SHIPPING_METHOD_FEES.standard
-        : 0;
+    );
 
     if (!items.length) {
       showErrorNotify("Giỏ hàng đang trống");
+      return;
+    }
+
+    if (selectedPaymentMethod === "bank" && !billImageUrl) {
+      showErrorNotify("Vui lòng tải ảnh bill chuyển khoản");
       return;
     }
 
@@ -101,7 +118,8 @@ const PaymentPage = () => {
         address: [address, ward, city].filter(Boolean).join(", "),
         shippingMethod: values.shippingMethod,
         shippingFee,
-        paymentMethod: values.paymentMethod,
+        paymentMethod: apiPaymentMethod,
+        billImageUrl,
         note: values.note,
         items,
       });
@@ -158,6 +176,11 @@ const PaymentPage = () => {
                   <PaymentMethodSection
                     onSubmit={handleOpenConfirm}
                     loading={createOrderMutation.isLoading}
+                    uploadingBill={uploadBillMutation.isLoading}
+                  onUploadBill={async (file) => {
+                      const res = await uploadBillMutation.mutateAsync(file);
+                      return String(res.data?.path || res.data?.url || "").trim();
+                    }}
                   />
                 </Flex>
               </RightColumn>

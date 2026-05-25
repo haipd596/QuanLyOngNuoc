@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useGioHangQuery } from "@/apps/home/services/query";
 import type { ICart } from "@/apps/home/services/types";
 
-import { SHIPPING_METHOD_FEES } from "../shipping";
+import { getShippingFee } from "../shipping";
 import {
   PriceRow,
   SummaryCard,
@@ -44,6 +44,7 @@ const resolveImageUrl = (imageUrl?: string) => {
 const OrderSummaryCard = () => {
   const form = Form.useFormInstance();
   const shippingMethod = Form.useWatch("shippingMethod", form);
+  const paymentMethod = Form.useWatch("paymentMethod", form);
   const { data, isLoading } = useGioHangQuery();
 
   const cart = useMemo<ICart | null>(() => {
@@ -81,11 +82,11 @@ const OrderSummaryCard = () => {
     [items]
   );
 
-  const shippingFee =
+  const shippingFee = getShippingFee(
+    String(shippingMethod || "standard"),
+    String(paymentMethod || "cod"),
     items.length > 0
-      ? SHIPPING_METHOD_FEES[shippingMethod as keyof typeof SHIPPING_METHOD_FEES] ??
-        SHIPPING_METHOD_FEES.standard
-      : 0;
+  );
 
   const total = subTotal + shippingFee;
 

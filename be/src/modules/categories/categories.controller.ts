@@ -1,11 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiQuery } from '@nestjs/swagger';
-import { ResponseMessage } from '../../common/decorators/response-message.decorator';
-import { UseGuards } from '@nestjs/common';
-import { Roles } from '../../common/decorators/roles.decorator';
+﻿import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ROLE_ADMIN } from '../../common/constants/roles.constant';
 import { Public } from '../../common/decorators/public.decorator';
+import { ResponseMessage } from '../../common/decorators/response-message.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { ApiPaginationQuery } from '../../common/swagger/api-pagination-query.decorator';
@@ -13,14 +11,13 @@ import {
   ApiStandardPaginationResponse,
   ApiStandardResponse,
 } from '../../common/swagger/api-standard-response.decorator';
-import { ROLE_ADMIN } from '../../common/constants/roles.constant';
-import { CategoriesService } from './categories.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import {
   buildPaginationInput,
   extractQueryFilters,
 } from '../../common/utils/list-query.util';
+import { CategoriesService } from './categories.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('categories')
 @ApiTags('Danh mục')
@@ -68,6 +65,21 @@ export class CategoriesController {
     return this.categoriesService.findAll(paging, keyword, filters);
   }
 
+  @Get('product-counts')
+  @Public()
+  @ResponseMessage('Lấy số lượng sản phẩm theo danh mục thành công')
+  @ApiStandardResponse('Lấy số lượng sản phẩm theo danh mục thành công', 200, [
+    {
+      id: 'cmai42t3b0000cat001',
+      name: 'Ống nước',
+      slug: 'ong-nuoc',
+      productCount: 12,
+    },
+  ])
+  getProductCounts() {
+    return this.categoriesService.getProductCounts();
+  }
+
   @Get(':id')
   @Public()
   @ResponseMessage('Lấy chi tiết danh mục thành công')
@@ -88,7 +100,10 @@ export class CategoriesController {
   @Roles(ROLE_ADMIN)
   @ResponseMessage('Xóa danh mục thành công')
   @ApiStandardResponse('Xóa danh mục thành công')
-  remove(@Param('id') id: string) {
-    return this.categoriesService.remove(id);
+  remove(
+    @Param('id') id: string,
+    @Query('force') force: string | undefined,
+  ) {
+    return this.categoriesService.remove(id, String(force).toLowerCase() === 'true');
   }
 }

@@ -64,7 +64,7 @@ const SellerCancelReasonsPage = () => {
   ];
 
   return (
-    <Panel>
+    <Panel style={{ border: "none", boxShadow: "none" }}>
       <PanelHeader>
         <PanelTitle>Quản lý lý do hủy đơn</PanelTitle>
         <StatusDot>

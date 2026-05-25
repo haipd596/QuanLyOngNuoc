@@ -7,6 +7,13 @@ import useNotification from "@/shared/hooks/useNotification";
 import { ADMIN_PAGE_SIZE, formatMoney } from "../dashboard/utils";
 import { Panel, PanelHeader, PanelTitle, StatusDot, TableWrap } from "../dashboard/styled";
 
+const PAYMENT_STATUS_LABEL_MAP: Record<string, string> = {
+  UNPAID: "Chưa thanh toán",
+  PARTIAL: "Thanh toán một phần",
+  PAID: "Đã thanh toán",
+  REFUNDED: "Đã hoàn tiền",
+};
+
 const AdminOrdersPage = () => {
   const { Search } = Input;
   const { showSuccessNotify, showErrorNotify } = useNotification();
@@ -55,7 +62,14 @@ const AdminOrdersPage = () => {
   const columns: ColumnsType<any> = [
     { title: "Mã đơn", dataIndex: "orderCode" },
     { title: "Khách hàng", render: (_, r) => r.customer?.fullName || r.guestName || "Khách lẻ" },
-    { title: "Thanh toán", dataIndex: "paymentStatus" },
+    {
+      title: "Thanh toán",
+      render: (_, r) => (
+        <Tag color={r.paymentStatus === "PAID" ? "green" : "orange"}>
+          {PAYMENT_STATUS_LABEL_MAP[r.paymentStatus] || r.paymentStatus || "-"}
+        </Tag>
+      ),
+    },
     { title: "Tổng tiền", render: (_, r) => formatMoney(Number(r.finalAmount)) },
     {
       title: "Trạng thái",

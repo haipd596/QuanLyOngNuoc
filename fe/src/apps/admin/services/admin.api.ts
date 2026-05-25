@@ -36,6 +36,15 @@ export type AdminCustomerInput = {
   note?: string;
 };
 
+export type AdminUserInput = {
+  fullName: string;
+  email: string;
+  password?: string;
+  phone?: string;
+  roleId?: string;
+  status?: string;
+};
+
 export const getAdminDashboard = () =>
   axiosClient.get<IResponse<any>>("/reports/dashboard");
 
@@ -51,6 +60,8 @@ export const getInventoryAudit = (params: QueryParams = {}) =>
 
 export const getProducts = (params: QueryParams = {}) =>
   axiosClient.get<IResponsePagination<any>>("/products", { params });
+export const getProductById = (id: string) =>
+  axiosClient.get<IResponse<any>>(`/products/${id}`);
 
 export const createProduct = (payload: AdminProductInput) =>
   axiosClient.post<IResponse<any>>("/products", payload);
@@ -75,16 +86,22 @@ export const uploadProductImage = (file: File) => {
 
 export const getCategories = (params: QueryParams = {}) =>
   axiosClient.get<IResponsePagination<any>>("/categories", { params });
+export const getCategoryById = (id: string) =>
+  axiosClient.get<IResponse<any>>(`/categories/${id}`);
 
 export const createCategory = (payload: AdminCategoryInput) =>
   axiosClient.post<IResponse<any>>("/categories", payload);
 export const updateCategory = (id: string, payload: Partial<AdminCategoryInput>) =>
   axiosClient.patch<IResponse<any>>(`/categories/${id}`, payload);
-export const deleteCategory = (id: string) =>
-  axiosClient.delete<IResponse<any>>(`/categories/${id}`);
+export const deleteCategory = (id: string, force = false) =>
+  axiosClient.delete<IResponse<any>>(`/categories/${id}`, {
+    params: force ? { force: true } : undefined,
+  });
 
 export const getCustomers = (params: QueryParams = {}) =>
   axiosClient.get<IResponsePagination<any>>("/customers", { params });
+export const getCustomerById = (id: string) =>
+  axiosClient.get<IResponse<any>>(`/customers/${id}`);
 
 export const createCustomer = (payload: AdminCustomerInput) =>
   axiosClient.post<IResponse<any>>("/customers", payload);
@@ -98,3 +115,20 @@ export const getSalesOrders = (params: QueryParams = {}) =>
 
 export const updateOrderStatus = (id: string, orderStatus: string) =>
   axiosClient.patch<IResponse<any>>(`/sales-orders/${id}/status`, { orderStatus });
+
+export const getUsers = (params: QueryParams = {}) =>
+  axiosClient.get<IResponsePagination<any>>("/users", { params });
+export const getUserById = (id: string) =>
+  axiosClient.get<IResponse<any>>(`/users/${id}`);
+
+export const createUser = (payload: AdminUserInput) =>
+  axiosClient.post<IResponse<any>>("/users", payload);
+
+export const updateUser = (id: string, payload: Partial<AdminUserInput>) =>
+  axiosClient.patch<IResponse<any>>(`/users/${id}`, payload);
+
+export const deleteUser = (id: string) =>
+  axiosClient.delete<IResponse<any>>(`/users/${id}`);
+
+export const getRoles = (params: QueryParams = {}) =>
+  axiosClient.get<IResponsePagination<any>>("/roles", { params });

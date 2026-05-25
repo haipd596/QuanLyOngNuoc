@@ -21,11 +21,45 @@ const statusOptions = [
   { value: "CLOSED", label: "Đã đóng" },
 ];
 
+const tagStyle: React.CSSProperties = {
+  width: 120,
+  textAlign: "center",
+  display: "inline-flex",
+  justifyContent: "center",
+  alignItems: "center",
+  marginInlineEnd: 0,
+};
+
 const statusTag = (status?: string) => {
-  if (status === "IN_PROGRESS") return <Tag color="processing">Đang xử lý</Tag>;
-  if (status === "RESOLVED") return <Tag color="success">Đã xử lý</Tag>;
-  if (status === "CLOSED") return <Tag color="default">Đã đóng</Tag>;
-  return <Tag color="gold">Mới</Tag>;
+  if (status === "IN_PROGRESS") {
+    return (
+      <Tag color="processing" style={tagStyle}>
+        Đang xử lý
+      </Tag>
+    );
+  }
+
+  if (status === "RESOLVED") {
+    return (
+      <Tag color="success" style={tagStyle}>
+        Đã xử lý
+      </Tag>
+    );
+  }
+
+  if (status === "CLOSED") {
+    return (
+      <Tag color="default" style={tagStyle}>
+        Đã đóng
+      </Tag>
+    );
+  }
+
+  return (
+    <Tag color="gold" style={tagStyle}>
+      Mới
+    </Tag>
+  );
 };
 
 const SellerContactMessagesPage = () => {
@@ -114,7 +148,7 @@ const SellerContactMessagesPage = () => {
 
   return (
     <>
-      <Panel>
+      <Panel style={{ border: "none", boxShadow: "none" }}>
         <PanelHeader>
           <PanelTitle>Quản lý liên hệ</PanelTitle>
           <Space>

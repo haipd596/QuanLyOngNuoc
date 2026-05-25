@@ -11,11 +11,15 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
   const uploadsRoot = join(process.cwd(), 'uploads');
   const uploadsProductsRoot = join(uploadsRoot, 'products');
+  const uploadsBillsRoot = join(uploadsRoot, 'bills');
   if (!existsSync(uploadsRoot)) {
     mkdirSync(uploadsRoot, { recursive: true });
   }
   if (!existsSync(uploadsProductsRoot)) {
     mkdirSync(uploadsProductsRoot, { recursive: true });
+  }
+  if (!existsSync(uploadsBillsRoot)) {
+    mkdirSync(uploadsBillsRoot, { recursive: true });
   }
   app.use('/uploads', expressStatic(uploadsRoot));
 

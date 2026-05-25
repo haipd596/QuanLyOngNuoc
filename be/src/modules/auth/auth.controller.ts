@@ -15,6 +15,7 @@ import { ResponseMessage } from '../../common/decorators/response-message.decora
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ApiStandardResponse } from '../../common/swagger/api-standard-response.decorator';
 import { AuthService } from './auth.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateMyProfileDto } from './dto/update-my-profile.dto';
@@ -36,6 +37,13 @@ export class AuthController {
   @ApiStandardResponse('Dang nhap thanh cong')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('change-password')
+  @ResponseMessage('Doi mat khau thanh cong')
+  @ApiStandardResponse('Doi mat khau thanh cong')
+  changePassword(@Body() dto: ChangePasswordDto) {
+    return this.authService.changePassword(dto);
   }
 
   @Post('refresh')

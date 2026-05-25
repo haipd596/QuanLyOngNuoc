@@ -1,6 +1,21 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { extname, join } from 'path';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -20,8 +35,11 @@ import { CancelSalesOrderDto } from './dto/cancel-sales-order.dto';
 import { GuestCheckoutDto } from './dto/guest-checkout.dto';
 import { MyCheckoutDto } from './dto/my-checkout.dto';
 import { TrackOrderDto } from './dto/track-order.dto';
+import { UpdateSalesOrderPaymentStatusDto } from './dto/update-sales-order-payment-status.dto';
 import { UpdateSalesOrderStatusDto } from './dto/update-sales-order-status.dto';
 import { SalesOrdersService } from './sales-orders.service';
+
+const { diskStorage } = require('multer');
 
 @Controller('sales-orders')
 @ApiTags('Don ban hang')
@@ -42,6 +60,45 @@ export class SalesOrdersController {
   @ApiStandardResponse('Dat don thanh cong', 201)
   myCheckout(@Req() req: Request & { user?: { sub: string } }, @Body() dto: MyCheckoutDto) {
     return this.salesOrdersService.createMyOrder(req.user?.sub ?? '', dto);
+  }
+
+  @Post('upload-bill')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('BearerAuth')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: join(process.cwd(), 'uploads', 'bills'),
+        filename: (_req: any, file: any, cb: any) => {
+          const suffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          const ext = extname(file.originalname);
+          cb(null, `${suffix}${ext}`);
+        },
+      }),
+      fileFilter: (_req: any, file: any, cb: any) => {
+        if (!file.mimetype.startsWith('image/')) {
+          cb(new BadRequestException('Chi chap nhan file anh'), false);
+          return;
+        }
+        cb(null, true);
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+    }),
+  )
+  @ResponseMessage('Upload bill thanh cong')
+  uploadBill(@Req() req: Request, @UploadedFile() file: any) {
+    if (!file) {
+      throw new BadRequestException('Khong tim thay file upload');
+    }
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const path = `/uploads/bills/${file.filename}`;
+    return {
+      url: `${baseUrl}${path}`,
+      path,
+      filename: file.filename,
+    };
   }
 
   @Get('my-orders')
@@ -168,6 +225,19 @@ export class SalesOrdersController {
   @ApiStandardResponse('Cap nhat trang thai don hang thanh cong')
   updateStatus(@Param('id') id: string, @Body() dto: UpdateSalesOrderStatusDto) {
     return this.salesOrdersService.updateStatus(id, dto);
+  }
+
+  @Patch(':id/payment-status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth('BearerAuth')
+  @Roles(...INTERNAL_ROLES)
+  @ResponseMessage('Cap nhat trang thai thanh toan thanh cong')
+  @ApiStandardResponse('Cap nhat trang thai thanh toan thanh cong')
+  updatePaymentStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateSalesOrderPaymentStatusDto,
+  ) {
+    return this.salesOrdersService.updatePaymentStatus(id, dto.paymentStatus);
   }
 
   @Post(':id/cancel')

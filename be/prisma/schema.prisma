@@ -262,6 +262,7 @@ model SalesOrder {
   shippingMethod ShippingMethod   @default(STANDARD)
   paymentMethod  PaymentMethod    @default(COD)
   paymentStatus  PaymentStatus    @default(UNPAID)
+  billImageUrl   String?
   orderStatus    OrderStatus      @default(PENDING)
   note           String?
   customer       Customer?        @relation(fields: [customerId], references: [id])
