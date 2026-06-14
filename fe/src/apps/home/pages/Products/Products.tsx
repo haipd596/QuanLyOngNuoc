@@ -1,10 +1,14 @@
 import MainLayout from "../../components/MainLayout";
-import { HOME_ROUTE } from "../../constants";
+import { HOME_ROUTE, PRODUCTS_ROUTE } from "../../constants";
 
 import { Col, Pagination, Row } from "antd";
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import useFilter from "~/shared/hooks/useFilter";
+import { LOCAL_STORAGE_KEYS } from "@/constants";
+import { lcStorage } from "@/shared/utils";
+import { canUseCart } from "@/shared/utils/roleAccess";
 import { useAddToCartAction } from "./hooks/useAction";
 import { ISanPham, TFilter, useSanPhamQuery } from "./services";
 import CategoriesSidebar from "./components/CategoriesSidebar";
@@ -20,11 +24,14 @@ export const initialFilter: TFilter = {
 };
 
 const ProductsPage = () => {
+  const navigate = useNavigate();
   const { filter, setFilter } = useFilter(initialFilter);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const { data, isLoading } = useSanPhamQuery(filter);
   const { addProductToCart, isAdding, pendingProductId } = useAddToCartAction();
+  const currentUser = lcStorage.get<{ role?: string }>(LOCAL_STORAGE_KEYS.user);
+  const canAddToCart = !currentUser || canUseCart(currentUser.role);
 
   const products = data?.data ?? [];
   const meta = data?.metaData;
@@ -49,6 +56,10 @@ const ProductsPage = () => {
     });
 
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleViewProduct = (product: ISanPham) => {
+    navigate({ to: `${PRODUCTS_ROUTE}/${product.id}` as any });
   };
 
   return (
@@ -80,7 +91,9 @@ const ProductsPage = () => {
                 loading={isLoading}
                 isAdding={isAdding}
                 pendingProductId={pendingProductId}
+                canAddToCart={canAddToCart}
                 onAddToCart={(p: ISanPham) => addProductToCart(p, 1)}
+                onViewDetails={handleViewProduct}
               />
 
               {!isLoading && (

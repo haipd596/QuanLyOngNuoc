@@ -2,6 +2,7 @@
 import { Button, Col, Form, Input, InputNumber, Popconfirm, Row, Select, Space, Table, Upload, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "react-query";
 import BaseModal from "@/shared/components/modals";
 import useNotification from "@/shared/hooks/useNotification";
 import {
@@ -13,10 +14,18 @@ import {
   updateProduct,
   uploadProductImage,
 } from "@/apps/admin/services/admin.api";
+import {
+  CATEGORY_PRODUCT_COUNTS_QUERY_KEY,
+  PRODUCT_DETAIL_QUERY_KEY,
+  PRODUCT_LIST_QUERY_KEY,
+} from "@/apps/home/pages/Products/services/query";
 import { ADMIN_PAGE_SIZE, formatMoney, toSlug } from "../dashboard/utils";
 import { Panel, PanelHeader, PanelTitle, StatusDot, TableWrap } from "../dashboard/styled";
 
+const PRODUCT_DESCRIPTION_MIN_LENGTH = 50;
+
 const AdminProductsPage = () => {
+  const queryClient = useQueryClient();
   const { Search } = Input;
   const { showSuccessNotify, showErrorNotify } = useNotification();
   const [loading, setLoading] = useState(false);
@@ -73,6 +82,16 @@ const AdminProductsPage = () => {
     } catch {
       return value;
     }
+  };
+
+  const invalidatePublicProductQueries = async (productId?: string) => {
+    await Promise.all([
+      queryClient.invalidateQueries(PRODUCT_LIST_QUERY_KEY),
+      queryClient.invalidateQueries(CATEGORY_PRODUCT_COUNTS_QUERY_KEY),
+      productId
+        ? queryClient.invalidateQueries([PRODUCT_DETAIL_QUERY_KEY, productId])
+        : queryClient.invalidateQueries(PRODUCT_DETAIL_QUERY_KEY),
+    ]);
   };
 
   const fetchProducts = async () => {
@@ -162,6 +181,7 @@ const AdminProductsPage = () => {
               }
               try {
                 await deleteProduct(productId);
+                await invalidatePublicProductQueries(productId);
                 showSuccessNotify("Đã xóa sản phẩm");
                 void fetchProducts();
               } catch (error: any) {
@@ -264,9 +284,11 @@ const AdminProductsPage = () => {
                   return;
                 }
                 await updateProduct(productId, payload);
+                await invalidatePublicProductQueries(productId);
                 showSuccessNotify("Cập nhật sản phẩm thành công");
               } else {
-                await createProduct(payload);
+                const createdProduct: any = await createProduct(payload);
+                await invalidatePublicProductQueries(createdProduct?.data?.id || createdProduct?.data?.productId);
                 showSuccessNotify("Tạo sản phẩm thành công");
               }
               setOpenModal(false);
@@ -331,8 +353,33 @@ const AdminProductsPage = () => {
               </Form.Item>
             </Col>
             <Col xs={24}>
-              <Form.Item name="description" label="Mô tả">
-                <Input.TextArea rows={3} placeholder="Nhập mô tả sản phẩm" />
+              <Form.Item
+                name="description"
+                label="Mô tả"
+                rules={[
+                  { required: true, message: "Vui lòng nhập mô tả sản phẩm" },
+                  {
+                    validator: (_: unknown, value: string | undefined) => {
+                      const normalizedValue = value?.trim() || "";
+                      if (!normalizedValue) {
+                        return Promise.resolve();
+                      }
+                      if (normalizedValue.length < PRODUCT_DESCRIPTION_MIN_LENGTH) {
+                        return Promise.reject(
+                          new Error(`Mô tả phải có ít nhất ${PRODUCT_DESCRIPTION_MIN_LENGTH} ký tự`)
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <Input.TextArea
+                  rows={5}
+                  showCount
+                  maxLength={2000}
+                  placeholder="Nhập mô tả sản phẩm thật chi tiết, tối thiểu 50 ký tự để mô tả rõ công dụng, chất liệu, quy cách hoặc ứng dụng thực tế"
+                />
               </Form.Item>
             </Col>
             <Col xs={24}>

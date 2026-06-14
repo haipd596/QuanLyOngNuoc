@@ -3,6 +3,7 @@ import { useState } from "react";
 import { LOCAL_STORAGE_KEYS } from "@/constants";
 import useNotification from "@/shared/hooks/useNotification";
 import { lcStorage } from "@/shared/utils";
+import { canUseCart } from "@/shared/utils/roleAccess";
 
 import { IAddGioHang, ISanPham, useAddToCart } from "../services";
 
@@ -12,9 +13,14 @@ export const useAddToCartAction = () => {
   const [pendingProductId, setPendingProductId] = useState<string | null>(null);
 
   const addProductToCart = (product: ISanPham, quantity: number = 1) => {
-    const currentUser = lcStorage.get(LOCAL_STORAGE_KEYS.user);
+    const currentUser = lcStorage.get<{ role?: string }>(LOCAL_STORAGE_KEYS.user);
     if (!currentUser) {
       showErrorNotify("Vui lòng đăng nhập");
+      return;
+    }
+
+    if (!canUseCart(currentUser.role)) {
+      showErrorNotify("Tài khoản này không được sử dụng giỏ hàng");
       return;
     }
 

@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
-  IsBoolean,
   IsArray,
+  IsBoolean,
   IsNumber,
   IsOptional,
   IsString,
@@ -12,6 +13,8 @@ import {
 } from 'class-validator';
 
 const PRODUCT_PRICE_MAX = 9999999999.99;
+const PRODUCT_DESCRIPTION_MIN_LENGTH = 50;
+const PRODUCT_DESCRIPTION_MAX_LENGTH = 2000;
 
 export class CreateProductDto {
   @ApiProperty({ example: 'ONV-PVC-001', description: 'Mã SKU sản phẩm' })
@@ -90,14 +93,16 @@ export class CreateProductDto {
   @IsBoolean()
   hotYN?: boolean;
 
-  @ApiPropertyOptional({
-    example: 'Ống nhựa PVC dùng cho hệ thống cấp nước',
+  @ApiProperty({
+    example:
+      'Ống nhựa PVC dùng cho hệ thống cấp thoát nước dân dụng, bền, chịu lực tốt, phù hợp thi công công trình dân dụng và thương mại.',
     description: 'Mô tả sản phẩm',
   })
-  @IsOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
-  @MaxLength(255)
-  description?: string;
+  @MinLength(PRODUCT_DESCRIPTION_MIN_LENGTH)
+  @MaxLength(PRODUCT_DESCRIPTION_MAX_LENGTH)
+  description!: string;
 
   @ApiPropertyOptional({
     example: ['/uploads/products/1747700012345-abc123.png'],

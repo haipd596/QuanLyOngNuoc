@@ -15,13 +15,15 @@ import {
 type Props = {
   product: ISanPham;
   onAddToCart: (product: ISanPham) => void;
+  onViewDetails?: (product: ISanPham) => void;
   isLoading: boolean;
+  canAddToCart?: boolean;
 };
 
 const formatPrice = (value: string) =>
   `${Number(value).toLocaleString("vi-VN")}đ`;
 
-const ProductCard = ({ product, onAddToCart, isLoading }: Props) => {
+const ProductCard = ({ product, onAddToCart, onViewDetails, isLoading, canAddToCart = true }: Props) => {
   const resolveImageUrl = (imageUrl?: string) => {
     if (!imageUrl) {
       return "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=700&q=80";
@@ -43,6 +45,7 @@ const ProductCard = ({ product, onAddToCart, isLoading }: Props) => {
     <ProductCardWrapper
       hoverable
       cover={<ProductImage src={mainImage} alt={product.name} />}
+      onClick={() => onViewDetails?.(product)}
     >
       <ProductName title={product.name}>{product.name}</ProductName>
 
@@ -53,17 +56,22 @@ const ProductCard = ({ product, onAddToCart, isLoading }: Props) => {
       <ProductPrice>{formatPrice(product.salePrice)}</ProductPrice>
       <ProductStock inStock={inStock}>{inStock ? "Còn hàng" : "Hết hàng"}</ProductStock>
 
-      <ProductFooter>
-        <AddToCartButton
-          type="primary"
-          icon={<ShoppingCartOutlined />}
-          loading={isLoading}
-          disabled={isLoading || !inStock}
-          onClick={() => onAddToCart(product)}
-        >
-          Thêm vào giỏ
-        </AddToCartButton>
-      </ProductFooter>
+      {canAddToCart && (
+        <ProductFooter>
+          <AddToCartButton
+            type="primary"
+            icon={<ShoppingCartOutlined />}
+            loading={isLoading}
+            disabled={isLoading || !inStock}
+            onClick={(event) => {
+              event.stopPropagation();
+              onAddToCart(product);
+            }}
+          >
+            Thêm vào giỏ
+          </AddToCartButton>
+        </ProductFooter>
+      )}
     </ProductCardWrapper>
   );
 };

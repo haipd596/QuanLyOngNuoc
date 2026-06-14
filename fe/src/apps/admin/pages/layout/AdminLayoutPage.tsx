@@ -3,6 +3,7 @@
   BarChartOutlined,
   BellOutlined,
   HomeOutlined,
+  InboxOutlined,
   LogoutOutlined,
   ShopOutlined,
   TeamOutlined,
@@ -16,6 +17,7 @@ import {
   ADMIN_CUSTOMERS_ROUTE,
   ADMIN_CATEGORIES_ROUTE,
   ADMIN_DASHBOARD_ROUTE,
+  ADMIN_INVENTORY_ROUTE,
   ADMIN_PRODUCTS_ROUTE,
   ADMIN_REPORTS_ROUTE,
   ADMIN_STAFFS_ROUTE,
@@ -45,6 +47,7 @@ const menuItems = [
   { key: "overview", label: "Tổng quan", icon: <AppstoreOutlined />, to: ADMIN_DASHBOARD_ROUTE },
   { key: "categories", label: "Danh mục", icon: <AppstoreOutlined />, to: ADMIN_CATEGORIES_ROUTE },
   { key: "products", label: "Sản phẩm", icon: <ShopOutlined />, to: ADMIN_PRODUCTS_ROUTE },
+  { key: "inventory", label: "Kho hàng", icon: <InboxOutlined />, to: ADMIN_INVENTORY_ROUTE },
   { key: "customers", label: "Khách hàng", icon: <TeamOutlined />, to: ADMIN_CUSTOMERS_ROUTE },
   { key: "staffs", label: "Nhân viên", icon: <UserOutlined />, to: ADMIN_STAFFS_ROUTE },
   { key: "reports", label: "Báo cáo", icon: <BarChartOutlined />, to: ADMIN_REPORTS_ROUTE },
@@ -53,6 +56,7 @@ const menuItems = [
 const getActiveMenu = (pathname: string) => {
   if (pathname.startsWith(ADMIN_CATEGORIES_ROUTE)) return "categories";
   if (pathname.startsWith(ADMIN_PRODUCTS_ROUTE)) return "products";
+  if (pathname.startsWith(ADMIN_INVENTORY_ROUTE)) return "inventory";
   if (pathname.startsWith(ADMIN_CUSTOMERS_ROUTE)) return "customers";
   if (pathname.startsWith(ADMIN_STAFFS_ROUTE)) return "staffs";
   if (pathname.startsWith(ADMIN_REPORTS_ROUTE)) return "reports";

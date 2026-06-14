@@ -6,17 +6,21 @@ import ProductCard from "./ProductCard";
 type Props = {
   products: ISanPham[];
   onAddToCart: (product: ISanPham) => void;
+  onViewDetails?: (product: ISanPham) => void;
   loading?: boolean;
   isAdding?: boolean;
   pendingProductId?: string | null;
+  canAddToCart?: boolean;
 };
 
 const ProductGrid = ({
   products,
   onAddToCart,
+  onViewDetails,
   loading,
   isAdding,
   pendingProductId,
+  canAddToCart = true,
 }: Props) => {
   if (loading) {
     return (
@@ -41,7 +45,9 @@ const ProductGrid = ({
           key={p.id}
           product={p}
           onAddToCart={onAddToCart}
+          onViewDetails={onViewDetails}
           isLoading={Boolean(isAdding && pendingProductId === p.id)}
+          canAddToCart={canAddToCart}
         />
       ))}
     </ProductsGrid>

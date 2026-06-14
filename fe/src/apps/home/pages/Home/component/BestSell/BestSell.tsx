@@ -1,9 +1,14 @@
 import { ShoppingCartOutlined, StarFilled } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { formatMoney } from "@/apps/admin/pages/dashboard/utils";
+import { LOCAL_STORAGE_KEYS } from "@/constants";
+import { PRODUCTS_ROUTE } from "@/apps/home/constants";
 import { useAddToCartAction } from "@/apps/home/pages/Products/hooks/useAction";
 import { getSanPham } from "@/apps/home/pages/Products/services/api";
 import type { ISanPham } from "@/apps/home/pages/Products/services/types";
+import { lcStorage } from "@/shared/utils";
+import { canUseCart } from "@/shared/utils/roleAccess";
 import {
   Badge,
   Card,
@@ -25,8 +30,11 @@ import {
 } from "./styled";
 
 const BestSell = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState<ISanPham[]>([]);
   const { addProductToCart, pendingProductId } = useAddToCartAction();
+  const currentUser = lcStorage.get<{ role?: string }>(LOCAL_STORAGE_KEYS.user);
+  const canAddToCart = !currentUser || canUseCart(currentUser.role);
 
   const resolveImageUrl = (imageUrl?: string) => {
     if (!imageUrl) return "https://via.placeholder.com/600x400?text=Khong+co+anh";
@@ -76,6 +84,7 @@ const BestSell = () => {
             return (
               <Card
                 key={item.id}
+                onClick={() => navigate({ to: `${PRODUCTS_ROUTE}/${item.id}` as any })}
                 cover={
                   <ImageBox>
                     <img src={firstImage} alt={item.name} />
@@ -100,13 +109,18 @@ const BestSell = () => {
                   <Footer>
                     <Price>{formatMoney(Number(item.salePrice))}</Price>
 
-                    <CartButton
-                      disabled={!inStock || pendingProductId === item.id}
-                      aria-label="Thêm vào giỏ"
-                      onClick={() => addProductToCart(item)}
-                    >
-                      <ShoppingCartOutlined />
-                    </CartButton>
+                    {canAddToCart && (
+                      <CartButton
+                        disabled={!inStock || pendingProductId === item.id}
+                        aria-label="Thêm vào giỏ"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          addProductToCart(item);
+                        }}
+                      >
+                        <ShoppingCartOutlined />
+                      </CartButton>
+                    )}
                   </Footer>
                 </Content>
               </Card>

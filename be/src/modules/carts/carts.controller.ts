@@ -1,6 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { ROLE_CUSTOMER } from '../../common/constants/roles.constant';
 import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 import { ApiStandardResponse } from '../../common/swagger/api-standard-response.decorator';
 import { CartsService } from './carts.service';
@@ -10,7 +13,8 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 @ApiTags('Giỏ hàng')
 @Controller('carts')
 @ApiBearerAuth('BearerAuth')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(ROLE_CUSTOMER)
 export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 

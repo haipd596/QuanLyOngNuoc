@@ -1,6 +1,11 @@
 import { useQuery, type UseQueryOptions, type UseQueryResult } from 'react-query';
-import { getCategoryProductCounts, getDanhMuc, getSanPham } from './api';
-import type { TFilter } from './types';
+import { getCategoryProductCounts, getDanhMuc, getSanPham, getSanPhamDetail } from './api';
+import type { ISanPham, TFilter } from './types';
+import type { IResponse } from '@/shared/types/response.type';
+
+export const PRODUCT_LIST_QUERY_KEY = 'san-pham';
+export const PRODUCT_DETAIL_QUERY_KEY = 'san-pham-detail';
+export const CATEGORY_PRODUCT_COUNTS_QUERY_KEY = 'category-product-counts';
 
 export const useDanhMucQuery = ( params: TFilter, options?: UseQueryOptions<any>): UseQueryResult<any> => {
   return useQuery({
@@ -12,8 +17,20 @@ export const useDanhMucQuery = ( params: TFilter, options?: UseQueryOptions<any>
 
 export const useSanPhamQuery = ( params: TFilter, options?: UseQueryOptions<any>): UseQueryResult<any> => {
   return useQuery({
-    queryKey: ['san-pham', params],
+    queryKey: [PRODUCT_LIST_QUERY_KEY, params],
     queryFn: () => getSanPham(params),
+    ...options,
+  });
+};
+
+export const useSanPhamDetailQuery = (
+  id?: string,
+  options?: UseQueryOptions<IResponse<ISanPham>>,
+): UseQueryResult<IResponse<ISanPham>> => {
+  return useQuery({
+    queryKey: [PRODUCT_DETAIL_QUERY_KEY, id],
+    queryFn: () => getSanPhamDetail(id as string),
+    enabled: !!id,
     ...options,
   });
 };
@@ -22,7 +39,7 @@ export const useCategoryProductCountsQuery = (
   options?: UseQueryOptions<any>,
 ): UseQueryResult<any> => {
   return useQuery({
-    queryKey: ['category-product-counts'],
+    queryKey: [CATEGORY_PRODUCT_COUNTS_QUERY_KEY],
     queryFn: () => getCategoryProductCounts(),
     ...options,
   });

@@ -14,6 +14,7 @@ import { USER_PROFILE_ROUTE } from "@/apps/user/constants";
 import { LOCAL_STORAGE_KEYS } from "@/constants";
 import useNotification from "@/shared/hooks/useNotification";
 import { lcStorage } from "@/shared/utils";
+import { canUseCart } from "@/shared/utils/roleAccess";
 import tokenManager from "@/shared/utils/tokenManager";
 import { useNavigate } from "@tanstack/react-router";
 import { Badge, Col, Dropdown, Drawer } from "antd";
@@ -49,14 +50,15 @@ const AppHeader = () => {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const fullName = currentUser?.fullName?.trim();
+  const canCurrentUserUseCart = canUseCart(currentUser?.role);
   const cartCountScopeKey = currentUser?.id || currentUser?.email || "guest";
 
   const { data: cartCountResponse } = useCartCountQuery({
-    enabled: !!currentUser,
+    enabled: !!currentUser && canCurrentUserUseCart,
     queryKey: ["gio-hang-count", cartCountScopeKey],
   });
 
-  const cartCount = currentUser ? (cartCountResponse?.data?.count ?? 0) : 0;
+  const cartCount = canCurrentUserUseCart ? (cartCountResponse?.data?.count ?? 0) : 0;
 
   const goTo = (to: string) => {
     navigate({ to });
@@ -140,12 +142,14 @@ const AppHeader = () => {
               accountContent
             )}
 
-            <Cart onClick={() => setIsOrderModalOpen(true)} aria-label="Giỏ hàng">
-              <Badge count={cartCount}>
-                <ShoppingCartOutlined style={{ fontSize: 25 }} />
-              </Badge>
-              <span>Giỏ hàng</span>
-            </Cart>
+            {canCurrentUserUseCart && (
+              <Cart onClick={() => setIsOrderModalOpen(true)} aria-label="Giỏ hàng">
+                <Badge count={cartCount}>
+                  <ShoppingCartOutlined style={{ fontSize: 25 }} />
+                </Badge>
+                <span>Giỏ hàng</span>
+              </Cart>
+            )}
 
             <MobileMenuButton
               aria-label="Mở menu"
@@ -173,11 +177,13 @@ const AppHeader = () => {
         </MobileNavList>
       </Drawer>
 
-      <OrderModal
-        open={isOrderModalOpen}
-        onClose={() => setIsOrderModalOpen(false)}
-        onCheckout={() => {}}
-      />
+      {canCurrentUserUseCart && (
+        <OrderModal
+          open={isOrderModalOpen}
+          onClose={() => setIsOrderModalOpen(false)}
+          onCheckout={() => {}}
+        />
+      )}
     </Wrapper>
   );
 };

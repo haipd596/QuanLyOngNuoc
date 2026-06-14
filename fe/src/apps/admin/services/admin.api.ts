@@ -5,7 +5,7 @@ type QueryParams = {
   Page?: number;
   PageSize?: number;
   Keyword?: string;
-};
+} & Record<string, unknown>;
 
 export type AdminProductInput = {
   sku: string;
@@ -20,6 +20,14 @@ export type AdminProductInput = {
   minStockLevel?: number;
   description?: string;
   imageUrls?: string[];
+};
+
+export type AdminMoveStockInput = {
+  productId: string;
+  type: "IMPORT" | "EXPORT" | "ADJUST";
+  quantity: number;
+  note?: string;
+  createdById?: string;
 };
 
 export type AdminCategoryInput = {
@@ -57,6 +65,15 @@ export const getOrderStatusSummary = (days = 30) =>
 
 export const getInventoryAudit = (params: QueryParams = {}) =>
   axiosClient.get<IResponse<any>>("/reports/inventory-audit", { params });
+
+export const getInventorySummary = (params: QueryParams = {}) =>
+  axiosClient.get<IResponsePagination<any>>("/inventory/summary", { params });
+
+export const getInventoryMovements = (params: QueryParams = {}) =>
+  axiosClient.get<IResponsePagination<any>>("/inventory/movements", { params });
+
+export const moveInventoryStock = (payload: AdminMoveStockInput) =>
+  axiosClient.post<IResponse<any>>("/inventory/move", payload);
 
 export const getProducts = (params: QueryParams = {}) =>
   axiosClient.get<IResponsePagination<any>>("/products", { params });
