@@ -23,6 +23,7 @@ import { ADMIN_PAGE_SIZE, formatMoney, toSlug } from "../dashboard/utils";
 import { Panel, PanelHeader, PanelTitle, StatusDot, TableWrap } from "../dashboard/styled";
 
 const PRODUCT_DESCRIPTION_MIN_LENGTH = 50;
+const PRODUCT_IMAGE_MAX_SIZE_MB = 5;
 
 const AdminProductsPage = () => {
   const queryClient = useQueryClient();
@@ -83,6 +84,12 @@ const AdminProductsPage = () => {
       return value;
     }
   };
+
+  const getErrorMessage = (error: any, fallback: string) =>
+    error?.data?.message ||
+    error?.response?.data?.message ||
+    error?.message ||
+    fallback;
 
   const invalidatePublicProductQueries = async (productId?: string) => {
     await Promise.all([
@@ -296,8 +303,13 @@ const AdminProductsPage = () => {
               setEditingProduct(null);
               setImageUrls([]);
               void fetchProducts();
-            } catch {
-              showErrorNotify(editingProduct ? "Cập nhật sản phẩm thất bại" : "Tạo sản phẩm thất bại");
+            } catch (error: any) {
+              showErrorNotify(
+                getErrorMessage(
+                  error,
+                  editingProduct ? "Cập nhật sản phẩm thất bại" : "Tạo sản phẩm thất bại",
+                ),
+              );
             }
           }}
         >
@@ -393,6 +405,17 @@ const AdminProductsPage = () => {
                   accept="image/*"
                   multiple
                   showUploadList={false}
+                  beforeUpload={(file) => {
+                    if (!file.type.startsWith("image/")) {
+                      message.error("Chỉ hỗ trợ file ảnh");
+                      return Upload.LIST_IGNORE;
+                    }
+                    if (file.size > PRODUCT_IMAGE_MAX_SIZE_MB * 1024 * 1024) {
+                      message.error(`Ảnh không được vượt quá ${PRODUCT_IMAGE_MAX_SIZE_MB}MB/file`);
+                      return Upload.LIST_IGNORE;
+                    }
+                    return true;
+                  }}
                   customRequest={async ({ file, onSuccess, onError }) => {
                     try {
                       const uploadFile = file as File;
@@ -403,8 +426,8 @@ const AdminProductsPage = () => {
                       }
                       setImageUrls((prev) => [...prev, uploadedPath]);
                       onSuccess?.(res);
-                    } catch (error) {
-                      message.error("Upload ảnh thất bại");
+                    } catch (error: any) {
+                      message.error(getErrorMessage(error, "Upload ảnh thất bại"));
                       onError?.(error as Error);
                     }
                   }}

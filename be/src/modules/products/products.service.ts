@@ -259,6 +259,9 @@ export class ProductsService {
       if (error.code === 'P2003') {
         throw new BadRequestException('Danh muc hoac nha cung cap khong ton tai');
       }
+      if (error.code === 'P2000') {
+        throw new BadRequestException('Du lieu vuot qua do dai cho phep');
+      }
       if (error.code === 'P2022') {
         throw new BadRequestException(
           'Cau truc du lieu chua dong bo (thieu cot trong database). Vui long chay migrate moi nhat',
