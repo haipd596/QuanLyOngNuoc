@@ -1,4 +1,5 @@
 import { ShoppingCartOutlined, StarFilled } from "@ant-design/icons";
+import { Pagination } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { formatMoney } from "@/apps/admin/pages/dashboard/utils";
@@ -19,6 +20,7 @@ import {
   Grid,
   Header,
   ImageBox,
+  PaginationWrap,
   Price,
   ProductTitle,
   Rating,
@@ -29,9 +31,13 @@ import {
   Title,
 } from "./styled";
 
+const PAGE_SIZE = 4;
+
 const BestSell = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<ISanPham[]>([]);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const { addProductToCart, pendingProductId } = useAddToCartAction();
   const currentUser = lcStorage.get<{ role?: string }>(LOCAL_STORAGE_KEYS.user);
   const canAddToCart = !currentUser || canUseCart(currentUser.role);
@@ -53,18 +59,20 @@ const BestSell = () => {
     const fetchBestSellers = async () => {
       try {
         const res = await getSanPham({
-          page: 1,
-          pageSize: 8,
+          Page: page,
+          PageSize: PAGE_SIZE,
           Query: { HotYN: "true" },
         });
         setProducts(res?.data || []);
+        setTotal(res?.metaData?.total || 0);
       } catch {
         setProducts([]);
+        setTotal(0);
       }
     };
 
     void fetchBestSellers();
-  }, []);
+  }, [page]);
 
   return (
     <Section>
@@ -127,6 +135,17 @@ const BestSell = () => {
             );
           })}
         </Grid>
+
+        <PaginationWrap>
+          <Pagination
+            current={page}
+            pageSize={PAGE_SIZE}
+            total={total}
+            onChange={setPage}
+            showSizeChanger={false}
+            align="center"
+          />
+        </PaginationWrap>
       </Container>
     </Section>
   );

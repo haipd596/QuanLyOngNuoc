@@ -54,6 +54,10 @@ export const Grid = styled.div`
   }
 `;
 
+export const PaginationWrap = styled.div`
+  margin-top: 28px;
+`;
+
 export const Card = styled(AntCard)`
   border-radius: 8px !important;
   overflow: hidden;

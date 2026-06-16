@@ -15,9 +15,11 @@ import CategoriesSidebar from "./components/CategoriesSidebar";
 import ProductGrid from "./components/ProductGrid";
 import { PageIntro } from "./styled";
 
+const PAGE_SIZE = 9;
+
 export const initialFilter: TFilter = {
   page: 1,
-  pageSize: 12,
+  pageSize: PAGE_SIZE,
   Query: {
     CategoryId: undefined,
   },
@@ -102,6 +104,7 @@ const ProductsPage = () => {
                   pageSize={filter.pageSize}
                   total={meta?.total || 0}
                   onChange={handleChangePage}
+                  showSizeChanger={false}
                   align="center"
                 />
               )}

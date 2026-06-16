@@ -9,13 +9,23 @@ import {
 import { stringtifyQuery } from '@/shared/utils';
 import type { IResponse, IResponsePagination } from '@/shared/types/response.type';
 
+const normalizeListParams = (params: TFilter): TFilter => {
+  const { page, pageSize, Page, PageSize, ...rest } = params;
+
+  return {
+    ...rest,
+    Page: Page ?? page,
+    PageSize: PageSize ?? pageSize,
+  };
+};
+
 export const getDanhMuc = (params: TFilter): Promise<IResponsePagination<IDanhMuc>> => {
-  const query = stringtifyQuery(params);
+  const query = stringtifyQuery(normalizeListParams(params));
   return axiosClient.get(`/categories?${query}`)  
 }
 
 export const getSanPham = (params: TFilter): Promise<IResponsePagination<ISanPham>> => {
-  const query = stringtifyQuery(params);
+  const query = stringtifyQuery(normalizeListParams(params));
   return axiosClient.get(`/products?${query}`)  
 }
 

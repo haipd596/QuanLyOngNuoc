@@ -81,4 +81,4 @@ export interface IAddGioHang {
   quantity: number;
 }
 
-export type TFilter = { Query?: object; } & IBaseFilter
+export type TFilter = { Query?: object; Page?: number; PageSize?: number } & IBaseFilter
