@@ -53,6 +53,7 @@ type TOrderItem = {
   name: string;
   price: number;
   quantity: number;
+  stockQuantity: number;
   unit: string;
   image: string;
 };
@@ -77,6 +78,17 @@ const resolveImageUrl = (imageUrl?: string) => {
   } catch {
     return imageUrl;
   }
+};
+
+const getCartErrorMessage = (error: any) => {
+  const message = String(error?.data?.message || error?.message || "");
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes("tồn kho") || normalized.includes("ton kho")) {
+    return message;
+  }
+
+  return "Số lượng tồn kho không đủ";
 };
 
 const OrderModal = ({ open, onClose, onCheckout }: OrderModalProps) => {
@@ -120,6 +132,7 @@ const OrderModal = ({ open, onClose, onCheckout }: OrderModalProps) => {
         name: product.name,
         price: Number(product.salePrice) || 0,
         quantity: item.quantity,
+        stockQuantity: Number(product.stockQuantity || 0),
         unit: product.unit,
         image: resolveImageUrl(image),
       };
@@ -161,6 +174,11 @@ const OrderModal = ({ open, onClose, onCheckout }: OrderModalProps) => {
       return;
     }
 
+    if (nextQuantity > item.stockQuantity) {
+      showErrorNotify(`Sản phẩm "${item.name}" chỉ còn ${item.stockQuantity} trong kho`);
+      return;
+    }
+
     setPendingProductId(item.productId);
 
     updateCartItemMutation.mutate(
@@ -171,8 +189,8 @@ const OrderModal = ({ open, onClose, onCheckout }: OrderModalProps) => {
         },
       },
       {
-        onError: () => {
-          showErrorNotify("Không thể cập nhật số lượng sản phẩm");
+        onError: (error: any) => {
+          showErrorNotify(getCartErrorMessage(error));
           setPendingProductId(null);
         },
         onSuccess: () => {
@@ -185,6 +203,14 @@ const OrderModal = ({ open, onClose, onCheckout }: OrderModalProps) => {
   const handleCheckout = () => {
     if (!currentUser) {
       showErrorNotify("Vui lòng đăng nhập");
+      return;
+    }
+
+    const invalidItem = items.find((item) => item.quantity > item.stockQuantity);
+    if (invalidItem) {
+      showErrorNotify(
+        `Sản phẩm "${invalidItem.name}" chỉ còn ${invalidItem.stockQuantity} trong kho, vui lòng giảm số lượng`
+      );
       return;
     }
 
@@ -274,7 +300,7 @@ const OrderModal = ({ open, onClose, onCheckout }: OrderModalProps) => {
                           <QuantityButton
                             type="primary"
                             onClick={() => handleQuantityChange(item, 1)}
-                            disabled={isPending}
+                            disabled={isPending || item.quantity >= item.stockQuantity}
                           >
                             +
                           </QuantityButton>

@@ -246,9 +246,17 @@ export class SalesOrdersService {
   async updateStatus(id: string, dto: UpdateSalesOrderStatusDto) {
     const order = await this.findOne(id);
     this.ensureOrderStatusTransition(order.orderStatus, dto.orderStatus);
+    const data: Prisma.SalesOrderUpdateInput = {
+      orderStatus: dto.orderStatus,
+    };
+
+    if (dto.orderStatus === OrderStatus.CONFIRMED && !order.confirmedAt) {
+      data.confirmedAt = new Date();
+    }
+
     return this.prisma.salesOrder.update({
       where: { id },
-      data: { orderStatus: dto.orderStatus },
+      data,
     });
   }
 

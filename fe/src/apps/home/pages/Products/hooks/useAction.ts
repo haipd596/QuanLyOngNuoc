@@ -12,6 +12,17 @@ export const useAddToCartAction = () => {
   const { showSuccessNotify, showErrorNotify } = useNotification();
   const [pendingProductId, setPendingProductId] = useState<string | null>(null);
 
+  const getCartErrorMessage = (error: any) => {
+    const message = String(error?.data?.message || error?.message || "");
+    const normalized = message.toLowerCase();
+
+    if (normalized.includes("tồn kho") || normalized.includes("ton kho")) {
+      return message;
+    }
+
+    return "Số lượng tồn kho không đủ";
+  };
+
   const addProductToCart = (product: ISanPham, quantity: number = 1) => {
     const currentUser = lcStorage.get<{ role?: string }>(LOCAL_STORAGE_KEYS.user);
     if (!currentUser) {
@@ -36,8 +47,8 @@ export const useAddToCartAction = () => {
         showSuccessNotify(`Đã thêm "${product.name}" vào giỏ hàng`);
         setPendingProductId(null);
       },
-      onError: () => {
-        showErrorNotify("Không thể thêm vào giỏ hàng");
+      onError: (error: any) => {
+        showErrorNotify(getCartErrorMessage(error));
         setPendingProductId(null);
       },
     });

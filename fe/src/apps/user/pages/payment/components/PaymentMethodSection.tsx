@@ -1,8 +1,8 @@
 ﻿import {
-  BankOutlined,  CreditCardOutlined,
+  BankOutlined,
+  CreditCardOutlined,
   SafetyCertificateOutlined,
   UploadOutlined,
-  WalletOutlined,
 } from "@ant-design/icons";
 import { Button, Flex, Form, Upload, message } from "antd";
 import type { UploadProps } from "antd";
@@ -119,10 +119,6 @@ const PaymentMethodSection = ({
                 <PaymentOption value="bank">
                   <BankOutlined style={{ marginRight: 8 }} />
                   Chuyển khoản ngân hàng
-                </PaymentOption>
-                <PaymentOption value="wallet">
-                  <WalletOutlined style={{ marginRight: 8 }} />
-                  Ví điện tử (Momo/ZaloPay)
                 </PaymentOption>
               </Flex>
             </StyledRadioGroup>

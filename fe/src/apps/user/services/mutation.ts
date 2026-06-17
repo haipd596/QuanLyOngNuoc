@@ -6,6 +6,11 @@ import { cancelMyOrder, createMyOrder, updateMyProfile, uploadMyOrderBill } from
 import type { ICancelMyOrderPayload, IMyCheckoutPayload, IMyOrder, IUpdateMyProfilePayload, IUserMe } from "./types";
 import { USER_ME_QUERY_KEY, USER_MY_ORDER_DETAIL_QUERY_KEY, USER_MY_ORDERS_QUERY_KEY } from "./query";
 import { CART_COUNT_QUERY_KEY, CART_QUERY_KEY } from "@/apps/home/services/query";
+import {
+  CATEGORY_PRODUCT_COUNTS_QUERY_KEY,
+  PRODUCT_DETAIL_QUERY_KEY,
+  PRODUCT_LIST_QUERY_KEY,
+} from "@/apps/home/pages/Products/services";
 
 export const useCreateMyOrderMutation = (): UseMutationResult<
   IResponse<IMyOrder>,
@@ -19,6 +24,9 @@ export const useCreateMyOrderMutation = (): UseMutationResult<
       queryClient.invalidateQueries(USER_MY_ORDERS_QUERY_KEY);
       queryClient.invalidateQueries(CART_QUERY_KEY);
       queryClient.invalidateQueries(CART_COUNT_QUERY_KEY);
+      queryClient.invalidateQueries(PRODUCT_LIST_QUERY_KEY);
+      queryClient.invalidateQueries(PRODUCT_DETAIL_QUERY_KEY);
+      queryClient.invalidateQueries(CATEGORY_PRODUCT_COUNTS_QUERY_KEY);
     },
   });
 };

@@ -7,6 +7,17 @@ import {
 } from '../../common/utils/pagination.util';
 import { PrismaService } from '../../config/prisma.service';
 
+const formatLocalDateKey = (value: Date | string) => {
+  if (typeof value === 'string') {
+    return value.slice(0, 10);
+  }
+
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, '0');
+  const day = String(value.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 @Injectable()
 export class ReportsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -30,13 +41,13 @@ export class ReportsService {
     const end = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
     const [todayRevenue, newOrdersToday, pendingOrders, packingOrders, completedOrders] = await Promise.all([
-      this.prisma.salesOrder.aggregate({
-      _sum: { finalAmount: true },
-      where: {
-        createdAt: { gte: start, lt: end },
-        orderStatus: { not: OrderStatus.CANCELED },
-      },
-    }),
+      this.prisma.$queryRaw<Array<{ revenue: string | number | null }>>`
+        SELECT COALESCE(SUM(finalAmount), 0) as revenue
+        FROM SalesOrder
+        WHERE COALESCE(confirmedAt, createdAt) >= ${start}
+          AND COALESCE(confirmedAt, createdAt) < ${end}
+          AND orderStatus IN (${OrderStatus.CONFIRMED}, ${OrderStatus.PACKING}, ${OrderStatus.SHIPPED}, ${OrderStatus.COMPLETED})
+      `,
       this.prisma.salesOrder.count({
         where: { createdAt: { gte: start, lt: end } },
       }),
@@ -58,7 +69,7 @@ export class ReportsService {
       totalSuppliers,
       totalOrders,
       lowStockProducts: Number(lowStock[0]?.count ?? 0),
-      todayRevenue: Number(todayRevenue._sum.finalAmount ?? 0),
+      todayRevenue: Number(todayRevenue[0]?.revenue ?? 0),
       newOrdersToday,
       pendingOrders,
       packingOrders,
@@ -163,15 +174,23 @@ export class ReportsService {
     const start = from ? new Date(from) : new Date(now.getFullYear(), now.getMonth(), 1);
     const end = to ? new Date(to) : new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
-    const [aggregate, byStatus] = await Promise.all([
-      this.prisma.salesOrder.aggregate({
-        _count: { id: true },
-        _sum: { finalAmount: true, discountAmount: true },
-        where: {
-          createdAt: { gte: start, lt: end },
-          orderStatus: { not: OrderStatus.CANCELED },
-        },
-      }),
+    const [aggregateRows, byStatus] = await Promise.all([
+      this.prisma.$queryRaw<
+        Array<{
+          totalOrders: bigint;
+          totalRevenue: string | number | null;
+          totalDiscount: string | number | null;
+        }>
+      >`
+        SELECT
+          COUNT(id) as totalOrders,
+          COALESCE(SUM(finalAmount), 0) as totalRevenue,
+          COALESCE(SUM(discountAmount), 0) as totalDiscount
+        FROM SalesOrder
+        WHERE COALESCE(confirmedAt, createdAt) >= ${start}
+          AND COALESCE(confirmedAt, createdAt) < ${end}
+          AND orderStatus IN (${OrderStatus.CONFIRMED}, ${OrderStatus.PACKING}, ${OrderStatus.SHIPPED}, ${OrderStatus.COMPLETED})
+      `,
       this.prisma.salesOrder.groupBy({
         by: ['orderStatus'],
         _count: { id: true },
@@ -181,14 +200,17 @@ export class ReportsService {
       }),
     ]);
 
+    const aggregate = aggregateRows[0];
+    const totalRevenue = Number(aggregate?.totalRevenue ?? 0);
+    const totalDiscount = Number(aggregate?.totalDiscount ?? 0);
+
     return {
       from: start,
       to: end,
-      totalOrders: aggregate._count.id,
-      totalRevenue: Number(aggregate._sum.finalAmount ?? 0),
-      totalDiscount: Number(aggregate._sum.discountAmount ?? 0),
-      netRevenue:
-        Number(aggregate._sum.finalAmount ?? 0) - Number(aggregate._sum.discountAmount ?? 0),
+      totalOrders: Number(aggregate?.totalOrders ?? 0),
+      totalRevenue,
+      totalDiscount,
+      netRevenue: totalRevenue - totalDiscount,
       statusBreakdown: byStatus.map((s) => ({
         orderStatus: s.orderStatus,
         count: s._count.id,
@@ -204,22 +226,22 @@ export class ReportsService {
     start.setDate(end.getDate() - safeDays + 1);
     start.setHours(0, 0, 0, 0);
 
-    const rows = await this.prisma.$queryRaw<Array<{ day: Date; revenue: bigint }>>`
-      SELECT DATE(createdAt) as day, COALESCE(SUM(finalAmount), 0) as revenue
+    const rows = await this.prisma.$queryRaw<Array<{ day: Date | string; revenue: string | number }>>`
+      SELECT DATE(COALESCE(confirmedAt, createdAt)) as day, COALESCE(SUM(finalAmount), 0) as revenue
       FROM SalesOrder
-      WHERE createdAt >= ${start}
-        AND createdAt <= ${end}
-        AND orderStatus <> ${OrderStatus.CANCELED}
-      GROUP BY DATE(createdAt)
-      ORDER BY DATE(createdAt) ASC
+      WHERE COALESCE(confirmedAt, createdAt) >= ${start}
+        AND COALESCE(confirmedAt, createdAt) <= ${end}
+        AND orderStatus IN (${OrderStatus.CONFIRMED}, ${OrderStatus.PACKING}, ${OrderStatus.SHIPPED}, ${OrderStatus.COMPLETED})
+      GROUP BY DATE(COALESCE(confirmedAt, createdAt))
+      ORDER BY DATE(COALESCE(confirmedAt, createdAt)) ASC
     `;
 
-    const map = new Map(rows.map((r) => [new Date(r.day).toISOString().slice(0, 10), Number(r.revenue || 0)]));
+    const map = new Map(rows.map((r) => [formatLocalDateKey(r.day), Number(r.revenue || 0)]));
     const points: Array<{ date: string; revenue: number }> = [];
     for (let i = 0; i < safeDays; i += 1) {
       const d = new Date(start);
       d.setDate(start.getDate() + i);
-      const key = d.toISOString().slice(0, 10);
+      const key = formatLocalDateKey(d);
       points.push({ date: key, revenue: map.get(key) ?? 0 });
     }
     return points;

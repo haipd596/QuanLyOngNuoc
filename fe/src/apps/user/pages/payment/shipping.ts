@@ -3,7 +3,7 @@ export const SHIPPING_METHOD_FEES: Record<string, number> = {
   express: 55000,
 };
 
-const FREE_SHIPPING_PAYMENT_METHODS = new Set(["bank", "wallet"]);
+const FREE_SHIPPING_PAYMENT_METHODS = new Set(["bank"]);
 
 export const getShippingFee = (
   shippingMethod: string,

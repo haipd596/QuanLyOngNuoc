@@ -1,12 +1,12 @@
 import { ShoppingCartOutlined, StarFilled } from "@ant-design/icons";
 import { Pagination } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { formatMoney } from "@/apps/admin/pages/dashboard/utils";
 import { LOCAL_STORAGE_KEYS } from "@/constants";
 import { PRODUCTS_ROUTE } from "@/apps/home/constants";
 import { useAddToCartAction } from "@/apps/home/pages/Products/hooks/useAction";
-import { getSanPham } from "@/apps/home/pages/Products/services/api";
+import { useSanPhamQuery } from "@/apps/home/pages/Products/services";
 import type { ISanPham } from "@/apps/home/pages/Products/services/types";
 import { lcStorage } from "@/shared/utils";
 import { canUseCart } from "@/shared/utils/roleAccess";
@@ -35,12 +35,17 @@ const PAGE_SIZE = 4;
 
 const BestSell = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState<ISanPham[]>([]);
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
   const { addProductToCart, pendingProductId } = useAddToCartAction();
   const currentUser = lcStorage.get<{ role?: string }>(LOCAL_STORAGE_KEYS.user);
   const canAddToCart = !currentUser || canUseCart(currentUser.role);
+  const { data } = useSanPhamQuery({
+    Page: page,
+    PageSize: PAGE_SIZE,
+    Query: { HotYN: "true" },
+  });
+  const products = (data?.data || []) as ISanPham[];
+  const total = data?.metaData?.total || 0;
 
   const resolveImageUrl = (imageUrl?: string) => {
     if (!imageUrl) return "https://via.placeholder.com/600x400?text=Khong+co+anh";
@@ -54,25 +59,6 @@ const BestSell = () => {
       return imageUrl;
     }
   };
-
-  useEffect(() => {
-    const fetchBestSellers = async () => {
-      try {
-        const res = await getSanPham({
-          Page: page,
-          PageSize: PAGE_SIZE,
-          Query: { HotYN: "true" },
-        });
-        setProducts(res?.data || []);
-        setTotal(res?.metaData?.total || 0);
-      } catch {
-        setProducts([]);
-        setTotal(0);
-      }
-    };
-
-    void fetchBestSellers();
-  }, [page]);
 
   return (
     <Section>

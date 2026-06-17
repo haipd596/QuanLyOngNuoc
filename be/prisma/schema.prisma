@@ -264,6 +264,7 @@ model SalesOrder {
   paymentStatus  PaymentStatus    @default(UNPAID)
   billImageUrl   String?
   orderStatus    OrderStatus      @default(PENDING)
+  confirmedAt    DateTime?
   note           String?
   customer       Customer?        @relation(fields: [customerId], references: [id])
   staff          User?            @relation(fields: [staffId], references: [id])

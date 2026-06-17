@@ -46,8 +46,6 @@ const PAYMENT_STATUS_OPTIONS = [
 
 const PAYMENT_METHOD_OPTIONS = [
   { label: "COD", value: "COD" },
-  { label: "MOMO", value: "MOMO" },
-  { label: "ZALOPAY", value: "ZALOPAY" },
   { label: "BANK_TRANSFER", value: "BANK_TRANSFER" },
 ];
 
@@ -60,8 +58,6 @@ const PAYMENT_STATUS_LABEL_MAP: Record<string, string> = {
 const PAYMENT_METHOD_LABEL_MAP: Record<string, string> = {
   COD: "Thanh toán khi nhận hàng (COD)",
   BANK_TRANSFER: "Chuyển khoản ngân hàng",
-  MOMO: "Ví điện tử MoMo",
-  ZALOPAY: "Ví điện tử ZaloPay",
 };
 
 const ORDER_STEPS = [

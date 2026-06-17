@@ -46,8 +46,6 @@ const resolveImageUrl = (imageUrl?: string) => {
 const formatPaymentMethod = (method?: string) => {
   const normalized = String(method || "COD").toUpperCase();
   if (normalized === "BANK_TRANSFER") return "Chuyển khoản ngân hàng";
-  if (normalized === "MOMO") return "Ví MoMo";
-  if (normalized === "ZALOPAY") return "ZaloPay";
   return "Thanh toán khi nhận hàng";
 };
 

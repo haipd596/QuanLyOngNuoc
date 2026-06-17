@@ -45,7 +45,6 @@ const toLabel = (input: unknown): string => {
 const toApiPaymentMethod = (method: string): string => {
   const normalized = String(method || "").toLowerCase();
   if (normalized === "bank") return "BANK_TRANSFER";
-  if (normalized === "wallet") return "MOMO";
   if (normalized === "cod") return "COD";
   return method;
 };
@@ -102,6 +101,18 @@ const PaymentPage = () => {
 
     if (!items.length) {
       showErrorNotify("Giỏ hàng đang trống");
+      return;
+    }
+
+    const invalidItem = (cart?.items || []).find(
+      (item) => item.quantity > Number(item.product?.stockQuantity || 0)
+    );
+    if (invalidItem) {
+      showErrorNotify(
+        `Sản phẩm "${invalidItem.product?.name || "trong giỏ hàng"}" chỉ còn ${Number(
+          invalidItem.product?.stockQuantity || 0
+        )} trong kho, vui lòng giảm số lượng`
+      );
       return;
     }
 
@@ -177,7 +188,7 @@ const PaymentPage = () => {
                     onSubmit={handleOpenConfirm}
                     loading={createOrderMutation.isLoading}
                     uploadingBill={uploadBillMutation.isLoading}
-                  onUploadBill={async (file) => {
+                    onUploadBill={async (file) => {
                       const res = await uploadBillMutation.mutateAsync(file);
                       return String(res.data?.path || res.data?.url || "").trim();
                     }}

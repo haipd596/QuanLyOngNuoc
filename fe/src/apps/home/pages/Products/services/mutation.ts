@@ -23,9 +23,5 @@ export const useAddToCart = () => {
 
       message.success("Đã thêm vào giỏ hàng");
     },
-
-    onError: () => {
-      message.error("Thêm vào giỏ thất bại");
-    },
   });
 };
