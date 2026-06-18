@@ -1,51 +1,7 @@
-﻿import { Col, Form, Input, Row, Select } from "antd";
-import { useEffect, useMemo } from "react";
-
-import {
-  usePublicProvincesQuery,
-  usePublicWardsQuery,
-} from "../services";
+﻿import { Col, Form, Input, Row } from "antd";
 import { SectionCard, SectionTitle, StepBadge, StyledForm } from "../styled";
 
-type SelectOptionValue = {
-  value?: number;
-  label?: string;
-};
-
 const ShippingAddressSection = () => {
-  const form = Form.useFormInstance();
-  const selectedProvince = Form.useWatch("city", form) as SelectOptionValue | undefined;
-  const selectedProvinceId = selectedProvince?.value;
-
-  const { data: provincesResponse, isLoading: isLoadingProvinces } =
-    usePublicProvincesQuery();
-
-  const { data: wardsResponse, isLoading: isLoadingWards } = usePublicWardsQuery(
-    selectedProvinceId
-  );
-
-  useEffect(() => {
-    form.setFieldValue("ward", undefined);
-  }, [form, selectedProvinceId]);
-
-  const provinceOptions = useMemo(
-    () =>
-      (provincesResponse?.data ?? []).map((province) => ({
-        label: province.ten,
-        value: province.id,
-      })),
-    [provincesResponse]
-  );
-
-  const wardOptions = useMemo(
-    () =>
-      (wardsResponse?.data ?? []).map((ward) => ({
-        label: ward.ten,
-        value: ward.id,
-      })),
-    [wardsResponse]
-  );
-
   return (
     <section>
       <SectionTitle>
@@ -63,18 +19,11 @@ const ShippingAddressSection = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn tỉnh / thành phố",
+                    message: "Vui lòng nhập tỉnh / thành phố",
                   },
                 ]}
               >
-                <Select
-                  showSearch
-                  labelInValue
-                  loading={isLoadingProvinces}
-                  placeholder="Chọn tỉnh / thành phố"
-                  options={provinceOptions}
-                  optionFilterProp="label"
-                />
+                <Input placeholder="Nhập tỉnh / thành phố" />
               </Form.Item>
             </Col>
 
@@ -85,19 +34,11 @@ const ShippingAddressSection = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Vui lòng chọn phường / xã",
+                    message: "Vui lòng nhập phường / xã",
                   },
                 ]}
               >
-                <Select
-                  showSearch
-                  labelInValue
-                  loading={isLoadingWards}
-                  placeholder="Chọn phường / xã"
-                  options={wardOptions}
-                  optionFilterProp="label"
-                  disabled={!selectedProvinceId}
-                />
+                <Input placeholder="Nhập phường / xã" />
               </Form.Item>
             </Col>
 
